@@ -31,6 +31,14 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
+#include <QFileDialog>
+#include <QStandardPaths>
+
+#include <QImage>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QApplication>
 
 FilterController::FilterController(QObject *parent)
     : QObject(parent)
@@ -444,4 +452,11 @@ void FilterController::setTrackTransitionService(const QString &service)
         m_metadataModel.setHidden("qtBlendMode", true);
         m_metadataModel.setHidden("blendMode", true);
     }
+}
+
+void FilterController::exportCurrentFrame()
+{
+    qDebug() << "=== Export Frame Test ===";
+    static int count = 0;
+    qDebug() << "Export frame clicked" << ++count << "times";
 }
