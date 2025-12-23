@@ -445,3 +445,79 @@ void FilterController::setTrackTransitionService(const QString &service)
         m_metadataModel.setHidden("blendMode", true);
     }
 }
+
+// 王奇琪
+
+void FilterController::exportCurrentFrame()
+{
+    if (!m_producer || !m_producer->is_valid()) {
+        LOG_WARNING() << "No valid producer for frame export";
+        return;
+    }
+    
+    // 获取当前播放器位置
+    int position = MAIN.position();
+    if (position < 0) {
+        LOG_WARNING() << "Invalid position for frame export";
+        return;
+    }
+    
+    // 创建保存对话框
+    QString filename = QFileDialog::getSaveFileName(
+        MAIN.getQmlWindow(),
+        tr("Export Frame As Image"),
+        QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) 
+            + QString("/frame_%1.png").arg(position),
+        tr("Image Files (*.png *.jpg *.jpeg *.bmp *.tif *.tiff);;All Files (*)")
+    );
+    
+    if (filename.isEmpty()) {
+        return;
+    }
+    
+    // 获取当前帧作为图像
+    QImage image = getCurrentFrameAsImage(position);
+    if (image.isNull()) {
+        LOG_WARNING() << "Failed to capture frame image";
+        return;
+    }
+    
+    // 保存图像
+    if (image.save(filename)) {
+        LOG_INFO() << "Frame exported to:" << filename;
+        showStatusMessage(tr("Frame exported to %1").arg(QFileInfo(filename).fileName()));
+    } else {
+        LOG_WARNING() << "Failed to save frame image:" << filename;
+        showStatusMessage(tr("Failed to export frame"));
+    }
+}
+
+QImage FilterController::getCurrentFrameAsImage(int position)
+{
+    if (!m_producer || !m_producer->is_valid()) {
+        return QImage();
+    }
+    
+    // 使用MLT的帧获取功能
+    std::shared_ptr<Mlt::Frame> frame(m_producer->get_frame(position));
+    if (!frame || !frame->is_valid()) {
+        return QImage();
+    }
+    
+    // 转换帧为图像
+    mlt_image_format format = mlt_image_rgb24a;
+    const uchar *imageData = frame->get_image(format);
+    int width = frame->get_image_width();
+    int height = frame->get_image_height();
+    
+    if (!imageData || width <= 0 || height <= 0) {
+        return QImage();
+    }
+    
+    // 创建QImage（注意：MLT的RGB24A是RGBA格式）
+    QImage image(imageData, width, height, QImage::Format_RGBA8888);
+    
+    // 如果需要，转换为ARGB32（Qt的标准格式）
+    return image.convertToFormat(QImage::Format_ARGB32);
+}
+//王奇琪
