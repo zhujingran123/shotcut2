@@ -456,7 +456,12 @@ void FilterController::setTrackTransitionService(const QString &service)
 
 void FilterController::exportCurrentFrame()
 {
-    qDebug() << "=== Export Frame Test ===";
-    static int count = 0;
-    qDebug() << "Export frame clicked" << ++count << "times";
+    qDebug() << "Export frame - step 2: dialog test";
+    
+    QFileDialog::getSaveFileName(
+        nullptr,
+        "Test Export",
+        QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+        "Images (*.png)"
+    );
 }
