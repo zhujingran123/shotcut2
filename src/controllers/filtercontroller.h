@@ -92,11 +92,12 @@ private:
     MotionTrackerModel m_motionTrackerModel;
     AttachedFiltersModel m_attachedModel;
     int m_currentFilterIndex;
-};
+
 // 王奇琪
 public slots:
     void exportCurrentFrame(); 
 private:
     QImage getCurrentFrameAsImage(int position);
 //王奇琪
+};
 #endif // FILTERCONTROLLER_H
