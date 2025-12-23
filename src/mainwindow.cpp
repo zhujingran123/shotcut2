@@ -6332,3 +6332,21 @@ void MainWindow::showSettingsMenu() const
 #endif
     ui->menuSettings->popup(point, ui->menuSettings->defaultAction());
 }
+void MainWindow::setupExportFrameAction()
+{
+    // 创建Action
+    QAction *exportFrameAction = new QAction(tr("Export &Frame as Image"), this);
+    exportFrameAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_E));
+    exportFrameAction->setStatusTip(tr("Export current frame as an image file"));
+    
+    // 连接到FilterController
+    connect(exportFrameAction, &QAction::triggered,
+            &m_filterController, &FilterController::exportCurrentFrame);
+    
+    // 添加到File菜单
+    ui->menuFile->insertAction(ui->actionExit, exportFrameAction);
+    ui->menuFile->insertSeparator(ui->actionExit);
+    
+    // 添加到工具栏（可选）
+    ui->mainToolBar->addAction(exportFrameAction);
+}
