@@ -81,6 +81,9 @@ private slots:
     void handleAttachDuplicateFailed(int index);
     void onQmlFilterChanged(const QString &name);
 
+public slots:
+    void exportCurrentFrame();
+
 private:
     void loadFilterSets();
     void loadFilterMetadata();
@@ -92,6 +95,7 @@ private:
     MotionTrackerModel m_motionTrackerModel;
     AttachedFiltersModel m_attachedModel;
     int m_currentFilterIndex;
+    QImage getCurrentFrameAsImage(int position);
 };
 
 #endif // FILTERCONTROLLER_H
