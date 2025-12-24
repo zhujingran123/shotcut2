@@ -70,6 +70,7 @@ public slots:
     void onProducerChanged();
     void pauseUndoTracking();
     void resumeUndoTracking();
+    void exportCurrentFrame();
 
 private slots:
     void handleAttachedModelChange();
@@ -80,6 +81,7 @@ private slots:
     void handleAttachedRowsInserted(const QModelIndex &parent, int first, int last);
     void handleAttachDuplicateFailed(int index);
     void onQmlFilterChanged(const QString &name);
+    QImage getCurrentFrameAsImage(int position);
 
 private:
     void loadFilterSets();
@@ -93,10 +95,5 @@ private:
     AttachedFiltersModel m_attachedModel;
     int m_currentFilterIndex;
 
-public slots:
-    void exportCurrentFrame();
-
-private:
-    QImage getCurrentFrameAsImage(int position);
 };
 #endif // FILTERCONTROLLER_H
