@@ -31,6 +31,8 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
+#include "mainwindow.h"
+extern MainWindow *MAIN;
 
 FilterController::FilterController(QObject *parent)
     : QObject(parent)
@@ -450,74 +452,66 @@ void FilterController::setTrackTransitionService(const QString &service)
 
 void FilterController::exportCurrentFrame()
 {
-    if (!m_producer || !m_producer->is_valid()) {
+    // 正确获取生产者
+    auto producer = m_attachedModel.producer();
+    if (!producer || !producer->is_valid()) {
         LOG_WARNING() << "No valid producer for frame export";
         return;
     }
     
-    // 获取当前播放器位置
-    int position = MAIN.position();
+    int position = MAIN->position();
     if (position < 0) {
         LOG_WARNING() << "Invalid position for frame export";
         return;
     }
     
-    // 创建保存对话框
     QString filename = QFileDialog::getSaveFileName(
-        MAIN.getQmlWindow(),
+        MAIN,
         tr("Export Frame As Image"),
         QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) 
             + QString("/frame_%1.png").arg(position),
         tr("Image Files (*.png *.jpg *.jpeg *.bmp *.tif *.tiff);;All Files (*)")
     );
     
-    if (filename.isEmpty()) {
-        return;
-    }
+    if (filename.isEmpty()) return;
     
-    // 获取当前帧作为图像
     QImage image = getCurrentFrameAsImage(position);
     if (image.isNull()) {
-        LOG_WARNING() << "Failed to capture frame image";
+        MAIN->showStatusMessage(tr("Failed to capture frame"), 3);
         return;
     }
     
-    // 保存图像
     if (image.save(filename)) {
-        LOG_INFO() << "Frame exported to:" << filename;
-        showStatusMessage(tr("Frame exported to %1").arg(QFileInfo(filename).fileName()));
+        MAIN->showStatusMessage(tr("Frame exported to %1").arg(QFileInfo(filename).fileName()), 3);
     } else {
-        LOG_WARNING() << "Failed to save frame image:" << filename;
-        showStatusMessage(tr("Failed to export frame"));
+        MAIN->showStatusMessage(tr("Failed to export frame"), 3);
     }
 }
 
 QImage FilterController::getCurrentFrameAsImage(int position)
 {
-    if (!m_producer || !m_producer->is_valid()) {
-        return QImage();
-    }
+    auto producer = m_attachedModel.producer();
+    if (!producer || !producer->is_valid()) return QImage();
     
-    // 使用MLT的帧获取功能
-    std::shared_ptr<Mlt::Frame> frame(m_producer->get_frame(position));
+    Mlt::Frame *frame = producer->get_frame(position);
     if (!frame || !frame->is_valid()) {
+        delete frame;
         return QImage();
     }
     
-    // 转换帧为图像
-    mlt_image_format format = mlt_image_rgb24a;
-    const uchar *imageData = frame->get_image(format);
-    int width = frame->get_image_width();
-    int height = frame->get_image_height();
+    mlt_image_format format = mlt_image_rgba;
+    int width = 0, height = 0;
+    const uchar *imageData = frame->get_image(format, width, height);
     
     if (!imageData || width <= 0 || height <= 0) {
+        delete frame;
         return QImage();
     }
     
-    // 创建QImage（注意：MLT的RGB24A是RGBA格式）
     QImage image(imageData, width, height, QImage::Format_RGBA8888);
+    QImage result = image.copy();
     
-    // 如果需要，转换为ARGB32（Qt的标准格式）
-    return image.convertToFormat(QImage::Format_ARGB32);
+    delete frame;
+    return result.convertToFormat(QImage::Format_ARGB32);
 }
 //王奇琪
