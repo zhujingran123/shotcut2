@@ -98,6 +98,3 @@ jobs:
         with:
           snap: ${{ steps.snap.outputs.snap }}
           release: edge
-:
-          snap: ${{ steps.snap.outputs.snap }}
-          release: edge
