@@ -18,6 +18,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "subtitleeditorwidget.h"
 #include "Logger.h"
 #include "actions.h"
 #include "autosavefile.h"
