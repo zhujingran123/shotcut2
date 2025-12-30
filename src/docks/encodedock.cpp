@@ -66,6 +66,13 @@ static Mlt::Filter getReframeFilter(Mlt::Service *service)
     return Mlt::Filter();
 }
 
+static bool isHardwareEncoder(const QString &vcodec)
+{
+    return vcodec.endsWith("_amf") || vcodec.endsWith("_mf") || vcodec.endsWith("_nvenc")
+           || vcodec.endsWith("_qsv") || vcodec.endsWith("_vaapi")
+           || vcodec.endsWith("_videotoolbox");
+}
+
 EncodeDock::EncodeDock(QWidget *parent)
     : QDockWidget(parent)
     , ui(new Ui::EncodeDock)
@@ -291,20 +298,15 @@ void EncodeDock::loadPresetFromProperties(Mlt::Properties &preset)
                 ui->fpsSpinner->setValue(preset.get_double("frame_rate_num")
                                          / preset.get_double("frame_rate_den"));
         } else if (name == "pix_fmt") {
-            // Handle 10 bit encoding with hardware encoder and GPU Effects
+            // Handle 10-bit encoding
             if (value.contains("p10le")) {
-                if (Settings.playerGPU()) {
-                    if (value == "yuva444p10le") {
-                        other.append("mlt_image_format=rgba");
-                    } else {
-                        other.append("mlt_image_format=yuv444p10");
-                    }
-                } else if (!other.contains("mlt_image_format=rgb")) {
+                // Let 8-bit processing modes utilize full range RGB
+                const auto pm = Settings.processingMode();
+                if ((pm == ShotcutSettings::Native8Cpu) && !other.contains("mlt_image_format=rgb")) {
                     other.append("mlt_image_format=rgb");
                 }
                 // Hardware encoder
-                if (vcodec.endsWith("_nvenc") || vcodec.endsWith("_qsv")
-                    || vcodec.endsWith("_vaapi") || vcodec.endsWith("_videotoolbox")) {
+                if (isHardwareEncoder(vcodec)) {
                     value = "p010le";
                 }
             }
@@ -981,7 +983,9 @@ Mlt::Properties *EncodeDock::collectProperties(int realtime, bool includeProfile
                         setIfNotSet(p, "crf", TO_ABSOLUTE(63, 0, vq));
                         setIfNotSet(p,
                                     "vb",
-                                    0); // VP9 needs this to prevent constrained quality mode.
+                                    (vcodec == "libvpx-vp9")
+                                        ? "0" // VP9 needs this to prevent constrained quality mode
+                                        : "100M");
                     } else if (vcodec.endsWith("_vaapi")) {
                         setIfNotSet(p, "vglobal_quality", TO_ABSOLUTE(51, 0, vq));
                         setIfNotSet(p, "vq", TO_ABSOLUTE(51, 0, vq));
@@ -1001,6 +1005,7 @@ Mlt::Properties *EncodeDock::collectProperties(int realtime, bool includeProfile
                         setIfNotSet(p, "crf", TO_ABSOLUTE(51, 0, vq));
                     } else if (vcodec.startsWith("libvpx") || vcodec.startsWith("libaom-")) {
                         setIfNotSet(p, "crf", TO_ABSOLUTE(63, 0, vq));
+                        setIfNotSet(p, "vb", qRound(cvbr));
                     } else if (vcodec.endsWith("_qsv")) {
                         setIfNotSet(p, "vb", qRound(cvbr));
                     } else if (vcodec.endsWith("_videotoolbox")) {
@@ -1117,9 +1122,8 @@ Mlt::Properties *EncodeDock::collectProperties(int realtime, bool includeProfile
             else
                 setIfNotSet(p, "threads", ui->videoCodecThreadsSpinner->value());
             if (ui->videoRateControlCombo->currentIndex() != RateControlQuality
-                && !vcodec.contains("nvenc") && !vcodec.endsWith("_amf") && !vcodec.endsWith("_qsv")
-                && !vcodec.endsWith("_videotoolbox") && !vcodec.endsWith("_vaapi")
-                && ui->dualPassCheckbox->isEnabled() && ui->dualPassCheckbox->isChecked())
+                && !isHardwareEncoder(vcodec) && ui->dualPassCheckbox->isEnabled()
+                && ui->dualPassCheckbox->isChecked())
                 setIfNotSet(p, "pass", 1);
             if (ui->scanModeCombo->currentIndex() == 0 && ui->fieldOrderCombo->currentIndex() == 0
                 && vcodec.startsWith("libx264")) {
@@ -1138,9 +1142,37 @@ void EncodeDock::collectProperties(QDomElement &node, int realtime)
 {
     Mlt::Properties *p = collectProperties(realtime);
     if (p && p->is_valid()) {
-        for (int i = 0; i < p->count(); i++)
+        for (int i = 0; i < p->count(); i++) {
             if (p->get_name(i) && strcmp(p->get_name(i), ""))
                 node.setAttribute(p->get_name(i), p->get(i));
+        }
+
+        const auto processingMode = Settings.processingMode();
+        if (processingMode == ShotcutSettings::Native10Cpu
+            || processingMode == ShotcutSettings::Linear10Cpu
+            || processingMode == ShotcutSettings::Linear10GpuCpu) {
+            if (!p->property_exists("mlt_image_format")) {
+                if (::qstrcmp(p->get("color_trc"), "arib-std-b67"))
+                    node.setAttribute("mlt_image_format", "rgba64");
+                else
+                    node.setAttribute("mlt_image_format", "yuv444p10");
+            }
+        }
+        if ((processingMode == ShotcutSettings::Linear10Cpu
+             || processingMode == ShotcutSettings::Linear10GpuCpu)
+            && ::qstrcmp(p->get("color_trc"), "arib-std-b67")) {
+            if (!p->property_exists("mlt_color_trc"))
+                node.setAttribute("mlt_color_trc", "linear");
+
+            // Prevent an 8-bit linear export
+            const auto imageFormat = node.attribute("mlt_image_format");
+            if (node.attribute("mlt_color_trc") == QStringLiteral("linear")
+                && imageFormat != QStringLiteral("rgba64")
+                && imageFormat != QStringLiteral("yuv444p10")
+                && imageFormat != QStringLiteral("yuv420p10")) {
+                node.setAttribute("mlt_image_format", "rgba64");
+            }
+        }
     }
     delete p;
 }
@@ -1436,7 +1468,7 @@ MeltJob *EncodeDock::createMeltJob(Mlt::Producer *service,
             markersModel.load(MAIN.multitrack());
             auto marker = markersModel.getMarker(index);
             if (marker.end > marker.start) {
-                job->setInAndOut(marker.start, marker.end);
+                job->setInAndOut(marker.start, marker.end - 1);
             }
         }
     }

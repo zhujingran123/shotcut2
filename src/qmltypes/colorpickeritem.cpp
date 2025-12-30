@@ -26,7 +26,7 @@
 #include <QScreen>
 #include <QTimer>
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusMetaType>
@@ -42,8 +42,12 @@
 ColorPickerItem::ColorPickerItem(QObject *parent)
     : QObject(parent)
 {
+<<<<<<< HEAD
 #ifdef Q_OS_LINUX
     // 【Linux平台】：注册QColor类型到DBus系统，用于进程间通信
+=======
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
     qDBusRegisterMetaType<QColor>();
 #endif
 
@@ -60,9 +64,14 @@ ColorPickerItem::ColorPickerItem(QObject *parent)
 // 【说明】：根据平台和配置选择不同的颜色抓取方式
 void ColorPickerItem::screenSelected(const QRect &rect)
 {
+<<<<<<< HEAD
     m_selectedRect = rect; // 保存选择的区域
 #ifdef Q_OS_LINUX
     // 【Linux平台】：根据配置选择DBus方式或传统方式
+=======
+    m_selectedRect = rect;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
     if (m_selector.useDBus())
         QTimer::singleShot(0, this, &ColorPickerItem::grabColorDBus);
     else
@@ -107,7 +116,7 @@ void ColorPickerItem::grabColor()
     emit colorPicked(avgColor);
 }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
 
 // 【DBus支持】：QColor类型的DBus序列化操作符
 // 【功能】：将QColor对象序列化为DBus可传输的格式

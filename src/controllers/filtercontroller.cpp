@@ -31,6 +31,14 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
+#include <QFileDialog>
+#include <QStandardPaths>
+
+#include <QImage>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QApplication>
 
 /**
  * @class FilterController
@@ -373,4 +381,16 @@ void FilterController::setTrackTransitionService(const QString &service)
         m_metadataModel.setHidden("qtBlendMode", true);
         m_metadataModel.setHidden("blendMode", true);
     }
+}
+
+void FilterController::exportCurrentFrame()
+{
+    qDebug() << "Export frame - step 2: dialog test";
+    
+    QFileDialog::getSaveFileName(
+        nullptr,
+        "Test Export",
+        QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+        "Images (*.png)"
+    );
 }

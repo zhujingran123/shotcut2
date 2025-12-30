@@ -18,6 +18,7 @@
 #include "videowidget.h"
 
 #include "Logger.h"
+#include "dialogs/durationdialog.h"
 #include "mainwindow.h"
 #include "qmltypes/qmlfilter.h"
 #include "qmltypes/qmlutilities.h"
@@ -200,6 +201,13 @@ void VideoWidget::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
+    // Cannot show a DurationDialog during mouse drag
+    // This is usually MLT.isLiveProducer(), but that checks for > 1 week,
+    // which is too long for the timeline.
+    if (m_producer->get_playtime() > qRound(profile().fps() * 24 * 3600)) {
+        m_producer->set_in_and_out(0, profile().fps() * 60 - 1);
+    }
+
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
     mimeData->setData(Mlt::XmlMimeType, MLT.XML().toUtf8());
@@ -358,8 +366,22 @@ int VideoWidget::reconfigure(bool isMulti)
         // Make an event handler for when a frame's image should be displayed
         m_consumer->listen("consumer-frame-show", this, (mlt_listener) on_frame_show);
         m_consumer->set("real_time", MLT.realTime());
-        m_consumer->set("mlt_image_format",
-                        serviceName.startsWith("decklink") ? "yuv422p" : "yuv420p");
+        const int processingMode = property("processing_mode").toInt();
+        const bool isDeckLinkHLG = serviceName.startsWith("decklink")
+                                   && property("decklinkGamma").toInt() == 1;
+        switch (processingMode) {
+        case ShotcutSettings::Native10Cpu:
+        case ShotcutSettings::Linear10Cpu:
+            m_consumer->set("mlt_image_format", "rgba64");
+            break;
+        case ShotcutSettings::Linear10GpuCpu:
+            m_consumer->set("mlt_image_format", isDeckLinkHLG ? "yuv444p10" : "rgba64");
+            break;
+        default: // Native8Cpu
+            m_consumer->set("mlt_image_format",
+                            serviceName.startsWith("decklink") ? "yuv422" : "yuv420p");
+            break;
+        }
         m_consumer->set("channels", property("audio_channels").toInt());
         if (property("audio_channels").toInt() == 4) {
             m_consumer->set("channel_layout", "quad");
@@ -378,18 +400,22 @@ int VideoWidget::reconfigure(bool isMulti)
             m_consumer->set("color_trc", "bt470bg");
             break;
         case 2020:
-            switch (property("decklinkGamma").toInt()) {
-            case 1:
+            if (isDeckLinkHLG) {
                 m_consumer->set("color_trc", "arib-std-b67");
-                break;
-            default:
+            } else {
                 m_consumer->clear("color_trc");
-                break;
             }
             break;
         default:
             m_consumer->set("color_trc", "bt709");
             break;
+        }
+        if (processingMode == ShotcutSettings::Linear10Cpu
+            || (processingMode == ShotcutSettings::Linear10GpuCpu
+                && property("decklinkGamma").toInt() != 1)) {
+            m_consumer->set("mlt_color_trc", "linear");
+        } else {
+            m_consumer->clear("mlt_color_trc");
         }
         if (isMulti) {
             m_consumer->set("terminate_on_pause", 0);

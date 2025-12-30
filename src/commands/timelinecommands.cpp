@@ -400,7 +400,7 @@ void RemoveCommand::redo()
                 Mlt::Playlist playlist(*track);
                 // 获取被移除片段的时间范围
                 m_markerRemoveStart = playlist.clip_start(m_clipIndex);
-                m_markerRemoveEnd = m_markerRemoveStart + playlist.clip_length(m_clipIndex) - 1;
+                m_markerRemoveEnd = m_markerRemoveStart + playlist.clip_length(m_clipIndex);
             }
         }
         if (m_markers.size() > 0 && m_markerRemoveStart >= 0) {

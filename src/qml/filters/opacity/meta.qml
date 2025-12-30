@@ -5,7 +5,7 @@ Metadata {
     type: Metadata.Filter
     objectName: 'brightnessOpacity'
     name: qsTr("Opacity")
-    keywords: qsTr('alpha transparent translucent', 'search keywords for the Opacity video filter') + ' opacity #rgba'
+    keywords: qsTr('alpha transparent translucent', 'search keywords for the Opacity video filter') + ' opacity #rgba #10bit'
     mlt_service: "brightness"
     qml: "ui.qml"
     icon: 'icon.webp'
@@ -22,7 +22,7 @@ Metadata {
                 gangedProperties: ['opacity']
                 isCurve: true
                 minimum: 0
-                maximum: 1
+                maximum: filter.isAtLeastVersion(5) ? 2 : 1
             }
         ]
     }

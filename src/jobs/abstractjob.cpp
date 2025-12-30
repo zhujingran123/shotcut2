@@ -216,11 +216,19 @@ void AbstractJob::resume()
     emit progressUpdated(m_item, 0); // 恢复进度显示
 }
 
+<<<<<<< HEAD
 /**
  * @brief 当进程结束时调用。
  * @param exitCode 进程的退出码。
  * @param exitStatus 进程的退出状态（正常退出或崩溃）。
  */
+=======
+void AbstractJob::setKilled(bool killed)
+{
+    m_killed = killed;
+}
+
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
 void AbstractJob::onFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     const QTime &time = QTime::fromMSecsSinceStartOfDay(m_totalTime.elapsed());
@@ -296,8 +304,13 @@ void AbstractJob::onStarted()
  */
 void AbstractJob::onProgressUpdated(QStandardItem *, int percent)
 {
+<<<<<<< HEAD
     // 在首次报告大于 0 的百分比时，启动估算计时器
     if (percent > 0 && (percent == 1 || m_startingPercent < 0)) {
+=======
+    // Start timer on first reported percentage > 0.
+    if (percent == 1 || m_startingPercent < 0) {
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
         m_estimateTime.restart();
         m_startingPercent = percent;
     }

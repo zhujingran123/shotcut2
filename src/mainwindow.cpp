@@ -48,9 +48,7 @@
 #include "docks/subtitlesdock.h"
 #include "docks/timelinedock.h"
 #include "jobqueue.h"
-#ifdef Q_OS_MAC
 #include "jobs/screencapturejob.h"
-#endif
 #include "models/audiolevelstask.h"
 #include "models/keyframesmodel.h"
 #include "models/motiontrackermodel.h"
@@ -60,6 +58,7 @@
 #include "qmltypes/qmlapplication.h"
 #include "qmltypes/qmlprofile.h"
 #include "qmltypes/qmlutilities.h"
+#include "screencapture/screencapture.h"
 #include "settings.h"
 #include "shotcut_mlt_properties.h"
 #include "util.h"
@@ -207,7 +206,9 @@ MainWindow::MainWindow()
     readPlayerSettings();
     configureVideoWidget();
 
-    setupLayoutSwitcher();
+    // Restore custom colors from settings
+    Settings.restoreCustomColors();
+
     centerLayoutInRemainingToolbarSpace();
 
 #ifndef SHOTCUT_NOUPGRADE
@@ -216,15 +217,12 @@ MainWindow::MainWindow()
         delete ui->actionUpgrade;
 
     setupAndConnectDocks();
-
     setupMenuFile();
     setupMenuView();
-
     connectVideoWidgetSignals();
-
     readWindowSettings();
-
     setupActions();
+    setupLayoutSwitcher();
 
     setFocus();
     setCurrentFile("");
@@ -375,9 +373,12 @@ void MainWindow::setupLayoutSwitcher()
         break;
     case LayoutMode::Color:
         ui->actionLayoutColor->setChecked(true);
+        filterController()->metadataModel()->setFilter(MetadataModel::VideoFilter);
+        filterController()->metadataModel()->setSearch("#color");
         break;
     case LayoutMode::Audio:
         ui->actionLayoutAudio->setChecked(true);
+        filterController()->metadataModel()->setFilter(MetadataModel::AudioFilter);
         break;
     case LayoutMode::PlayerOnly:
         ui->actionLayoutPlayer->setChecked(true);
@@ -681,6 +682,7 @@ void MainWindow::setupAndConnectDocks()
             m_filterController->motionTrackerModel(),
             &MotionTrackerModel::removeFromService);
     connect(this, SIGNAL(audioChannelsChanged()), m_filterController, SLOT(setProducer()));
+    connect(this, SIGNAL(processingModeChanged()), m_filterController, SLOT(setProducer()));
     connect(m_timelineDock,
             &TimelineDock::trimStarted,
             m_filterController,
@@ -1041,7 +1043,92 @@ MainWindow::~MainWindow()
 void MainWindow::setupSettingsMenu()
 {
     LOG_DEBUG() << "begin";
+
+    Mlt::Filter filter(MLT.profile(), "color_transform");
+    if (!filter.is_valid()) {
+#if LIBMLT_VERSION_INT < ((7 << 16) + (34 << 8))
+        ui->actionNative10bitCpu->setVisible(false);
+#endif
+        ui->actionLinear10bitCpu->setVisible(false);
+    }
     QActionGroup *group = new QActionGroup(this);
+    ui->actionNative8bitCpu->setData(ShotcutSettings::Native8Cpu);
+    if (ui->actionNative10bitCpu->isVisible())
+        ui->actionNative10bitCpu->setData(ShotcutSettings::Native10Cpu);
+    if (ui->actionLinear10bitCpu->isVisible())
+        ui->actionLinear10bitCpu->setData(ShotcutSettings::Linear10Cpu);
+    ui->actionLinear10bitGpuCpu->setData(ShotcutSettings::Linear10GpuCpu);
+    if (ui->actionNative8bitCpu->isVisible())
+        group->addAction(ui->actionNative8bitCpu);
+    if (ui->actionNative10bitCpu->isVisible())
+        group->addAction(ui->actionNative10bitCpu);
+    if (ui->actionLinear10bitCpu->isVisible())
+        group->addAction(ui->actionLinear10bitCpu);
+    if (ui->actionLinear10bitGpuCpu->isVisible())
+        group->addAction(ui->actionLinear10bitGpuCpu);
+    for (auto a : group->actions()) {
+        const auto mode = (ShotcutSettings::ProcessingMode) a->data().toInt();
+        if (Settings.processingMode() == mode) {
+            a->setChecked(true);
+            setProcessingMode(mode);
+            break;
+        }
+    }
+    connect(group, &QActionGroup::triggered, this, [&](QAction *action) {
+        const auto oldMode = Settings.processingMode();
+        const auto newMode = (ShotcutSettings::ProcessingMode) action->data().toInt();
+        if (oldMode == newMode)
+            return;
+        LOG_INFO() << "Processing Mode" << oldMode << "->" << newMode;
+        if (newMode == ShotcutSettings::Linear10GpuCpu) {
+            QMessageBox
+                dialog(QMessageBox::Warning,
+                       qApp->applicationName(),
+                       tr("GPU processing is experimental and does not work on all computers. "
+                          "Plan to do some testing after turning this on.\n"
+                          "At this time, a project created with GPU processing cannot be "
+                          "converted to a CPU-only project later.\n"
+                          "Do you want to enable GPU processing and restart Shotcut?"),
+                       QMessageBox::No | QMessageBox::Yes,
+                       this);
+            dialog.setDefaultButton(QMessageBox::Yes);
+            dialog.setEscapeButton(QMessageBox::No);
+            dialog.setWindowModality(QmlApplication::dialogModality());
+            dialog.adjustSize();
+            if (dialog.exec() == QMessageBox::Yes) {
+                Settings.setProcessingMode(newMode);
+                m_exitCode = EXIT_RESTART;
+                QApplication::closeAllWindows();
+            }
+            for (auto a : action->actionGroup()->actions()) {
+                if (oldMode == a->data().toInt()) {
+                    a->setChecked(true);
+                    break;
+                }
+            }
+        } else if (oldMode == ShotcutSettings::Linear10GpuCpu) {
+            QMessageBox dialog(QMessageBox::Information,
+                               qApp->applicationName(),
+                               tr("Shotcut must restart to disable GPU processing.\n"
+                                  "Disable GPU processing and restart?"),
+                               QMessageBox::No | QMessageBox::Yes,
+                               this);
+            dialog.setDefaultButton(QMessageBox::Yes);
+            dialog.setEscapeButton(QMessageBox::No);
+            dialog.setWindowModality(QmlApplication::dialogModality());
+            dialog.adjustSize();
+            if (dialog.exec() == QMessageBox::Yes) {
+                Settings.setProcessingMode(newMode);
+                m_exitCode = EXIT_RESTART;
+                QApplication::closeAllWindows();
+            }
+            ui->actionLinear10bitGpuCpu->setChecked(true);
+        } else {
+            setProcessingMode((ShotcutSettings::ProcessingMode) action->data().toInt());
+        }
+    });
+
+    group = new QActionGroup(this);
     group->addAction(ui->actionChannels1);
     group->addAction(ui->actionChannels2);
     group->addAction(ui->actionChannels4);
@@ -1517,8 +1604,7 @@ void MainWindow::setupOpenOtherMenu()
         }
     }
     if (mltProducers->get_data("glaxnimate")) {
-        ui->menuNew
-            ->addAction(tr("Animation") + " (Glaxnimate)", this, SLOT(onOpenOtherTriggered()))
+        ui->menuNew->addAction(tr("Drawing/Animation"), this, SLOT(onOpenOtherTriggered()))
             ->setObjectName("glaxnimate");
         otherMenu->addAction(ui->menuNew->actions().constLast());
     }
@@ -1552,15 +1638,19 @@ void MainWindow::setupOpenOtherMenu()
             ->setObjectName("blipflash");
         otherMenu->addAction(ui->menuNew->actions().constLast());
     }
-#if (defined(Q_OS_MAC) || defined(Q_OS_WIN)) && defined(EXTERNAL_LAUNCHERS)
+#if defined(EXTERNAL_LAUNCHERS)
     ui->actionScreenSnapshot->setVisible(true);
-    ui->actionScreenRecording->setVisible(true);
     ui->menuNew->addAction(tr("Screen Snapshot"), this, SLOT(on_actionScreenSnapshot_triggered()))
         ->setObjectName("screenSnapshot");
     otherMenu->addAction(ui->menuNew->actions().constLast());
-    ui->menuNew->addAction(tr("Screen Recording"), this, SLOT(on_actionScreenRecording_triggered()))
-        ->setObjectName("screenRecording");
-    otherMenu->addAction(ui->menuNew->actions().constLast());
+    if (QSysInfo::productType() == QStringLiteral("windows")
+        && QSysInfo::productVersion() != QStringLiteral("10")) {
+        ui->actionScreenRecording->setVisible(true);
+        ui->menuNew
+            ->addAction(tr("Screen Recording"), this, SLOT(on_actionScreenRecording_triggered()))
+            ->setObjectName("screenRecording");
+        otherMenu->addAction(ui->menuNew->actions().constLast());
+    }
 #endif
 }
 
@@ -1617,32 +1707,31 @@ bool MainWindow::isCompatibleWithGpuMode(MltXmlChecker &checker)
 {
     if (checker.needsGPU() && !Settings.playerGPU()) {
         LOG_INFO() << "file uses GPU but GPU not enabled";
-        QMessageBox
-            dialog(QMessageBox::Warning,
-                   qApp->applicationName(),
-                   tr("The file you opened uses GPU effects, but GPU effects are not enabled."),
-                   QMessageBox::Ok,
-                   this);
+        QMessageBox dialog(QMessageBox::Warning,
+                           qApp->applicationName(),
+                           tr("The file you opened uses GPU processing, which is not enabled."),
+                           QMessageBox::Ok,
+                           this);
         dialog.setWindowModality(QmlApplication::dialogModality());
         dialog.setDefaultButton(QMessageBox::Ok);
         dialog.setEscapeButton(QMessageBox::Ok);
         dialog.exec();
         return false;
     } else if (checker.needsCPU() && Settings.playerGPU()) {
-        LOG_INFO() << "file uses GPU incompatible filters but GPU is enabled";
-        QMessageBox dialog(QMessageBox::Question,
-                           qApp->applicationName(),
-                           tr("The file you opened uses CPU effects that are incompatible with GPU "
-                              "effects, but GPU effects are enabled.\n"
-                              "Do you want to disable GPU effects and restart?"),
-                           QMessageBox::No | QMessageBox::Yes,
-                           this);
+        LOG_INFO() << "file uses GPU incompatible filters but GPU processing is enabled";
+        QMessageBox dialog(
+            QMessageBox::Question,
+            qApp->applicationName(),
+            tr("The file you opened uses CPU effects that are incompatible with GPU processing.\n"
+               "Do you want to disable GPU processing and restart?"),
+            QMessageBox::No | QMessageBox::Yes,
+            this);
         dialog.setWindowModality(QmlApplication::dialogModality());
         dialog.setDefaultButton(QMessageBox::Yes);
         dialog.setEscapeButton(QMessageBox::No);
         int r = dialog.exec();
         if (r == QMessageBox::Yes) {
-            ui->actionGPU->setChecked(false);
+            Settings.setProcessingMode(ShotcutSettings::Native8Cpu);
             m_exitCode = EXIT_RESTART;
             QApplication::closeAllWindows();
         }
@@ -1845,6 +1934,31 @@ void MainWindow::setAudioChannels(int channels)
     else if (channels == 6)
         ui->actionChannels6->setChecked(true);
     emit audioChannelsChanged();
+}
+
+void MainWindow::setProcessingMode(ShotcutSettings::ProcessingMode mode)
+{
+    LOG_DEBUG() << mode;
+    if (mode != Settings.processingMode()) {
+        Settings.setProcessingMode(mode);
+    }
+    switch (mode) {
+    case ShotcutSettings::Native8Cpu:
+        ui->actionNative8bitCpu->setChecked(true);
+        break;
+    case ShotcutSettings::Native10Cpu:
+        ui->actionNative10bitCpu->setChecked(true);
+        break;
+    case ShotcutSettings::Linear10Cpu:
+        ui->actionLinear10bitCpu->setChecked(true);
+        break;
+    case ShotcutSettings::Linear10GpuCpu:
+        ui->actionLinear10bitGpuCpu->setChecked(true);
+        break;
+    }
+    MLT.videoWidget()->setProperty("processing_mode", mode);
+    MLT.setProcessingMode(mode);
+    emit processingModeChanged();
 }
 
 void MainWindow::showSaveError()
@@ -2093,6 +2207,9 @@ bool MainWindow::open(QString url, const Mlt::Properties *properties, bool play,
         m_player->setPauseAfterOpen(!play || !MLT.isClip());
 
         setAudioChannels(MLT.audioChannels());
+        Mlt::Filter filter(MLT.profile(), "color_transform");
+        if (filter.is_valid())
+            setProcessingMode(MLT.processingMode());
         if (url.endsWith(".mlt") || url.endsWith(".xml")) {
             if (MLT.producer()->get_int(kShotcutProjectFolder)) {
                 MLT.setProjectFolder(info.absolutePath());
@@ -2297,8 +2414,6 @@ void MainWindow::readPlayerSettings()
     ui->actionScrubAudio->setChecked(Settings.playerScrubAudio());
     if (ui->actionJack)
         ui->actionJack->setChecked(Settings.playerJACK());
-    if (ui->actionGPU)
-        ui->actionGPU->setChecked(Settings.playerGPU());
 
     QString external = Settings.playerExternal();
     bool ok = false;
@@ -2571,7 +2686,6 @@ void MainWindow::writeSettings()
     if (isFullScreen())
         showNormal();
 #endif
-    Settings.setPlayerGPU(ui->actionGPU->isChecked());
     Settings.setWindowGeometry(saveGeometry());
     Settings.setWindowState(saveState());
     Settings.sync();
@@ -3245,7 +3359,7 @@ void MainWindow::cropSource(const QRectF &rect)
         MLT.setPreviewScale(Settings.playerPreviewScale());
         auto xml = MLT.XML();
         emit profileChanged();
-        MLT.restart(xml);
+        MLT.reload(xml);
     }
     emit producerOpened(false);
 }
@@ -3742,8 +3856,7 @@ void MainWindow::changeTheme(const QString &theme)
         palette.setColor(QPalette::Disabled, QPalette::Light, Qt::transparent);
         QApplication::setPalette(palette);
         QIcon::setThemeName(kThemeDark);
-        if (!::qEnvironmentVariableIsSet("QT_QUICK_CONTROLS_CONF"))
-            ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-dark.conf");
+        ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-dark.conf");
     } else if (mytheme == "light") {
         QApplication::setStyle(kStyleFusion);
         QPalette palette;
@@ -3766,8 +3879,7 @@ void MainWindow::changeTheme(const QString &theme)
         palette.setColor(QPalette::Disabled, QPalette::Light, Qt::transparent);
         QApplication::setPalette(palette);
         QIcon::setThemeName(kThemeLight);
-        if (!::qEnvironmentVariableIsSet("QT_QUICK_CONTROLS_CONF"))
-            ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-light.conf");
+        ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-light.conf");
     } else {
         // Use a macro since this can change on some OS after setStyle(Fusion)
 #define isDark (QGuiApplication::palette().color(QPalette::Text).lightnessF() > 0.5f)
@@ -3804,12 +3916,10 @@ void MainWindow::changeTheme(const QString &theme)
         else
             QIcon::setThemeName(mytheme == kThemeSystemFusion ? kThemeLight : kIconsOxygen);
 
-        if (!::qEnvironmentVariableIsSet("QT_QUICK_CONTROLS_CONF")) {
-            if (!isDark)
-                ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-light.conf");
-            else
-                ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-dark.conf");
-        }
+        if (!isDark)
+            ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-light.conf");
+        else
+            ::qputenv("QT_QUICK_CONTROLS_CONF", ":/resources/qtquickcontrols2-dark.conf");
     }
 #endif
 
@@ -4009,13 +4119,13 @@ void MainWindow::on_actionEnterFullScreen_triggered()
 
 void MainWindow::onGpuNotSupported()
 {
-    Settings.setPlayerGPU(false);
-    if (ui->actionGPU) {
-        ui->actionGPU->setChecked(false);
-        ui->actionGPU->setDisabled(true);
+    if (Settings.processingMode() == ShotcutSettings::Linear10GpuCpu) {
+        Settings.setProcessingMode(ShotcutSettings::Native8Cpu);
     }
+    ui->actionLinear10bitGpuCpu->setChecked(false);
+    ui->actionLinear10bitGpuCpu->setDisabled(true);
     LOG_WARNING() << "";
-    QMessageBox::critical(this, qApp->applicationName(), tr("GPU effects are not supported"));
+    QMessageBox::critical(this, qApp->applicationName(), tr("GPU processing is not supported"));
 }
 
 void MainWindow::onShuttle(float x)
@@ -4047,7 +4157,7 @@ void MainWindow::on_actionRealtime_triggered(bool checked)
     if (Settings.playerGPU())
         MLT.pause();
     if (MLT.consumer()) {
-        MLT.restart();
+        MLT.consumerChanged();
     }
 }
 
@@ -4059,7 +4169,7 @@ void MainWindow::on_actionProgressive_triggered(bool checked)
     if (MLT.consumer()) {
         MLT.profile().set_progressive(checked);
         MLT.updatePreviewProfile();
-        MLT.restart();
+        MLT.consumerChanged();
     }
     Settings.setPlayerProgressive(checked);
 }
@@ -4256,48 +4366,6 @@ void MainWindow::on_actionJack_triggered(bool checked)
     }
 }
 
-void MainWindow::on_actionGPU_triggered(bool checked)
-{
-    if (checked) {
-        QMessageBox dialog(QMessageBox::Warning,
-                           qApp->applicationName(),
-                           tr("GPU effects are experimental and do not work good on all computers. "
-                              "Plan to do some testing after turning this on.\n"
-                              "At this time, a project created with GPU effects cannot be "
-                              "converted to a CPU-only project later."
-                              "\n\n"
-                              "Do you want to enable GPU effects and restart Shotcut?"),
-                           QMessageBox::No | QMessageBox::Yes,
-                           this);
-        dialog.setDefaultButton(QMessageBox::Yes);
-        dialog.setEscapeButton(QMessageBox::No);
-        dialog.setWindowModality(QmlApplication::dialogModality());
-        if (dialog.exec() == QMessageBox::Yes) {
-            m_exitCode = EXIT_RESTART;
-            QApplication::closeAllWindows();
-        } else {
-            ui->actionGPU->setChecked(false);
-        }
-    } else {
-        QMessageBox dialog(QMessageBox::Information,
-                           qApp->applicationName(),
-                           tr("Shotcut must restart to disable GPU effects."
-                              "\n\n"
-                              "Disable GPU effects and restart?"),
-                           QMessageBox::No | QMessageBox::Yes,
-                           this);
-        dialog.setDefaultButton(QMessageBox::Yes);
-        dialog.setEscapeButton(QMessageBox::No);
-        dialog.setWindowModality(QmlApplication::dialogModality());
-        if (dialog.exec() == QMessageBox::Yes) {
-            m_exitCode = EXIT_RESTART;
-            QApplication::closeAllWindows();
-        } else {
-            ui->actionGPU->setChecked(true);
-        }
-    }
-}
-
 void MainWindow::onExternalTriggered(QAction *action)
 {
     LOG_DEBUG() << action->data().toString();
@@ -4343,10 +4411,11 @@ void MainWindow::onExternalTriggered(QAction *action)
 
     // Automatic not permitted for SDI/HDMI
     if (isExternal && profile.isEmpty()) {
+        auto xml = MLT.XML();
         profile = "atsc_720p_50";
         Settings.setPlayerProfile(profile);
         setProfile(profile);
-        MLT.restart();
+        MLT.reload(xml);
         foreach (QAction *a, m_profileGroup->actions()) {
             if (a->data() == profile) {
                 a->setChecked(true);
@@ -4366,7 +4435,7 @@ void MainWindow::onExternalTriggered(QAction *action)
     MLT.videoWidget()->setProperty("progressive", isProgressive);
     if (MLT.consumer()) {
         MLT.consumer()->set("progressive", isProgressive);
-        MLT.restart();
+        MLT.consumerChanged();
     }
     if (action->data().toString().startsWith("decklink")) {
         if (m_decklinkGammaMenu)
@@ -4455,7 +4524,7 @@ void MainWindow::onProfileTriggered(QAction *action)
         // Save the XML to get correct in/out points before profile is changed.
         QString xml = MLT.XML(producer);
         setProfile(action->data().toString());
-        MLT.restart(xml);
+        MLT.reload(xml);
         emit producerOpened(false);
     } else {
         Settings.setPlayerProfile(action->data().toString());
@@ -4493,7 +4562,7 @@ void MainWindow::on_actionAddCustomProfile_triggered()
         // Use the new profile.
         emit profileChanged();
         if (!xml.isEmpty()) {
-            MLT.restart(xml);
+            MLT.reload(xml);
             emit producerOpened(false);
         }
     }
@@ -4579,6 +4648,16 @@ bool MainWindow::confirmRestartExternalMonitor()
     dialog.setEscapeButton(QMessageBox::No);
     dialog.setWindowModality(QmlApplication::dialogModality());
     return dialog.exec() == QMessageBox::Yes;
+}
+
+void MainWindow::resetFilterMenuIfNeeded()
+{
+    // Reset to Favorites if currently set to Color or Audio
+    if (filterController()->metadataModel()->search() == "#color"
+        || filterController()->metadataModel()->filter() == MetadataModel::AudioFilter) {
+        filterController()->metadataModel()->setFilter(MetadataModel::FavoritesFilter);
+        filterController()->metadataModel()->setSearch("");
+    }
 }
 
 void MainWindow::on_actionSystemTheme_triggered()
@@ -5086,13 +5165,8 @@ void MainWindow::on_actionNew_triggered()
     on_actionClose_triggered();
 }
 
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
 void MainWindow::on_actionScreenSnapshot_triggered()
 {
-#ifdef Q_OS_WIN
-    showMinimized();
-    QDesktopServices::openUrl({"ms-screenclip:", QUrl::TolerantMode});
-#else
     auto fileName = QmlApplication::getNextProjectFile("screenshot-.png");
     if (fileName.isEmpty()) {
         fileName = Settings.savePath() + "/%1.png";
@@ -5108,52 +5182,114 @@ void MainWindow::on_actionScreenSnapshot_triggered()
             fileName += ".png";
         }
     }
-    // Run screencapture command directly
-    QStringList args;
-    args << "-i"
-         << "-t"
-         << "png" << fileName;
-
-    QProcess *process = new QProcess(this);
-    connect(process, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus) {
-        if (exitCode == 0 && QFileInfo::exists(fileName)) {
+    const bool maximized = windowState() & Qt::WindowMaximized;
+    const auto mode = ScreenCapture::isWayland() ? ScreenCapture::Fullscreen
+                                                 : ScreenCapture::Interactive;
+    m_screenCapture = new ScreenCapture(fileName, mode, this);
+    connect(m_screenCapture, &ScreenCapture::minimizeShotcut, this, [this]() { showMinimized(); });
+    connect(m_screenCapture, &ScreenCapture::finished, this, [=](bool success) {
+        if (success)
             // Automatically open the captured file
             QTimer::singleShot(500, this, [this, fileName]() { open(fileName); });
-        }
-        process->deleteLater();
-        showNormal();
+        if (maximized)
+            showMaximized();
+        else
+            showNormal();
     });
-
-    showMinimized();
-    process->start("screencapture", args);
-#endif
+    m_screenCapture->startSnapshot();
 }
 
 void MainWindow::on_actionScreenRecording_triggered()
 {
+    QString filenameExtension;
+    auto mode = ScreenCapture::Interactive;
 #ifdef Q_OS_WIN
     QDesktopServices::openUrl({"ms-screenclip:?type=recording", QUrl::TolerantMode});
+    return;
+#elif defined(Q_OS_MAC)
+    filenameExtension = ".mov";
 #else
-    auto fileName = QmlApplication::getNextProjectFile("screen-.mov");
-    if (fileName.isEmpty()) {
-        fileName = Settings.savePath() + "/%1.mov";
-        fileName = QFileDialog::getSaveFileName(this,
-                                                tr("Screen Recording"),
-                                                fileName.arg(tr("screen")),
-                                                tr("MOV Files (*.mov)"));
-        if (fileName.isEmpty())
-            return;
+    bool isGNOMEorKDEonWayland = false;
+    // GNOME and KDE have built-in screen recording compatible with Wayland
+    if (ScreenCapture::isWayland()) {
+        const auto desktop = qEnvironmentVariable("XDG_CURRENT_DESKTOP").toLower();
+        isGNOMEorKDEonWayland = desktop.contains("gnome") || desktop.contains("kde")
+                                || desktop.contains("plasma");
+        if (isGNOMEorKDEonWayland) {
+            filenameExtension = ".webm";
+            mode = ScreenCapture::Fullscreen;
+        }
+    } else {
+        filenameExtension = ".mp4";
+    }
+#endif
+    QString fileName;
+    if (!filenameExtension.isEmpty()) {
+        fileName = QmlApplication::getNextProjectFile("screen-" + filenameExtension);
+        if (fileName.isEmpty()) {
+            fileName = Settings.savePath() + "/%1" + filenameExtension;
+            fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Screen Recording"),
+                                                    fileName.arg(tr("screen")),
+                                                    QString("%1 %2 (*%3)")
+                                                        .arg(filenameExtension.toUpper(),
+                                                             tr("Files"),
+                                                             filenameExtension));
+            if (fileName.isEmpty())
+                return;
 
-        // Ensure the filename ends with .mov
-        if (!fileName.endsWith(".mov", Qt::CaseInsensitive)) {
-            fileName += ".mov";
+            // Ensure the filename ends with extension
+            if (!fileName.endsWith(filenameExtension, Qt::CaseInsensitive)) {
+                fileName += filenameExtension;
+            }
         }
     }
-    ScreenCaptureJob *job = new ScreenCaptureJob(tr("Screen Recording"), fileName, true);
+#ifdef Q_OS_MAC
+    ScreenCaptureJob *job = new ScreenCaptureJob(tr("Screen Recording"), fileName, QRect(), true);
     JOBS.add(job);
+    return;
+#elif defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+    // On Linux with Wayland and not GNOME or KDE
+    if (ScreenCapture::isWayland() && !isGNOMEorKDEonWayland) {
+        // Let user pick a program to use on Wayland and not GNOME or KDE.
+        // OBS Studio (default) supports Wayland.
+        QString exePath = Settings.screenRecorderPath();
+
+        // Check if saved path is still valid
+        if (!exePath.isEmpty() && !QFile::exists(exePath)) {
+            exePath.clear();
+        }
+
+        // If not found, prompt user
+        if (exePath.isEmpty()) {
+            exePath = Util::getExecutable(this);
+            if (exePath.isEmpty()) {
+                return; // User cancelled
+            }
+            Settings.setScreenRecorderPath(exePath);
+        }
+
+        // Launch the screen recorder
+        if (Util::startDetached(exePath, QStringList())) {
+            showStatusMessage(tr("Screen recorder launched"));
+        } else {
+            showStatusMessage(tr("Failed to launch screen recorder"));
+        }
+        return;
+    }
 #endif
+    m_screenCapture = new ScreenCapture(fileName, mode, this);
+    connect(m_screenCapture, &ScreenCapture::minimizeShotcut, this, [this]() { showMinimized(); });
+    connect(m_screenCapture,
+            &ScreenCapture::beginRecording,
+            this,
+            [=](const QRect &rect, bool recordAudio) {
+                ScreenCaptureJob *job
+                    = new ScreenCaptureJob(tr("Screen Recording"), fileName, rect, recordAudio);
+                JOBS.add(job);
+            });
+    m_screenCapture->startRecording();
 }
-#endif
 
 void MainWindow::on_actionKeyboardShortcuts_triggered()
 {
@@ -5188,6 +5324,7 @@ void MainWindow::on_actionLayoutLogging_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionLayoutEditing_triggered()
@@ -5205,6 +5342,7 @@ void MainWindow::on_actionLayoutEditing_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionLayoutEffects_triggered()
@@ -5222,6 +5360,7 @@ void MainWindow::on_actionLayoutEffects_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionLayoutColor_triggered()
@@ -5242,6 +5381,9 @@ void MainWindow::on_actionLayoutColor_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    // Set filter menu to Video filters for Color layout
+    filterController()->metadataModel()->setFilter(MetadataModel::VideoFilter);
+    filterController()->metadataModel()->setSearch("#color");
 }
 
 void MainWindow::on_actionLayoutAudio_triggered()
@@ -5262,6 +5404,9 @@ void MainWindow::on_actionLayoutAudio_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    // Set filter menu to Audio filters for Audio layout
+    filterController()->metadataModel()->setFilter(MetadataModel::AudioFilter);
+    filterController()->metadataModel()->setSearch("");
 }
 
 void MainWindow::on_actionLayoutPlayer_triggered()
@@ -5283,6 +5428,7 @@ void MainWindow::on_actionLayoutPlayer_triggered()
         restoreState(state);
     }
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionLayoutPlaylist_triggered()
@@ -5317,6 +5463,7 @@ void MainWindow::on_actionLayoutClip_triggered()
     m_filtersDock->show();
     m_filtersDock->raise();
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionLayoutAdd_triggered()
@@ -5353,6 +5500,7 @@ void MainWindow::onLayoutTriggered(QAction *action)
     clearCurrentLayout();
     restoreState(Settings.layoutState(action->text()));
     Settings.setWindowState(saveState());
+    resetFilterMenuIfNeeded();
 }
 
 void MainWindow::on_actionProfileRemove_triggered()
@@ -5446,7 +5594,6 @@ void MainWindow::onOpenOtherTriggered(QWidget *widget)
 
 void MainWindow::onOpenOtherFinished(int result)
 {
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     // Handle screen capture custom result codes
     if (result == 42) { // Screen Snapshot
         on_actionScreenSnapshot_triggered();
@@ -5455,7 +5602,6 @@ void MainWindow::onOpenOtherFinished(int result)
         on_actionScreenRecording_triggered();
         return;
     }
-#endif
 
     if (QDialog::Rejected == result || !m_producerWidget)
         return;
@@ -5577,25 +5723,22 @@ void MainWindow::on_actionClearRecentOnExit_toggled(bool arg1)
 void MainWindow::onSceneGraphInitialized()
 {
     if (Settings.playerGPU() && Settings.playerWarnGPU()) {
-        QMessageBox dialog(QMessageBox::Warning,
-                           qApp->applicationName(),
-                           tr("GPU effects are EXPERIMENTAL, UNSTABLE and UNSUPPORTED! Unsupported "
-                              "means do not report bugs about it.\n\n"
-                              "Do you want to disable GPU effects and restart Shotcut?"),
-                           QMessageBox::No | QMessageBox::Yes,
-                           this);
+        QMessageBox
+            dialog(QMessageBox::Warning,
+                   qApp->applicationName(),
+                   tr("GPU processing is EXPERIMENTAL, UNSTABLE and UNSUPPORTED! Unsupported "
+                      "means do not report bugs about it.\n\n"
+                      "Do you want to disable GPU processing and restart Shotcut?"),
+                   QMessageBox::No | QMessageBox::Yes,
+                   this);
         dialog.setDefaultButton(QMessageBox::Yes);
         dialog.setEscapeButton(QMessageBox::No);
         dialog.setWindowModality(QmlApplication::dialogModality());
         if (dialog.exec() == QMessageBox::Yes) {
-            ui->actionGPU->setChecked(false);
+            Settings.setProcessingMode(ShotcutSettings::Native8Cpu);
             m_exitCode = EXIT_RESTART;
             QApplication::closeAllWindows();
-        } else {
-            ui->actionGPU->setVisible(true);
         }
-    } else {
-        ui->actionGPU->setVisible(true);
     }
     auto videoWidget = (Mlt::VideoWidget *) &(MLT);
     videoWidget->setBlankScene();

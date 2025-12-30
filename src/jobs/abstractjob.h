@@ -67,6 +67,7 @@ signals:
     void finished(AbstractJob *job, bool isSuccess, QString failureTime = QString());
 
 protected:
+    void setKilled(bool = true);
     QList<QAction *> m_standardActions;
     QList<QAction *> m_successActions;
     QStandardItem *m_item;

@@ -25,18 +25,23 @@
 #include "jobs/htmlgeneratorjob.h"
 #include "mainwindow.h"
 #include "mltcontroller.h"
+#include "qmltypes/colordialog.h"
 #include "qmltypes/qmlapplication.h"
 #include "settings.h"
 #include "shotcut_mlt_properties.h"
 #include "util.h"
 
-#include <QColorDialog>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFont>
+#include <QListWidgetItem>
+#include <QMouseEvent>
+#include <QMovie>
+#include <QPixmap>
 #include <QTemporaryFile>
 
 static const QString kTransparent = QObject::tr("transparent", "New > Image/Video From HTML");
+static QString kPresetsFolder("HTML");
 const char *HtmlGeneratorWidget::kColorProperty = "shotcut:color";
 const char *HtmlGeneratorWidget::kCssProperty = "shotcut:css";
 const char *HtmlGeneratorWidget::kBodyProperty = "shotcut:body";
@@ -71,11 +76,31 @@ HtmlGeneratorWidget::HtmlGeneratorWidget(QWidget *parent)
     on_bodyToggleButton_toggled(false);
     on_cssToggleButton_toggled(false);
     on_javascriptToggleButton_toggled(false);
+
+    // Enable mouse tracking for hover detection
+    ui->presetIconView->setMouseTracking(true);
+    ui->presetIconView->viewport()->setMouseTracking(true);
+
     ui->preset->saveDefaultPreset(getPreset());
 
     Mlt::Properties p;
     QFile f;
+    QDir dir(Settings.appDataLocation());
 
+    if (!dir.exists())
+        dir.mkpath(dir.path());
+    if (!dir.cd("presets")) {
+        if (dir.mkdir("presets"))
+            dir.cd("presets");
+    }
+    if (!dir.cd(kPresetsFolder)) {
+        if (dir.mkdir(kPresetsFolder))
+            dir.cd(kPresetsFolder);
+    }
+    QFile::copy(QStringLiteral(":/resources/html/icons/defaults.webp"),
+                dir.filePath(tr("(defaults)") + ".webp"));
+
+    QString name = tr("Elastic Stroke (Video)");
     f.setFileName(QStringLiteral(":/resources/html/elastic_stroke/css"));
     f.open(QIODevice::ReadOnly);
     p.set(kCssProperty, f.readAll().toBase64().constData());
@@ -85,8 +110,11 @@ HtmlGeneratorWidget::HtmlGeneratorWidget(QWidget *parent)
     p.set(kBodyProperty, f.readAll().toBase64().constData());
     f.close();
     p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
-    ui->preset->savePreset(p, tr("Elastic Stroke (Video)"));
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/elastic_stroke/icon.webp"),
+                dir.filePath(name + ".webp"));
 
+    name = tr("Folded (Image)");
     f.setFileName(QStringLiteral(":/resources/html/folded/css"));
     f.open(QIODevice::ReadOnly);
     p.set(kCssProperty, f.readAll().toBase64().constData());
@@ -100,19 +128,25 @@ HtmlGeneratorWidget::HtmlGeneratorWidget(QWidget *parent)
     p.set(kBodyProperty, f.readAll().toBase64().constData());
     f.close();
     p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
-    ui->preset->savePreset(p, tr("Folded (Image)"));
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/folded/icon.webp"), dir.filePath(name + ".webp"));
 
+    name = tr("Gold Metal (Image)");
     f.setFileName(QStringLiteral(":/resources/html/gold_metal/css"));
     f.open(QIODevice::ReadOnly);
     p.set(kCssProperty, f.readAll().toBase64().constData());
     f.close();
+    p.clear(kJavaScriptProperty);
     f.setFileName(QStringLiteral(":/resources/html/gold_metal/body.html"));
     f.open(QIODevice::ReadOnly);
     p.set(kBodyProperty, f.readAll().toBase64().constData());
     f.close();
     p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
-    ui->preset->savePreset(p, tr("Gold Metal (Image)"));
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/gold_metal/icon.webp"),
+                dir.filePath(name + ".webp"));
 
+    name = tr("Party Time (Video)");
     f.setFileName(QStringLiteral(":/resources/html/party_time/css"));
     f.open(QIODevice::ReadOnly);
     p.set(kCssProperty, f.readAll().toBase64().constData());
@@ -126,24 +160,62 @@ HtmlGeneratorWidget::HtmlGeneratorWidget(QWidget *parent)
     p.set(kBodyProperty, f.readAll().toBase64().constData());
     f.close();
     p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
-    ui->preset->savePreset(p, tr("Party Time (Video)"));
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/party_time/icon.webp"),
+                dir.filePath(name + ".webp"));
 
+    name = tr("3D (Image)");
     f.setFileName(QStringLiteral(":/resources/html/three_d/css"));
     f.open(QIODevice::ReadOnly);
     p.set(kCssProperty, f.readAll().toBase64().constData());
     f.close();
+    p.clear(kJavaScriptProperty);
     f.setFileName(QStringLiteral(":/resources/html/three_d/body.html"));
     f.open(QIODevice::ReadOnly);
     p.set(kBodyProperty, f.readAll().toBase64().constData());
     f.close();
     p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
-    ui->preset->savePreset(p, tr("3D (Image)"));
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/three_d/icon.webp"), dir.filePath(name + ".webp"));
+
+    name = tr("Chrome (Image)");
+    f.setFileName(QStringLiteral(":/resources/html/chrome/css"));
+    f.open(QIODevice::ReadOnly);
+    p.set(kCssProperty, f.readAll().toBase64().constData());
+    f.close();
+    p.clear(kJavaScriptProperty);
+    f.setFileName(QStringLiteral(":/resources/html/chrome/body.html"));
+    f.open(QIODevice::ReadOnly);
+    p.set(kBodyProperty, f.readAll().toBase64().constData());
+    f.close();
+    p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/chrome/icon.webp"), dir.filePath(name + ".webp"));
+
+    name = tr("Neon Flux (Video)");
+    f.setFileName(QStringLiteral(":/resources/html/neon_flux/css"));
+    f.open(QIODevice::ReadOnly);
+    p.set(kCssProperty, f.readAll().toBase64().constData());
+    f.close();
+    p.clear(kJavaScriptProperty);
+    f.setFileName(QStringLiteral(":/resources/html/neon_flux/body.html"));
+    f.open(QIODevice::ReadOnly);
+    p.set(kBodyProperty, f.readAll().toBase64().constData());
+    f.close();
+    p.set(kColorProperty, colorStringToResource(kTransparent).toLatin1().constData());
+    ui->preset->savePreset(p, name);
+    QFile::copy(QStringLiteral(":/resources/html/neon_flux/icon.webp"),
+                dir.filePath(name + ".webp"));
 
     ui->preset->loadPresets();
+    populatePresetIconView();
 }
 
 HtmlGeneratorWidget::~HtmlGeneratorWidget()
 {
+    // Clean up movie objects
+    qDeleteAll(m_iconMovies);
+    m_iconMovies.clear();
     delete ui;
 }
 
@@ -151,19 +223,11 @@ void HtmlGeneratorWidget::on_colorButton_clicked()
 {
     const QColor color = colorStringToResource(ui->colorLabel->text());
     // At this point Qt's colors are misread from CSS and and are stored in Qt as ARGB instead of RGBA
-    QColorDialog::ColorDialogOptions flags = QColorDialog::ShowAlphaChannel;
-    flags |= Util::getColorDialogOptions();
     // Remap to Qt's color order RGBA
     const QColor qtColor(color.alpha(), color.red(), color.green(), color.blue());
-    auto newColor = QColorDialog::getColor(qtColor, this, QString(), flags);
+    auto newColor = ColorDialog::getColor(qtColor, this);
+
     if (newColor.isValid()) {
-        auto rgb = newColor;
-        auto transparent = QColor(0, 0, 0, 0);
-        rgb.setAlpha(color.alpha());
-        if (newColor.alpha() == 0
-            && (rgb != color || (newColor == transparent && color == transparent))) {
-            newColor.setAlpha(255);
-        }
         ui->colorLabel->setText(colorToString(newColor));
         ui->colorLabel->setStyleSheet(QStringLiteral("color: %1; background-color: %2")
                                           .arg(Util::textColor(newColor), newColor.name()));
@@ -216,7 +280,7 @@ void HtmlGeneratorWidget::loadPreset(Mlt::Properties &p)
     const auto line3 = QByteArray::fromBase64(p.get(kLine3Property));
     ui->line3LineEdit->setText(QString::fromUtf8(line3));
     updateTextSectionVisibility();
-    if (ui->line1Label->isVisible())
+    if (ui->line1LineEdit->isVisible())
         ui->line1LineEdit->setFocus();
 }
 
@@ -243,6 +307,8 @@ void HtmlGeneratorWidget::setProducer(Mlt::Producer *p)
     ui->line2LineEdit->setText(QString::fromUtf8(line2));
     const auto line3 = QByteArray::fromBase64(p->get(kLine3Property));
     ui->line3LineEdit->setText(QString::fromUtf8(line3));
+    if (p->property_exists(kColorProperty))
+        ui->stackedWidget->setCurrentIndex(1);
     updateTextSectionVisibility();
 }
 
@@ -413,6 +479,8 @@ void HtmlGeneratorWidget::on_bodyToggleButton_toggled(bool checked)
     ui->bodySpacerLabel->setVisible(checked);
     ui->bodyTextEdit->setVisible(checked);
     ui->bodyToggleButton->setText(checked ? tr("▼ Body") : tr("▶ Body"));
+    if (checked)
+        ui->bodyTextEdit->setFocus(Qt::PopupFocusReason);
 }
 
 void HtmlGeneratorWidget::on_javascriptToggleButton_toggled(bool checked)
@@ -432,6 +500,7 @@ void HtmlGeneratorWidget::updateTextSectionVisibility()
     bool hasPlaceholders = body.contains("%1") || body.contains("%2") || body.contains("%3");
 
     ui->textLabel->setVisible(hasPlaceholders);
+    on_bodyToggleButton_toggled(!hasPlaceholders);
 
     // Show individual line fields based on what placeholders are in the body
     ui->line1Label->setVisible(body.contains("%1"));
@@ -440,4 +509,182 @@ void HtmlGeneratorWidget::updateTextSectionVisibility()
     ui->line2LineEdit->setVisible(body.contains("%2"));
     ui->line3Label->setVisible(body.contains("%3"));
     ui->line3LineEdit->setVisible(body.contains("%3"));
+    if (ui->line1LineEdit->isVisible())
+        ui->line1LineEdit->setFocus(Qt::PopupFocusReason);
+}
+
+void HtmlGeneratorWidget::populatePresetIconView()
+{
+    // Clean up existing movies
+    qDeleteAll(m_iconMovies);
+    m_iconMovies.clear();
+    ui->presetIconView->clear();
+
+    // Install event filter to detect when mouse leaves an item
+    ui->presetIconView->viewport()->installEventFilter(this);
+
+    // Get list of presets from the ServicePresetWidget directory
+    QDir dir(Settings.appDataLocation());
+    if (!dir.cd("presets"))
+        return;
+
+    // Get global presets
+    QStringList presetNames;
+    presetNames.append(dir.entryList(QDir::Files));
+
+    // Get widget-specific presets
+    if (dir.cd(kPresetsFolder)) {
+        QStringList widgetPresets = dir.entryList(QDir::Files | QDir::Readable);
+        for (const auto &preset : std::as_const(widgetPresets)) {
+            // Exclude .webp files
+            if (!preset.endsWith(".webp", Qt::CaseInsensitive))
+                presetNames.append(preset);
+        }
+        dir.cdUp();
+    }
+
+    // Create icon items for each preset
+    for (const auto &presetName : std::as_const(presetNames)) {
+        if (presetName.isEmpty())
+            continue;
+
+        auto *item = new QListWidgetItem();
+        item->setText(presetName == tr("(defaults)") ? tr("(custom)") : presetName);
+        item->setData(Qt::UserRole, presetName);
+
+        // Find and setup icon (animated or static)
+        auto iconPath = findPresetIconPath(presetName);
+        if (!iconPath.isEmpty()) {
+            setupIconAnimation(item, iconPath);
+        }
+
+        ui->presetIconView->addItem(item);
+    }
+}
+
+QString HtmlGeneratorWidget::findPresetIconPath(const QString &presetName)
+{
+    QString iconFileName = presetName + QStringLiteral(".webp");
+
+    // First, try loading from preset directory
+    QDir dir(Settings.appDataLocation());
+    if (dir.cd("presets") && dir.cd(kPresetsFolder)) {
+        QString iconPath = dir.filePath(iconFileName);
+        if (QFile::exists(iconPath)) {
+            return iconPath;
+        }
+        dir.cdUp();
+        dir.cdUp();
+    }
+    return QString();
+}
+
+void HtmlGeneratorWidget::setupIconAnimation(QListWidgetItem *item, const QString &iconPath)
+{
+    // Try to load as an animated image first
+    auto *movie = new QMovie(iconPath, QByteArray(), this);
+
+    if (movie->isValid() && movie->frameCount() > 1) {
+        // It's an animated image
+        m_iconMovies.append(movie);
+        movie->setScaledSize(QSize(128, 128));
+
+        // Store the movie pointer in the item for later access
+        item->setData(Qt::UserRole + 1, QVariant::fromValue(movie));
+
+        // Connect to update the icon whenever a new frame is available
+        connect(movie, &QMovie::frameChanged, this, [this, item, movie]() {
+            item->setIcon(QIcon(movie->currentPixmap()));
+        });
+
+        // Set initial frame but don't start animation yet
+        movie->jumpToFrame(0);
+        item->setIcon(QIcon(movie->currentPixmap()));
+    } else {
+        // It's a static image or movie is invalid
+        delete movie;
+        QPixmap pixmap(iconPath);
+        if (!pixmap.isNull()) {
+            item->setIcon(
+                QIcon(pixmap.scaled(128, 128, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+        }
+    }
+}
+
+void HtmlGeneratorWidget::on_presetIconView_itemClicked(QListWidgetItem *item)
+{
+    if (!item)
+        return;
+
+    auto presetName = item->data(Qt::UserRole).toString();
+
+    // Load the preset
+    QDir dir(Settings.appDataLocation());
+    if (!dir.cd("presets") || !dir.cd(kPresetsFolder))
+        return;
+
+    auto presetPath = dir.filePath(presetName);
+    if (!QFile::exists(presetPath))
+        return;
+
+    // Load properties from preset file
+    std::unique_ptr<Mlt::Properties> properties{
+        Mlt::Properties::parse_yaml(presetPath.toUtf8().constData())};
+    if (!properties)
+        return;
+    loadPreset(*properties);
+
+    // Update the preset combo to reflect the selected preset
+    ui->preset->setPreset(presetName);
+
+    // Switch to editor page
+    ui->stackedWidget->setCurrentIndex(1);
+
+    if (ui->line1LineEdit->isVisible())
+        ui->line1LineEdit->setFocus(Qt::PopupFocusReason);
+}
+
+bool HtmlGeneratorWidget::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == ui->presetIconView->viewport()) {
+        if (event->type() == QEvent::MouseMove) {
+            auto mouseEvent = static_cast<QMouseEvent *>(event);
+            QListWidgetItem *item = ui->presetIconView->itemAt(mouseEvent->pos());
+
+            if (item != m_lastHoveredItem) {
+                // Stop animation on previously hovered item
+                if (m_lastHoveredItem) {
+                    auto prevMovie = m_lastHoveredItem->data(Qt::UserRole + 1).value<QMovie *>();
+                    if (prevMovie && prevMovie->state() == QMovie::Running) {
+                        prevMovie->stop();
+                        prevMovie->jumpToFrame(0);
+                        m_lastHoveredItem->setIcon(QIcon(prevMovie->currentPixmap()));
+                    }
+                }
+
+                // Start animation on newly hovered item
+                if (item) {
+                    auto movie = item->data(Qt::UserRole + 1).value<QMovie *>();
+                    if (movie && movie->frameCount() > 1) {
+                        movie->start();
+                    }
+                }
+
+                m_lastHoveredItem = item;
+            }
+        } else if (event->type() == QEvent::Leave) {
+            // Stop animation when mouse leaves the widget
+            if (m_lastHoveredItem) {
+                auto movie = m_lastHoveredItem->data(Qt::UserRole + 1).value<QMovie *>();
+                if (movie && movie->state() == QMovie::Running) {
+                    movie->stop();
+                    movie->jumpToFrame(0);
+                    m_lastHoveredItem->setIcon(QIcon(movie->currentPixmap()));
+                }
+                m_lastHoveredItem = nullptr;
+            }
+        }
+    }
+
+    return QWidget::eventFilter(watched, event);
 }

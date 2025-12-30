@@ -57,10 +57,14 @@ private slots:
     // 【槽函数】：传统屏幕颜色抓取方法（跨平台通用）
     // 【说明】：通过截取屏幕指定区域并计算像素平均颜色实现
     void grabColor();
+<<<<<<< HEAD
     
 #ifdef Q_OS_LINUX
     // 【Linux专用槽函数】：通过DBus调用系统颜色拾取服务
     // 【说明】：使用freedesktop门户服务，提供更好的桌面集成体验
+=======
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
     void grabColorDBus();
     
     // 【Linux专用槽函数】：处理DBus颜色拾取服务的异步响应

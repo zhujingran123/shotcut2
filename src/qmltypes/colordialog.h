@@ -33,6 +33,7 @@ class ColorDialog : public QObject
 
 // 【QML属性】：对话框标题文字，可读写
     Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(bool showAlpha READ showAlpha WRITE setShowAlpha NOTIFY showAlphaChanged)
 
 public:
  // 【构造函数】
@@ -44,6 +45,12 @@ public:
     // 【流程】：弹出系统颜色选择器，处理用户选择结果
     Q_INVOKABLE void open();
 
+    // Static convenience method for non-QML usage
+    static QColor getColor(const QColor &initial = Qt::white,
+                           QWidget *parent = nullptr,
+                           const QString &title = QString(),
+                           bool showAlpha = true);
+
 signals:
 // 【信号】：选中颜色改变时发射，携带新的颜色值
     void selectedColorChanged(const QColor &color);
@@ -53,10 +60,17 @@ signals:
 
  // 【信号】：对话框标题改变时发射
     void titleChanged();
+    void showAlphaChanged();
 
 private:
+<<<<<<< HEAD
     QColor m_color;// 存储当前选中的颜色值
     QString m_title;// 存储对话框标题文字
+=======
+    QColor m_color;
+    QString m_title;
+    bool m_showAlpha = true;
+>>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
 
 // 【私有方法】：获取当前选中的颜色
     QColor selectedColor() const { return m_color; }
@@ -69,6 +83,8 @@ private:
 
 // 【私有方法】：设置对话框标题，会检查标题是否实际改变
     void setTitle(const QString &title);
+    bool showAlpha() const { return m_showAlpha; }
+    void setShowAlpha(bool show);
 };
 
 #endif // COLORDIALOG_H
