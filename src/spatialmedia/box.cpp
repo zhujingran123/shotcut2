@@ -304,7 +304,8 @@ int32_t Box::size()
 // 【功能】：打印Box结构信息（用于调试）
 void Box::print_structure(const char *pIndent)
 {
-    std::cout << "{" << pIndent << "}" << "{" << name() << "} ";
+    std::cout << "{" << pIndent << "}"
+              << "{" << name() << "} ";
     std::cout << "[{" << m_iHeaderSize << "}, {" << m_iContentSize << "}]" << std::endl;
 }
 

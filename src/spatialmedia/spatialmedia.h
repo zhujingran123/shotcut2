@@ -25,7 +25,7 @@
 class SpatialMedia
 {
 private:
-    SpatialMedia() {};
+    SpatialMedia(){};
 
 public:
     static bool injectSpherical(const std::string &inFile, const std::string &outFile);
