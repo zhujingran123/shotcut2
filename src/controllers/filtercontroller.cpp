@@ -26,6 +26,11 @@
 #include "settings.h"
 #include "shotcut_mlt_properties.h"
 
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QFileInfo>
+#include <QImage>
+
 #include <MltLink.h>
 #include <QDir>
 #include <QQmlComponent>
@@ -452,64 +457,77 @@ void FilterController::setTrackTransitionService(const QString &service)
 
 void FilterController::exportCurrentFrame()
 {
-    // 正确获取生产者
-    auto producer = m_attachedModel.producer();
-    if (!producer || !producer->is_valid()) {
-        LOG_WARNING() << "No valid producer for frame export";
+    // 检查是否有有效的视频生产者
+    if (!m_producer || !m_producer->is_valid()) {
+        QMessageBox::warning(nullptr, tr("警告"), tr("没有可用的视频源"));
         return;
     }
     
-    int position = MAIN->position();
-    if (position < 0) {
-        LOG_WARNING() << "Invalid position for frame export";
-        return;
-    }
+    // 获取当前播放位置
+    int position = m_position;
     
-    QString filename = QFileDialog::getSaveFileName(
-        MAIN,
-        tr("Export Frame As Image"),
-        QStandardPaths::writableLocation(QStandardPaths::PicturesLocation) 
-            + QString("/frame_%1.png").arg(position),
-        tr("Image Files (*.png *.jpg *.jpeg *.bmp *.tif *.tiff);;All Files (*)")
+    // 弹出文件保存对话框
+    QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+    QString defaultName = QString("frame_%1.png").arg(position);
+    QString filePath = QFileDialog::getSaveFileName(
+        nullptr,
+        tr("导出当前帧"),
+        QDir(defaultDir).filePath(defaultName),
+        tr("图像文件 (*.png *.jpg *.bmp)")
     );
     
-    if (filename.isEmpty()) return;
+    if (filePath.isEmpty()) {
+        return; // 用户取消
+    }
     
-    QImage image = getCurrentFrameAsImage(position);
-    if (image.isNull()) {
-        MAIN->showStatusMessage(tr("Failed to capture frame"), 3);
+    // 获取帧图像
+    QImage frameImage = getCurrentFrameAsImage(position);
+    if (frameImage.isNull()) {
+        QMessageBox::warning(nullptr, tr("错误"), tr("无法获取当前帧图像"));
         return;
     }
     
-    if (image.save(filename)) {
-        MAIN->showStatusMessage(tr("Frame exported to %1").arg(QFileInfo(filename).fileName()), 3);
+    // 保存图像
+    if (frameImage.save(filePath)) {
+        MAIN.showStatusMessage(tr("帧已保存到: %1").arg(QFileInfo(filePath).fileName()));
     } else {
-        MAIN->showStatusMessage(tr("Failed to export frame"), 3);
+        QMessageBox::critical(nullptr, tr("错误"), tr("保存图像失败"));
     }
 }
 
 QImage FilterController::getCurrentFrameAsImage(int position)
 {
-    auto producer = m_attachedModel.producer();
-    if (!producer || !producer->is_valid()) return QImage();
+    if (!m_producer || !m_producer->is_valid()) {
+        return QImage();
+    }
     
-    Mlt::Frame *frame = producer->get_frame(position);
+    // 获取当前帧
+    Mlt::Frame* frame = m_producer->get_frame(position);
     if (!frame || !frame->is_valid()) {
         delete frame;
         return QImage();
     }
     
+    // 获取图像数据
     mlt_image_format format = mlt_image_rgba;
-    int width = 0, height = 0;
-    const uchar *imageData = frame->get_image(format, width, height);
+    const uchar* imageData = frame->get_image(format);
+    int width = frame->get_image_width();
+    int height = frame->get_image_height();
     
     if (!imageData || width <= 0 || height <= 0) {
         delete frame;
         return QImage();
     }
     
+    // 创建QImage（注意：MLT的rgba格式可能是大端或小端）
     QImage image(imageData, width, height, QImage::Format_RGBA8888);
-    QImage result = image.copy();
+    
+    // 复制图像数据（因为frame会被删除）
+    QImage copiedImage = image.copy();
+    
+    delete frame;
+    return copiedImage;
+}
     
     delete frame;
     return result.convertToFormat(QImage::Format_ARGB32);
