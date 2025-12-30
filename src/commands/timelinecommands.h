@@ -43,17 +43,17 @@ namespace Timeline {
  * 这些 ID 用于 `QUndoStack` 的命令合并机制，特别是 `mergeWith()` 函数。
  */
 enum {
-    UndoIdTrimClipIn = 100,        ///< 修剪片段入点命令的 ID
-    UndoIdTrimClipOut,             ///< 修剪片段出点命令的 ID
-    UndoIdFadeIn,                  ///< 淡入命令的 ID
-    UndoIdFadeOut,                 ///< 淡出命令的 ID
-    UndoIdTrimTransitionIn,        ///< 修剪转场入点命令的 ID
-    UndoIdTrimTransitionOut,       ///< 修剪转场出点命令的 ID
-    UndoIdAddTransitionByTrimIn,   ///< 通过修剪入点添加转场命令的 ID
-    UndoIdAddTransitionByTrimOut,  ///< 通过修剪出点添加转场命令的 ID
-    UndoIdUpdate,                  ///< 更新片段属性命令的 ID
-    UndoIdMoveClip,                ///< 移动片段命令的 ID
-    UndoIdChangeGain,              ///< 更改增益/音量命令的 ID
+    UndoIdTrimClipIn = 100,       ///< 修剪片段入点命令的 ID
+    UndoIdTrimClipOut,            ///< 修剪片段出点命令的 ID
+    UndoIdFadeIn,                 ///< 淡入命令的 ID
+    UndoIdFadeOut,                ///< 淡出命令的 ID
+    UndoIdTrimTransitionIn,       ///< 修剪转场入点命令的 ID
+    UndoIdTrimTransitionOut,      ///< 修剪转场出点命令的 ID
+    UndoIdAddTransitionByTrimIn,  ///< 通过修剪入点添加转场命令的 ID
+    UndoIdAddTransitionByTrimOut, ///< 通过修剪出点添加转场命令的 ID
+    UndoIdUpdate,                 ///< 更新片段属性命令的 ID
+    UndoIdMoveClip,               ///< 移动片段命令的 ID
+    UndoIdChangeGain,             ///< 更改增益/音量命令的 ID
 };
 
 /**
@@ -108,12 +108,12 @@ public:
 
 private:
     MultitrackModel &m_model; ///< 对多轨道模型的引用
-    int m_trackIndex;          ///< 目标轨道的索引
-    QString m_xml;             ///< 包含待添加片段数据的 XML 字符串
-    UndoHelper m_undoHelper;   ///< 用于记录和恢复状态的辅助类
-    bool m_skipProxy;          ///< 是否跳过代理文件的生成
-    bool m_seek;               ///< 操作完成后是否跳转到新片段
-    QVector<QUuid> m_uuids;    ///< 待添加片段的 UUID 列表
+    int m_trackIndex;         ///< 目标轨道的索引
+    QString m_xml;            ///< 包含待添加片段数据的 XML 字符串
+    UndoHelper m_undoHelper;  ///< 用于记录和恢复状态的辅助类
+    bool m_skipProxy;         ///< 是否跳过代理文件的生成
+    bool m_seek;              ///< 操作完成后是否跳转到新片段
+    QVector<QUuid> m_uuids;   ///< 待添加片段的 UUID 列表
 };
 
 /**
@@ -138,14 +138,14 @@ private:
     MultitrackModel &m_model;
     MarkersModel &m_markersModel; ///< 对标记模型的引用，用于波纹标记
     int m_trackIndex;
-    int m_position;               ///< 插入的位置（时间点）
+    int m_position; ///< 插入的位置（时间点）
     QString m_xml;
-    QStringList m_oldTracks;      ///< （此变量在代码中未使用，可能是遗留）
+    QStringList m_oldTracks; ///< （此变量在代码中未使用，可能是遗留）
     UndoHelper m_undoHelper;
     bool m_seek;
-    bool m_rippleAllTracks;       ///< 是否波纹所有轨道
-    bool m_rippleMarkers;         ///< 是否波纹标记
-    int m_markersShift;           ///< 记录标记移动的量
+    bool m_rippleAllTracks; ///< 是否波纹所有轨道
+    bool m_rippleMarkers;   ///< 是否波纹标记
+    int m_markersShift;     ///< 记录标记移动的量
     QVector<QUuid> m_uuids;
 };
 
@@ -169,7 +169,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    int m_position;               ///< 覆盖的起始位置
+    int m_position; ///< 覆盖的起始位置
     QString m_xml;
     UndoHelper m_undoHelper;
     bool m_seek;
@@ -191,7 +191,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    int m_clipIndex;              ///< 要提升的片段的索引
+    int m_clipIndex; ///< 要提升的片段的索引
     UndoHelper m_undoHelper;
 };
 
@@ -215,12 +215,12 @@ private:
     MultitrackModel &m_model;
     MarkersModel &m_markersModel;
     int m_trackIndex;
-    int m_clipIndex;              ///< 要移除的片段的索引
+    int m_clipIndex; ///< 要移除的片段的索引
     UndoHelper m_undoHelper;
     bool m_rippleAllTracks;
     bool m_rippleMarkers;
-    int m_markerRemoveStart;      ///< 被移除片段的起始位置
-    int m_markerRemoveEnd;        ///< 被移除片段的结束位置
+    int m_markerRemoveStart;          ///< 被移除片段的起始位置
+    int m_markerRemoveEnd;            ///< 被移除片段的结束位置
     QList<Markers::Marker> m_markers; ///< 保存原始标记列表，用于撤销
 };
 
@@ -239,7 +239,7 @@ public:
 
 private:
     MultitrackModel &m_model;
-    QList<ClipPosition> m_clips;      ///< 待组合的片段列表
+    QList<ClipPosition> m_clips;          ///< 待组合的片段列表
     QMap<ClipPosition, int> m_prevGroups; ///< 记录每个片段在组合前的组号
 };
 
@@ -279,8 +279,8 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    QString m_name;                ///< 新的轨道名称
-    QString m_oldName;             ///< 旧的轨道名称
+    QString m_name;    ///< 新的轨道名称
+    QString m_oldName; ///< 旧的轨道名称
 };
 
 /**
@@ -298,7 +298,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    int m_clipIndex;              ///< 要合并的片段的索引（通常是前一个）
+    int m_clipIndex; ///< 要合并的片段的索引（通常是前一个）
     UndoHelper m_undoHelper;
 };
 
@@ -317,7 +317,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    bool m_oldValue;              ///< 轨道在操作前的静音状态
+    bool m_oldValue; ///< 轨道在操作前的静音状态
 };
 
 /**
@@ -335,7 +335,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    bool m_oldValue;              ///< 轨道在操作前的隐藏状态
+    bool m_oldValue; ///< 轨道在操作前的隐藏状态
 };
 
 /**
@@ -356,8 +356,8 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    bool m_value;                 ///< 新的合成状态
-    bool m_oldValue;              ///< 旧的合成状态
+    bool m_value;    ///< 新的合成状态
+    bool m_oldValue; ///< 旧的合成状态
 };
 
 /**
@@ -375,8 +375,8 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    bool m_value;                 ///< 新的锁定状态
-    bool m_oldValue;              ///< 旧的锁定状态
+    bool m_value;    ///< 新的锁定状态
+    bool m_oldValue; ///< 旧的锁定状态
 };
 
 /**
@@ -397,13 +397,13 @@ public:
     void undo() override;
 
 protected:
-    int id() const override { return UndoIdMoveClip; } ///< 返回命令的唯一 ID
+    int id() const override { return UndoIdMoveClip; }  ///< 返回命令的唯一 ID
     bool mergeWith(const QUndoCommand *other) override; ///< 尝试与另一个命令合并
 
 private:
     void redoMarkers(); ///< 处理移动操作对标记的影响
 
-    TimelineDock &m_timeline;    ///< 对时间线 Dock 的引用
+    TimelineDock &m_timeline; ///< 对时间线 Dock 的引用
     MultitrackModel &m_model;
     MarkersModel &m_markersModel;
 
@@ -414,11 +414,11 @@ private:
     {
         int trackIndex;
         int clipIndex;
-        int frame_in;   ///< 片段的入点
-        int frame_out;  ///< 片段的出点
-        int start;      ///< 片段在轨道上的起始时间
-        int group;      ///< 片段所属的组号
-        QUuid uuid;     ///< 片段的唯一标识符
+        int frame_in;  ///< 片段的入点
+        int frame_out; ///< 片段的出点
+        int start;     ///< 片段在轨道上的起始时间
+        int group;     ///< 片段所属的组号
+        QUuid uuid;    ///< 片段的唯一标识符
 
         Info()
             : trackIndex(-1)
@@ -430,15 +430,15 @@ private:
         {}
     };
 
-    int m_trackDelta;              ///< 轨道偏移量
-    int m_positionDelta;           ///< 位置偏移量
-    bool m_ripple;                 ///< 是否为波纹移动
+    int m_trackDelta;    ///< 轨道偏移量
+    int m_positionDelta; ///< 位置偏移量
+    bool m_ripple;       ///< 是否为波纹移动
     bool m_rippleAllTracks;
     bool m_rippleMarkers;
     UndoHelper m_undoHelper;
-    QMultiMap<int, Info> m_clips;  ///< 待移动的片段列表，按位置排序
-    bool m_redo;                   ///< 标记是否已执行过 redo
-    int m_earliestStart;           ///< 记录被移动片段中最靠前的起始位置
+    QMultiMap<int, Info> m_clips;     ///< 待移动的片段列表，按位置排序
+    bool m_redo;                      ///< 标记是否已执行过 redo
+    int m_earliestStart;              ///< 记录被移动片段中最靠前的起始位置
     QList<Markers::Marker> m_markers; ///< 保存原始标记列表
 };
 
@@ -487,13 +487,13 @@ private:
     MarkersModel &m_markersModel;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 修剪的量（正数表示向后移动入点）
-    bool m_ripple;                 ///< 是否为波纹修剪
+    int m_delta;   ///< 修剪的量（正数表示向后移动入点）
+    bool m_ripple; ///< 是否为波纹修剪
     bool m_rippleAllTracks;
     bool m_rippleMarkers;
-    bool m_redo;                  ///< 标记是否需要执行 redo
-    int m_markerRemoveStart;       ///< 被移除部分的起始位置
-    int m_markerRemoveEnd;         ///< 被移除部分的结束位置
+    bool m_redo;                      ///< 标记是否需要执行 redo
+    int m_markerRemoveStart;          ///< 被移除部分的起始位置
+    int m_markerRemoveEnd;            ///< 被移除部分的结束位置
     QList<Markers::Marker> m_markers; ///< 保存原始标记列表
 };
 
@@ -525,7 +525,7 @@ private:
     MarkersModel &m_markersModel;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 修剪的量（正数表示向前移动出点）
+    int m_delta; ///< 修剪的量（正数表示向前移动出点）
     bool m_ripple;
     bool m_rippleAllTracks;
     bool m_rippleMarkers;
@@ -555,10 +555,9 @@ private:
     MultitrackModel &m_model;
     std::vector<int> m_trackIndex;
     std::vector<int> m_clipIndex;
-    int m_position;               ///< 分割点位置
+    int m_position; ///< 分割点位置
     UndoHelper m_undoHelper;
 };
-
 
 /**
  * @class FadeInCommand
@@ -577,15 +576,15 @@ public:
     void undo() override;
 
 protected:
-    int id() const override { return UndoIdFadeIn; } ///< 返回命令的唯一 ID
+    int id() const override { return UndoIdFadeIn; }    ///< 返回命令的唯一 ID
     bool mergeWith(const QUndoCommand *other) override; ///< 尝试与另一个命令合并
 
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_duration;               ///< 新的淡入时长
-    int m_previous;               ///< 旧的淡入时长
+    int m_duration; ///< 新的淡入时长
+    int m_previous; ///< 旧的淡入时长
 };
 
 /**
@@ -612,8 +611,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_duration;               ///< 新的淡出时长
-    int m_previous;               ///< 旧的淡出时长
+    int m_duration; ///< 新的淡出时长
+    int m_previous; ///< 旧的淡出时长
 };
 
 /// ####################################################################
@@ -644,14 +643,14 @@ private:
     MarkersModel &m_markersModel;
     int m_trackIndex;
     int m_clipIndex;
-    int m_position;               ///< 转场开始的位置
-    int m_transitionIndex;        ///< 存储创建的转场的索引
-    bool m_ripple;                ///< 是否为波纹添加
+    int m_position;        ///< 转场开始的位置
+    int m_transitionIndex; ///< 存储创建的转场的索引
+    bool m_ripple;         ///< 是否为波纹添加
     UndoHelper m_undoHelper;
     bool m_rippleAllTracks;
     bool m_rippleMarkers;
-    int m_markerOldStart;         ///< 记录被修改片段的原始起始位置
-    int m_markerNewStart;         ///< 记录被修改片段的新起始位置
+    int m_markerOldStart;             ///< 记录被修改片段的原始起始位置
+    int m_markerNewStart;             ///< 记录被修改片段的新起始位置
     QList<Markers::Marker> m_markers; ///< 保存原始标记列表
 };
 
@@ -680,8 +679,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 修剪的量
-    bool m_notify;                ///< 是否需要通知模型更新
+    int m_delta;   ///< 修剪的量
+    bool m_notify; ///< 是否需要通知模型更新
     bool m_redo;
 };
 
@@ -710,7 +709,7 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 修剪的量
+    int m_delta; ///< 修剪的量
     bool m_notify;
     bool m_redo;
 };
@@ -741,8 +740,8 @@ private:
     TimelineDock &m_timeline;
     int m_trackIndex;
     int m_clipIndex;
-    int m_duration;               ///< 转场时长
-    int m_trimDelta;              ///< 对前一个片段的修剪量
+    int m_duration;  ///< 转场时长
+    int m_trimDelta; ///< 对前一个片段的修剪量
     bool m_notify;
     bool m_redo;
 };
@@ -769,8 +768,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 转场的时长
-    QString m_xml;                ///< 转场效果的 XML 数据，用于恢复属性
+    int m_delta;   ///< 转场的时长
+    QString m_xml; ///< 转场效果的 XML 数据，用于恢复属性
     bool m_redo;
 };
 
@@ -796,8 +795,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_delta;                  ///< 转场的时长
-    QString m_xml;                ///< 转场效果的 XML 数据
+    int m_delta;   ///< 转场的时长
+    QString m_xml; ///< 转场效果的 XML 数据
     bool m_redo;
 };
 
@@ -827,8 +826,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    int m_duration;               ///< 转场时长
-    int m_trimDelta;              ///< 对后一个片段的修剪量
+    int m_duration;  ///< 转场时长
+    int m_trimDelta; ///< 对后一个片段的修剪量
     bool m_notify;
     bool m_redo;
 };
@@ -851,9 +850,9 @@ public:
 
 private:
     MultitrackModel &m_model;
-    int m_trackIndex;             ///< 新添加轨道的索引
-    bool m_isVideo;               ///< 是否为视频轨道
-    QUuid m_uuid;                 ///< 轨道的 UUID
+    int m_trackIndex; ///< 新添加轨道的索引
+    bool m_isVideo;   ///< 是否为视频轨道
+    QUuid m_uuid;     ///< 轨道的 UUID
 };
 
 /**
@@ -874,7 +873,7 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    TrackType m_trackType;        ///< 轨道类型
+    TrackType m_trackType; ///< 轨道类型
     QUuid m_uuid;
 };
 
@@ -893,11 +892,11 @@ public:
 private:
     MultitrackModel &m_model;
     int m_trackIndex;
-    TrackType m_trackType;        ///< 保存的轨道类型
-    QString m_trackName;          ///< 保存的轨道名称
+    TrackType m_trackType; ///< 保存的轨道类型
+    QString m_trackName;   ///< 保存的轨道名称
     UndoHelper m_undoHelper;
     QScopedPointer<Mlt::Producer> m_filtersProducer; ///< 保存的轨道滤镜
-    QUuid m_uuid;                 ///< 保存的轨道 UUID
+    QUuid m_uuid;                                    ///< 保存的轨道 UUID
 };
 
 /**
@@ -917,8 +916,8 @@ public:
 
 private:
     MultitrackModel &m_model;
-    int m_fromTrackIndex;         ///< 源轨道索引
-    int m_toTrackIndex;           ///< 目标轨道索引
+    int m_fromTrackIndex; ///< 源轨道索引
+    int m_toTrackIndex;   ///< 目标轨道索引
 };
 
 /**
@@ -941,10 +940,10 @@ signals:
     void modeChanged(QString &mode); ///< 当混合模式改变时发射的信号
 
 private:
-    Mlt::Transition m_transition;  ///< 轨道混合模式的转场服务
-    QString m_propertyName;        ///< 控制混合模式的属性名
-    QString m_newMode;             ///< 新的混合模式
-    QString m_oldMode;             ///< 旧的混合模式
+    Mlt::Transition m_transition; ///< 轨道混合模式的转场服务
+    QString m_propertyName;       ///< 控制混合模式的属性名
+    QString m_newMode;            ///< 新的混合模式
+    QString m_oldMode;            ///< 旧的混合模式
 };
 
 /// ####################################################################
@@ -964,7 +963,7 @@ public:
                   int clipIndex,
                   int position,
                   QUndoCommand *parent = 0);
-    void setXmlAfter(const QString &xml); ///< 设置更新后的 XML
+    void setXmlAfter(const QString &xml);                          ///< 设置更新后的 XML
     void setPosition(int trackIndex, int clipIndex, int position); ///< 允许在执行前更新目标位置
     void setRippleAllTracks(bool);
     int trackIndex() const { return m_trackIndex; }
@@ -978,8 +977,8 @@ private:
     int m_trackIndex;
     int m_clipIndex;
     int m_position;
-    QString m_xmlAfter;           ///< 包含更新后属性的 XML
-    bool m_isFirstRedo;           ///< 标记是否为首次执行
+    QString m_xmlAfter; ///< 包含更新后属性的 XML
+    bool m_isFirstRedo; ///< 标记是否为首次执行
     UndoHelper m_undoHelper;
     bool m_ripple;
     bool m_rippleAllTracks;
@@ -1007,10 +1006,10 @@ private:
     int m_trackIndex;
     int m_clipIndex;
     int m_position;
-    int m_targetTrackIndex;       ///< 分离后音频片段的目标轨道索引
-    QString m_xml;                ///< 原始片段的 XML
+    int m_targetTrackIndex; ///< 分离后音频片段的目标轨道索引
+    QString m_xml;          ///< 原始片段的 XML
     UndoHelper m_undoHelper;
-    bool m_trackAdded;            ///< 标记是否为此操作添加了新轨道
+    bool m_trackAdded; ///< 标记是否为此操作添加了新轨道
     QUuid m_uuid;
 };
 
@@ -1034,7 +1033,7 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    QString m_xml;                ///< 新片段的 XML
+    QString m_xml; ///< 新片段的 XML
     bool m_isFirstRedo;
     UndoHelper m_undoHelper;
 };
@@ -1067,9 +1066,9 @@ private:
      */
     struct Alignment
     {
-        QUuid uuid;               ///< 片段的唯一标识符
-        int offset;                ///< 新的起始位置
-        double speed;              ///< 新的速度
+        QUuid uuid;   ///< 片段的唯一标识符
+        int offset;   ///< 新的起始位置
+        double speed; ///< 新的速度
     };
     QVector<Alignment> m_alignments; ///< 所有待对齐片段的信息列表
 };
@@ -1119,8 +1118,8 @@ private:
     MultitrackModel &m_model;
     int m_trackIndex;
     int m_clipIndex;
-    double m_gain;                ///< 新的增益值
-    double m_previous;            ///< 旧的增益值
+    double m_gain;     ///< 新的增益值
+    double m_previous; ///< 旧的增益值
 };
 
 } // namespace Timeline

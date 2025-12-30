@@ -17,27 +17,24 @@
 // STL
 #include <windows.h>
 
-
 /**
  * \class OutputDebugAppender
  *
  * \brief Appender that writes the log records to the Microsoft Debug Log
  */
 
-
 //! Writes the log record to the windows debug log.
 /**
  * \sa AbstractStringAppender::format()
  */
-void OutputDebugAppender::append(const QDateTime& timeStamp,
+void OutputDebugAppender::append(const QDateTime &timeStamp,
                                  Logger::LogLevel logLevel,
-                                 const char* file,
+                                 const char *file,
                                  int line,
-                                 const char* function,
-                                 const QString& category,
-                                 const QString& message)
+                                 const char *function,
+                                 const QString &category,
+                                 const QString &message)
 {
     QString s = formattedString(timeStamp, logLevel, file, line, function, category, message);
     OutputDebugStringW((LPCWSTR) s.utf16());
 }
-

@@ -37,12 +37,12 @@ static const unsigned int editorWidth = 180;
 // 自定义快捷键编辑器部件类，用于编辑快捷键序列
 class ShortcutEditor : public QWidget
 {
-    Q_OBJECT    // 启用 Qt 的元对象系统，支持信号与槽机制
+Q_OBJECT // 启用 Qt 的元对象系统，支持信号与槽机制
 
-public:
-// 构造函数，parent 为父部件
+    public :
+    // 构造函数，parent 为父部件
     ShortcutEditor(QWidget *parent = nullptr)
-        : QWidget(parent)
+    : QWidget(parent)
     {
         // 设置部件最小宽度
         setMinimumWidth(editorWidth);
@@ -58,7 +58,7 @@ public:
         seqEdit = new QKeySequenceEdit();
         // 将其添加到布局
         layout->addWidget(seqEdit);
-        
+
         // 【创建“应用”工具按钮】
         QToolButton *applyButton = new QToolButton();
         // 设置按钮图标，优先从系统主题获取，否则用指定资源文件图标
@@ -73,7 +73,7 @@ public:
         // 将按钮添加到布局
         layout->addWidget(applyButton);
 
-       // 【创建“恢复默认”工具按钮】
+        // 【创建“恢复默认”工具按钮】
         QToolButton *defaultButton = new QToolButton();
         // 设置按钮图标，优先从系统主题获取，否则用指定资源文件图标
         defaultButton->setIcon(
@@ -89,7 +89,7 @@ public:
         // 将按钮添加到布局
         layout->addWidget(defaultButton);
 
-       // 【创建“清除快捷键”工具按钮】
+        // 【创建“清除快捷键”工具按钮】
         QToolButton *clearButton = new QToolButton();
         // 设置按钮图标，优先从系统主题获取，否则用指定资源文件图标
         clearButton->setIcon(
@@ -123,12 +123,12 @@ signals:
 // 【自定义项委托类】：用于在 QTreeView 中编辑快捷键相关列
 class ShortcutItemDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT  // 启用 Qt 元对象系统
+Q_OBJECT // 启用 Qt 元对象系统
 
-public:
+    public :
     // 构造函数，parent 为父对象
     ShortcutItemDelegate(QObject *parent = nullptr)
-        : QStyledItemDelegate(parent)
+    : QStyledItemDelegate(parent)
     {}
 
     // 【创建编辑器部件】：根据列索引判断是否创建 ShortcutEditor
@@ -196,11 +196,11 @@ private:
 // 自定义事件过滤器类，处理按键事件（比如回车关闭窗口）
 class KeyPressFilter : public QObject
 {
-    Q_OBJECT  // 启用 Qt 元对象系统
-public:
+Q_OBJECT // 启用 Qt 元对象系统
+    public :
     // 构造函数，parent 为父对象
     KeyPressFilter(QObject *parent = 0)
-        : QObject(parent)
+    : QObject(parent)
     {}
 
 protected:
@@ -227,12 +227,12 @@ protected:
 // 自定义 QTreeView 子类，用于处理编辑相关的自定义逻辑
 class PrivateTreeView : public QTreeView
 {
-    Q_OBJECT  // 启用 Qt 元对象系统
+Q_OBJECT // 启用 Qt 元对象系统
 
-public:
+    public :
     // 构造函数，parent 为父部件
     PrivateTreeView(QWidget *parent = nullptr)
-        : QTreeView(parent)
+    : QTreeView(parent)
     {}
 
     // 重写编辑方法，处理编辑状态相关逻辑
@@ -279,16 +279,15 @@ signals:
     void editRejected();
 };
 
-
 // 自定义事件过滤器类，处理搜索栏的按键事件（上下键聚焦搜索结果）
 class SearchKeyPressFilter : public QObject
 {
-    Q_OBJECT  // 启用 Qt 元对象系统
+Q_OBJECT // 启用 Qt 元对象系统
 
-public:
+    public :
     // 构造函数，parent 为父对象
     SearchKeyPressFilter(QObject *parent = 0)
-        : QObject(parent)
+    : QObject(parent)
     {}
 
 protected:
@@ -338,7 +337,7 @@ ActionsDialog::ActionsDialog(QWidget *parent)
     m_searchField->installEventFilter(new SearchKeyPressFilter(this));
     // 连接文本变化信号到 lambda 表达式，实现搜索过滤
     connect(m_searchField, &QLineEdit::textChanged, this, [&](const QString &text) {
-        if (m_proxyModel) {  // 如果代理模型存在
+        if (m_proxyModel) { // 如果代理模型存在
             // 设置过滤大小写不敏感
             m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
             // 设置过滤的固定字符串（即搜索内容）
@@ -368,7 +367,7 @@ ActionsDialog::ActionsDialog(QWidget *parent)
     // 将搜索布局添加到主垂直布局
     vlayout->addLayout(searchLayout);
 
-   // 创建代理模型（用于搜索过滤等），父对象为当前对话框
+    // 创建代理模型（用于搜索过滤等），父对象为当前对话框
     m_proxyModel = new QSortFilterProxyModel(this);
     // 设置代理模型的源模型为 m_model（ActionsModel 类型，代码中未完整展示 ）
     m_proxyModel->setSourceModel(&m_model);
@@ -404,7 +403,7 @@ ActionsDialog::ActionsDialog(QWidget *parent)
     m_table->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     // 设置第 1 列的调整模式：固定宽度（QHeaderView::Fixed 是枚举值，前面 QHeaderView:: 可简化，原写法冗余了 ）
     m_table->header()->setSectionResizeMode(1, QHeaderView::Fixed);
-    // 设置第 2 列的调整模式：固定宽度 
+    // 设置第 2 列的调整模式：固定宽度
     m_table->header()->setSectionResizeMode(2, QHeaderView::Fixed);
     // 手动设置第 1 列的宽度为 editorWidth（前面定义的 180）
     m_table->header()->resizeSection(1, editorWidth);
@@ -529,8 +528,8 @@ void ActionsDialog::hideEvent(QHideEvent *event)
 // 对话框显示事件：显示时让搜索框获取焦点、清空搜索内容、清除表格选中状态
 void ActionsDialog::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event) // 标记 event 参数未使用
+    Q_UNUSED(event)            // 标记 event 参数未使用
     m_searchField->setFocus(); // 搜索框获取焦点
-    m_searchField->clear(); // 清空搜索框文本
+    m_searchField->clear();    // 清空搜索框文本
     m_table->clearSelection(); // 清除表格选中项
 }

@@ -37,8 +37,7 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
-<<<<<<< HEAD extern MainWindow *MAIN;
-== == == =
+<<<<<<< HEAD extern MainWindow *MAIN; == == == =
 #include <QFileDialog>
 #include <QStandardPaths>
 
@@ -61,11 +60,11 @@
  */
 >>>>>>> master
 
-    FilterController::FilterController(QObject * parent)
+    FilterController::FilterController(QObject *parent)
     : QObject(parent)
-, m_metadataModel(this)                            // 元数据模型，存储所有可用滤镜的信息
-, m_attachedModel(this)                            // 附加滤镜模型，存储当前 Producer 上的滤镜列表
-, m_currentFilterIndex(QmlFilter::NoCurrentFilter) // 初始化时没有选中的滤镜
+    , m_metadataModel(this) // 元数据模型，存储所有可用滤镜的信息
+    , m_attachedModel(this) // 附加滤镜模型，存储当前 Producer 上的滤镜列表
+    , m_currentFilterIndex(QmlFilter::NoCurrentFilter) // 初始化时没有选中的滤镜
 {
     startTimer(0); // 启动一个 0 毫秒的定时器，以便在事件循环启动后立即加载数据
     // 连接附加滤镜模型的信号，以便在其变化时做出响应

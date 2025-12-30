@@ -1,13 +1,12 @@
 //*
- * Copyright (c) 2015-2024 Meltytech, LLC
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+*Copyright(c) 2015 - 2024 Meltytech,
+    LLC **This program is free software : you can redistribute it and /
+        or modify *it under the terms of the GNU General Public License as published by *the Free
+        Software Foundation,
+    either version 3 of the License,
+    or *(at your option) any later version
+            .**This program is distributed in the hope that it will be useful,
+    *but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
@@ -70,7 +69,7 @@ void UndoHelper::recordBeforeState()
             if (clip->is_blank()) {
                 uid = MLT.ensureHasUuid(*clip); // 空白片段也需要 UUID
             }
-            m_insertedOrder << uid; // 记录顺序
+            m_insertedOrder << uid;    // 记录顺序
             Info &info = m_state[uid]; // 获取或创建该 UUID 对应的信息结构体
             // 如果没有跳过 XML 的提示，则保存片段的完整 XML
             if (!(m_hints & SkipXML))
@@ -416,7 +415,7 @@ void UndoHelper::restoreAffectedTracks()
         }
     }
 
- // 第二步：按照原始顺序，将所有属于这些轨道的片段重新添加回去
+    // 第二步：按照原始顺序，将所有属于这些轨道的片段重新添加回去
     for (const auto &uid : std::as_const(m_insertedOrder)) {
         const Info &info = m_state[uid];
         if (m_affectedTracks.contains(info.oldTrackIndex)) {
@@ -462,4 +461,3 @@ void UndoHelper::fixTransitions(Mlt::Playlist playlist, int clipIndex, Mlt::Prod
         transitionIndex++;
     }
 }
-

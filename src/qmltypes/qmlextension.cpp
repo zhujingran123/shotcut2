@@ -32,7 +32,7 @@ const QString QmlExtension::WHISPER_ID = QStringLiteral("whispermodel");
 // 【参数】：parent - 父对象指针
 QmlExtensionFile::QmlExtensionFile(QObject *parent)
     : QObject(parent)
-    , m_standard(false)  // 默认非标准文件（用户自定义）
+    , m_standard(false) // 默认非标准文件（用户自定义）
 {}
 
 // 【核心功能】：加载QML扩展
@@ -47,19 +47,19 @@ QmlExtension *QmlExtension::load(const QString &id)
         // 如果不存在，尝试从安装目录加载（系统预置扩展）
         filePath = installDir(id).absoluteFilePath(extensionFileName(id));
     }
-    
+
     // 检查扩展文件是否存在
     if (!QFile::exists(filePath)) {
         LOG_ERROR() << filePath << "does not exist";
         return nullptr;
     }
-    
+
     // 使用QML引擎加载扩展组件
     QQmlComponent component(QmlUtilities::sharedEngine(), filePath);
     QmlExtension *extension = qobject_cast<QmlExtension *>(component.create());
-    
+
     if (!extension) {
-        LOG_ERROR() << component.errorString();  // 输出加载错误信息
+        LOG_ERROR() << component.errorString(); // 输出加载错误信息
     }
     return extension;
 }
@@ -78,9 +78,9 @@ QString QmlExtension::extensionFileName(const QString &id)
 // 【说明】：位于QML目录下的extensions子目录
 QDir QmlExtension::installDir(const QString &id)
 {
-    QDir dir = QmlUtilities::qmlDir();  // 获取QML根目录
-    dir.mkdir("extensions");            // 创建extensions目录（如果不存在）
-    dir.cd("extensions");               // 进入extensions目录
+    QDir dir = QmlUtilities::qmlDir(); // 获取QML根目录
+    dir.mkdir("extensions");           // 创建extensions目录（如果不存在）
+    dir.cd("extensions");              // 进入extensions目录
     return dir;
 }
 
@@ -90,11 +90,11 @@ QDir QmlExtension::installDir(const QString &id)
 // 【说明】：为每个扩展创建独立的子目录
 QDir QmlExtension::appDir(const QString &id)
 {
-    QDir dir = Settings.appDataLocation();  // 获取应用数据目录
-    dir.mkdir("extensions");                // 创建extensions目录
-    dir.cd("extensions");                   // 进入extensions目录
-    dir.mkdir(id);                          // 为特定扩展创建目录
-    dir.cd(id);                             // 进入扩展目录
+    QDir dir = Settings.appDataLocation(); // 获取应用数据目录
+    dir.mkdir("extensions");               // 创建extensions目录
+    dir.cd("extensions");                  // 进入extensions目录
+    dir.mkdir(id);                         // 为特定扩展创建目录
+    dir.cd(id);                            // 进入扩展目录
     return dir;
 }
 
@@ -109,7 +109,7 @@ QmlExtension::QmlExtension(QObject *parent)
 void QmlExtension::setId(const QString &id)
 {
     m_id = id;
-    emit changed();  // 通知属性改变
+    emit changed(); // 通知属性改变
 }
 
 // 【功能】：设置扩展名称
@@ -135,11 +135,11 @@ void QmlExtension::setVersion(const QString &version)
 QString QmlExtension::localPath(int index)
 {
     if (index < 0 || index >= fileCount()) {
-        LOG_ERROR() << "Invalid Index" << index;  // 索引越界检查
+        LOG_ERROR() << "Invalid Index" << index; // 索引越界检查
         return QString();
     }
-    QDir localPath = appDir(m_id);  // 获取扩展的应用数据目录
-    return localPath.absoluteFilePath(m_files[index]->file());  // 返回文件完整路径
+    QDir localPath = appDir(m_id);                             // 获取扩展的应用数据目录
+    return localPath.absoluteFilePath(m_files[index]->file()); // 返回文件完整路径
 }
 
 // 【功能】：检查扩展文件是否已下载
@@ -147,5 +147,5 @@ QString QmlExtension::localPath(int index)
 // 【返回值】：文件是否存在本地
 bool QmlExtension::downloaded(int index)
 {
-    return QFile(localPath(index)).exists();  // 检查文件是否存在
+    return QFile(localPath(index)).exists(); // 检查文件是否存在
 }

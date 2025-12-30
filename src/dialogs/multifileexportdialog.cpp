@@ -23,31 +23,29 @@
 #include "proxymanager.h"            // 代理管理器（获取文件资源路径）
 #include "qmltypes/qmlapplication.h" // QML应用类（获取对话框模态属性）
 #include "shotcut_mlt_properties.h"  // Shotcut自定义MLT属性常量
-#include "util.h"                   // 工具类（获取文件对话框选项、计算哈希等）
+#include "util.h"                    // 工具类（获取文件对话框选项、计算哈希等）
 
 // 引入MLT和Qt相关头文件
-#include <MltPlaylist.h>             // MLT播放列表类（管理待导出的剪辑）
-#include <QComboBox>                 // 下拉选择框（用于选择文件名字段类型）
-#include <QDialogButtonBox>          // 对话框按钮组（包含确定、取消按钮）
-#include <QDir>                      // 目录操作类（处理导出目录）
-#include <QFileDialog>               // 文件对话框（用于选择导出目录）
-#include <QGridLayout>               // 网格布局管理器（排列界面控件）
-#include <QHBoxLayout>               // 水平布局管理器（排列目录输入框和浏览按钮）
-#include <QLabel>                    // 标签控件（显示文本提示）
-#include <QLineEdit>                 // 单行输入框（输入前缀、扩展名等）
-#include <QListWidget>               // 列表控件（展示导出文件列表）
-#include <QPushButton>               // 按钮控件（浏览目录按钮）
-
+#include <MltPlaylist.h>    // MLT播放列表类（管理待导出的剪辑）
+#include <QComboBox>        // 下拉选择框（用于选择文件名字段类型）
+#include <QDialogButtonBox> // 对话框按钮组（包含确定、取消按钮）
+#include <QDir>             // 目录操作类（处理导出目录）
+#include <QFileDialog>      // 文件对话框（用于选择导出目录）
+#include <QGridLayout>      // 网格布局管理器（排列界面控件）
+#include <QHBoxLayout>      // 水平布局管理器（排列目录输入框和浏览按钮）
+#include <QLabel>           // 标签控件（显示文本提示）
+#include <QLineEdit>        // 单行输入框（输入前缀、扩展名等）
+#include <QListWidget>      // 列表控件（展示导出文件列表）
+#include <QPushButton>      // 按钮控件（浏览目录按钮）
 
 // 【枚举】：文件名字段类型（用于组合生成导出文件名）
 enum {
-    NAME_FIELD_NONE = 0,   // 无字段（不添加内容）
-    NAME_FIELD_NAME,       // 名称字段（剪辑标题或文件名）
-    NAME_FIELD_INDEX,      // 索引字段（剪辑在播放列表中的序号）
-    NAME_FIELD_DATE,       // 日期字段（剪辑的创建日期）
-    NAME_FIELD_HASH,       // 哈希字段（剪辑的唯一哈希值）
+    NAME_FIELD_NONE = 0, // 无字段（不添加内容）
+    NAME_FIELD_NAME,     // 名称字段（剪辑标题或文件名）
+    NAME_FIELD_INDEX,    // 索引字段（剪辑在播放列表中的序号）
+    NAME_FIELD_DATE,     // 日期字段（剪辑的创建日期）
+    NAME_FIELD_HASH,     // 哈希字段（剪辑的唯一哈希值）
 };
-
 
 // 【构造函数】：初始化多文件导出对话框
 // 参数说明：
@@ -64,20 +62,20 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
                                              const QString &extension,
                                              QWidget *parent)
     : QDialog(parent)
-    , m_playlist(playlist)  // 保存播放列表对象（用于获取剪辑信息）
+    , m_playlist(playlist) // 保存播放列表对象（用于获取剪辑信息）
 {
-    int col = 0;  // 网格布局的列索引（用于定位控件）
-    setWindowTitle(title);  // 设置对话框标题
-    setWindowModality(QmlApplication::dialogModality());  // 设置模态属性（与应用一致）
+    int col = 0;                                         // 网格布局的列索引（用于定位控件）
+    setWindowTitle(title);                               // 设置对话框标题
+    setWindowModality(QmlApplication::dialogModality()); // 设置模态属性（与应用一致）
 
     // 1. 创建网格布局（管理对话框内所有控件的排列）
     QGridLayout *glayout = new QGridLayout();
-    glayout->setHorizontalSpacing(4);  // 水平间距4像素
-    glayout->setVerticalSpacing(2);    // 垂直间距2像素
+    glayout->setHorizontalSpacing(4); // 水平间距4像素
+    glayout->setVerticalSpacing(2);   // 垂直间距2像素
 
     // 2. 添加“导出目录”相关控件（标签、输入框、浏览按钮）
-    glayout->addWidget(new QLabel(tr("Directory")), col, 0, Qt::AlignRight);  // 标签（右对齐）
-    QHBoxLayout *dirHbox = new QHBoxLayout();  // 水平布局（排列输入框和按钮）
+    glayout->addWidget(new QLabel(tr("Directory")), col, 0, Qt::AlignRight); // 标签（右对齐）
+    QHBoxLayout *dirHbox = new QHBoxLayout(); // 水平布局（排列输入框和按钮）
     // 目录输入框：显示默认目录，设为只读（只能通过浏览按钮修改）
     m_dir = new QLineEdit(QDir::toNativeSeparators(directory));
     m_dir->setReadOnly(true);
@@ -91,7 +89,7 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
     // 将输入框和按钮添加到水平布局
     dirHbox->addWidget(m_dir);
     dirHbox->addWidget(browseButton);
-    glayout->addLayout(dirHbox, col++, 1, Qt::AlignLeft);  // 水平布局添加到网格（左对齐）
+    glayout->addLayout(dirHbox, col++, 1, Qt::AlignLeft); // 水平布局添加到网格（左对齐）
 
     // 3. 添加“文件名前缀”相关控件（标签、输入框）
     glayout->addWidget(new QLabel(tr("Prefix")), col, 0, Qt::AlignRight);
@@ -105,34 +103,43 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
     // 4. 添加“字段1”相关控件（标签、下拉框）
     glayout->addWidget(new QLabel(tr("Field 1")), col, 0, Qt::AlignRight);
     m_field1 = new QComboBox();
-    fillCombo(m_field1);  // 向下拉框添加字段类型选项
+    fillCombo(m_field1); // 向下拉框添加字段类型选项
     // 连接下拉框选择变化信号到“重建文件列表”槽函数
-    if (!connect(m_field1, QOverload<int>::of(&QComboBox::activated), this, &MultiFileExportDialog::rebuildList))
+    if (!connect(m_field1,
+                 QOverload<int>::of(&QComboBox::activated),
+                 this,
+                 &MultiFileExportDialog::rebuildList))
         connect(m_field1, SIGNAL(activated(const QString &)), SLOT(rebuildList()));
     glayout->addWidget(m_field1, col++, 1, Qt::AlignLeft);
 
     // 5. 添加“字段2”相关控件（标签、下拉框）
     glayout->addWidget(new QLabel(tr("Field 2")), col, 0, Qt::AlignRight);
     m_field2 = new QComboBox();
-    fillCombo(m_field2);  // 填充字段类型选项
+    fillCombo(m_field2); // 填充字段类型选项
     // 连接选择变化信号到“重建文件列表”槽函数
-    if (!connect(m_field2, QOverload<int>::of(&QComboBox::activated), this, &MultiFileExportDialog::rebuildList))
+    if (!connect(m_field2,
+                 QOverload<int>::of(&QComboBox::activated),
+                 this,
+                 &MultiFileExportDialog::rebuildList))
         connect(m_field2, SIGNAL(activated(const QString &)), SLOT(rebuildList()));
     glayout->addWidget(m_field2, col++, 1, Qt::AlignLeft);
 
     // 6. 添加“字段3”相关控件（标签、下拉框）
     glayout->addWidget(new QLabel(tr("Field 3")), col, 0, Qt::AlignRight);
     m_field3 = new QComboBox();
-    fillCombo(m_field3);  // 填充字段类型选项
-    m_field3->setCurrentIndex(NAME_FIELD_INDEX);  // 默认选中“索引”字段
+    fillCombo(m_field3);                         // 填充字段类型选项
+    m_field3->setCurrentIndex(NAME_FIELD_INDEX); // 默认选中“索引”字段
     // 连接选择变化信号到“重建文件列表”槽函数
-    if (!connect(m_field3, QOverload<int>::of(&QComboBox::activated), this, &MultiFileExportDialog::rebuildList))
+    if (!connect(m_field3,
+                 QOverload<int>::of(&QComboBox::activated),
+                 this,
+                 &MultiFileExportDialog::rebuildList))
         connect(m_field3, SIGNAL(activated(const QString &)), SLOT(rebuildList()));
     glayout->addWidget(m_field3, col++, 1, Qt::AlignLeft);
 
     // 7. 添加“文件扩展名”相关控件（标签、输入框）
     glayout->addWidget(new QLabel(tr("Extension")), col, 0, Qt::AlignRight);
-    m_ext = new QLineEdit(extension);  // 扩展名输入框（默认值为传入的扩展名）
+    m_ext = new QLineEdit(extension); // 扩展名输入框（默认值为传入的扩展名）
     // 连接文本变化信号到“重建文件列表”槽函数
     if (!connect(m_ext, &QLineEdit::textChanged, this, &MultiFileExportDialog::rebuildList))
         connect(m_ext, SIGNAL(textChanged(const QString &)), SLOT(rebuildList()));
@@ -140,21 +147,21 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
 
     // 8. 添加“错误提示”相关控件（图标、文本）
     m_errorIcon = new QLabel();
-    QIcon icon = QIcon(":/icons/oxygen/32x32/status/task-reject.png");  // 错误图标
-    m_errorIcon->setPixmap(icon.pixmap(QSize(24, 24)));  // 设置图标大小
-    glayout->addWidget(m_errorIcon, col, 0, Qt::AlignRight);  // 错误图标（右对齐）
-    m_errorText = new QLabel();  // 错误文本标签
-    glayout->addWidget(m_errorText, col++, 1, Qt::AlignLeft);  // 错误文本（左对齐）
+    QIcon icon = QIcon(":/icons/oxygen/32x32/status/task-reject.png"); // 错误图标
+    m_errorIcon->setPixmap(icon.pixmap(QSize(24, 24)));                // 设置图标大小
+    glayout->addWidget(m_errorIcon, col, 0, Qt::AlignRight);           // 错误图标（右对齐）
+    m_errorText = new QLabel();                                        // 错误文本标签
+    glayout->addWidget(m_errorText, col++, 1, Qt::AlignLeft);          // 错误文本（左对齐）
 
     // 9. 添加“导出文件列表”控件（列表控件）
     m_list = new QListWidget();
-    m_list->setSelectionMode(QAbstractItemView::NoSelection);  // 禁用选择模式
-    m_list->setIconSize(QSize(16, 16));  // 设置图标大小（显示文件状态图标）
-    glayout->addWidget(m_list, col++, 0, 1, 2);  // 列表占2列（跨列布局）
+    m_list->setSelectionMode(QAbstractItemView::NoSelection); // 禁用选择模式
+    m_list->setIconSize(QSize(16, 16));                       // 设置图标大小（显示文件状态图标）
+    glayout->addWidget(m_list, col++, 0, 1, 2);               // 列表占2列（跨列布局）
 
     // 10. 添加“按钮组”控件（确定、取消按钮）
     m_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    glayout->addWidget(m_buttonBox, col++, 0, 1, 2);  // 按钮组占2列
+    glayout->addWidget(m_buttonBox, col++, 0, 1, 2); // 按钮组占2列
     // 连接按钮信号到对话框默认槽函数
     connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -165,12 +172,11 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
                                        + browseButton->width());
 
     // 12. 配置对话框属性
-    this->setLayout(glayout);  // 设置对话框布局
-    this->setModal(true);      // 模态对话框（阻塞父窗口操作）
-    rebuildList();             // 初始化时重建导出文件列表
-    resize(400, 300);          // 设置对话框初始大小
+    this->setLayout(glayout); // 设置对话框布局
+    this->setModal(true);     // 模态对话框（阻塞父窗口操作）
+    rebuildList();            // 初始化时重建导出文件列表
+    resize(400, 300);         // 设置对话框初始大小
 }
-
 
 // 【公共方法】：获取导出文件路径列表
 // 返回值：QStringList - 所有待导出文件的完整路径
@@ -178,7 +184,6 @@ QStringList MultiFileExportDialog::getExportFiles()
 {
     return m_stringList;
 }
-
 
 // 【私有方法】：拼接文件名字段（根据字段类型添加内容到文件名）
 // 参数说明：
@@ -188,13 +193,13 @@ QStringList MultiFileExportDialog::getExportFiles()
 // 返回值：QString - 拼接字段后的文件名文本
 QString MultiFileExportDialog::appendField(QString text, QComboBox *combo, int clipIndex)
 {
-    QString field;  // 存储当前字段的内容
+    QString field; // 存储当前字段的内容
     // 根据下拉框选中的字段类型，生成对应内容
     switch (combo->currentData().toInt()) {
     default:
-    case NAME_FIELD_NONE:  // 无字段：不添加内容
+    case NAME_FIELD_NONE: // 无字段：不添加内容
         break;
-    case NAME_FIELD_NAME: {  // 名称字段：获取剪辑标题或文件名
+    case NAME_FIELD_NAME: { // 名称字段：获取剪辑标题或文件名
         // 获取当前剪辑的信息（智能指针自动释放资源）
         QScopedPointer<Mlt::ClipInfo> info(MAIN.playlist()->clip_info(clipIndex));
         if (info && info->producer && info->producer->is_valid()) {
@@ -212,14 +217,14 @@ QString MultiFileExportDialog::appendField(QString text, QComboBox *combo, int c
         }
         break;
     }
-    case NAME_FIELD_INDEX: {  // 索引字段：生成带前置零的序号
+    case NAME_FIELD_INDEX: { // 索引字段：生成带前置零的序号
         // 计算序号的位数（与播放列表总剪辑数匹配，如10个剪辑则为2位）
         int digits = QString::number(m_playlist->count()).size();
         // 生成序号字符串（如第1个剪辑，3位 digits 则为“001”）
         field = QStringLiteral("%1").arg(clipIndex + 1, digits, 10, QChar('0'));
         break;
     }
-    case NAME_FIELD_DATE: {  // 日期字段：获取剪辑的创建日期
+    case NAME_FIELD_DATE: { // 日期字段：获取剪辑的创建日期
         QScopedPointer<Mlt::ClipInfo> info(MAIN.playlist()->clip_info(clipIndex));
         if (info && info->producer && info->producer->is_valid()) {
             // 获取剪辑的创建时间（毫秒级时间戳）
@@ -231,7 +236,7 @@ QString MultiFileExportDialog::appendField(QString text, QComboBox *combo, int c
         }
         break;
     }
-    case NAME_FIELD_HASH: {  // 哈希字段：获取剪辑的唯一哈希值
+    case NAME_FIELD_HASH: { // 哈希字段：获取剪辑的唯一哈希值
         QScopedPointer<Mlt::ClipInfo> info(MAIN.playlist()->clip_info(clipIndex));
         // 调用工具类方法计算生产者的哈希值
         field = Util::getHash(*info->producer);
@@ -249,7 +254,6 @@ QString MultiFileExportDialog::appendField(QString text, QComboBox *combo, int c
     }
 }
 
-
 // 【私有方法】：向下拉框填充字段类型选项
 // 参数：combo - 目标下拉框对象
 void MultiFileExportDialog::fillCombo(QComboBox *combo)
@@ -262,16 +266,15 @@ void MultiFileExportDialog::fillCombo(QComboBox *combo)
     combo->addItem(tr("Hash"), QVariant(NAME_FIELD_HASH));
 }
 
-
 // 【私有方法】：重建导出文件列表（根据当前配置生成文件名，检测错误）
 void MultiFileExportDialog::rebuildList()
 {
-    m_stringList.clear();  // 清空文件路径列表
-    m_list->clear();       // 清空列表控件
+    m_stringList.clear(); // 清空文件路径列表
+    m_list->clear();      // 清空列表控件
 
     // 1. 遍历播放列表中的每个剪辑，生成对应的导出文件路径
     for (int i = 0; i < m_playlist->count(); i++) {
-        QString filename = m_prefix->text();  // 初始化为前缀
+        QString filename = m_prefix->text(); // 初始化为前缀
         // 依次拼接3个字段（字段1→字段2→字段3）
         filename = appendField(filename, m_field1, i);
         filename = appendField(filename, m_field2, i);
@@ -279,13 +282,13 @@ void MultiFileExportDialog::rebuildList()
         // 若文件名非空，拼接目录和扩展名，生成完整路径
         if (!filename.isEmpty()) {
             filename = m_dir->text() + QDir::separator() + filename + "." + m_ext->text();
-            m_stringList << filename;  // 添加到文件路径列表
+            m_stringList << filename; // 添加到文件路径列表
         }
     }
-    m_list->addItems(m_stringList);  // 将文件路径添加到列表控件
+    m_list->addItems(m_stringList); // 将文件路径添加到列表控件
 
     // 2. 检测导出配置错误（空文件名、目录不存在、文件已存在、文件名重复）
-    m_errorText->setText("");  // 清空错误文本
+    m_errorText->setText(""); // 清空错误文本
     int n = m_stringList.size();
     if (n == 0) {
         // 错误1：无导出文件（文件名为空）
@@ -321,7 +324,7 @@ void MultiFileExportDialog::rebuildList()
                 // 有错误：显示“拒绝”图标，设置工具提示
                 item->setIcon(QIcon(":/icons/oxygen/32x32/status/task-reject.png"));
                 item->setToolTip(errorString);
-                m_errorText->setText(errorString);  // 显示第一个错误
+                m_errorText->setText(errorString); // 显示第一个错误
             }
         }
     }
@@ -330,16 +333,15 @@ void MultiFileExportDialog::rebuildList()
     if (m_errorText->text().isEmpty()) {
         m_errorText->setVisible(false);
         m_errorIcon->setVisible(false);
-        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);  // 启用确定按钮
+        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true); // 启用确定按钮
     } else {
         m_errorText->setVisible(true);
         m_errorIcon->setVisible(true);
-        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);  // 禁用确定按钮
+        m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false); // 禁用确定按钮
     }
     // 设置确定按钮提示（提示用户修复错误后导出）
     m_buttonBox->button(QDialogButtonBox::Ok)->setToolTip(tr("Fix file name errors before export."));
 }
-
 
 // 【私有槽函数】：处理“浏览”按钮点击事件（选择导出目录）
 void MultiFileExportDialog::browse()

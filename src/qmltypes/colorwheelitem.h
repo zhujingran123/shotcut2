@@ -46,15 +46,15 @@ class ColorWheelItem : public QQuickPaintedItem
     Q_PROPERTY(qreal blueF READ blueF WRITE setBlueF)
     // 【QML属性】：颜色变化步长，用于滚轮微调
     Q_PROPERTY(qreal step READ step WRITE setStep)
-    
+
 public:
     // 【构造函数】
     explicit ColorWheelItem(QQuickItem *parent = 0);
-    
+
     // 颜色属性访问方法
     QColor color();
     void setColor(const QColor &color);
-    
+
     // RGB分量访问方法（整数格式）
     int red();
     void setRed(int red);
@@ -62,7 +62,7 @@ public:
     void setGreen(int green);
     int blue();
     void setBlue(int blue);
-    
+
     // RGB分量访问方法（浮点格式）
     qreal redF();
     void setRedF(qreal red);
@@ -70,7 +70,7 @@ public:
     void setGreenF(qreal green);
     qreal blueF();
     void setBlueF(qreal blue);
-    
+
     // 步长属性访问方法
     qreal step();
     void setStep(qreal blue);
@@ -94,17 +94,17 @@ protected:
     void paint(QPainter *painter);
 
 private:
-    QImage m_image;             // 颜色轮缓存图像，提高渲染性能
-    bool m_isMouseDown;         // 鼠标按下状态标志
-    QPoint m_lastPoint;         // 最后鼠标位置坐标
-    QSize m_size;               // 组件当前尺寸
-    int m_margin;               // 边距大小
-    QRegion m_wheelRegion;      // 颜色轮可点击区域
-    QRegion m_sliderRegion;     // 滑动条可点击区域
-    QColor m_color;             // 当前选择的颜色
-    bool m_isInWheel;           // 鼠标是否在颜色轮内
-    bool m_isInSquare;          // 鼠标是否在滑动条内
-    qreal m_step;               // 颜色变化步长
+    QImage m_image;         // 颜色轮缓存图像，提高渲染性能
+    bool m_isMouseDown;     // 鼠标按下状态标志
+    QPoint m_lastPoint;     // 最后鼠标位置坐标
+    QSize m_size;           // 组件当前尺寸
+    int m_margin;           // 边距大小
+    QRegion m_wheelRegion;  // 颜色轮可点击区域
+    QRegion m_sliderRegion; // 滑动条可点击区域
+    QColor m_color;         // 当前选择的颜色
+    bool m_isInWheel;       // 鼠标是否在颜色轮内
+    bool m_isInSquare;      // 鼠标是否在滑动条内
+    qreal m_step;           // 颜色变化步长
 
     // 【私有方法】：计算颜色轮尺寸
     int wheelSize() const;

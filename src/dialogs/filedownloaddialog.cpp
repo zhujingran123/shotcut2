@@ -24,14 +24,13 @@
 #include "qmltypes/qmlapplication.h" // QML应用类（获取对话框模态属性）
 
 // 引入Qt网络和界面相关头文件
-#include <QMessageBox>               // 消息框（用于显示下载失败、SSL错误等提示）
-#include <QNetworkAccessManager>     // 网络访问管理器（发起网络请求）
-#include <QNetworkReply>             // 网络响应对象（接收下载数据、进度等）
-#include <QNetworkRequest>           // 网络请求对象（配置下载请求参数）
+#include <QMessageBox>           // 消息框（用于显示下载失败、SSL错误等提示）
+#include <QNetworkAccessManager> // 网络访问管理器（发起网络请求）
+#include <QNetworkReply>         // 网络响应对象（接收下载数据、进度等）
+#include <QNetworkRequest>       // 网络请求对象（配置下载请求参数）
 
 // 静态常量：下载进度最大值（用于进度条显示，1000对应100%）
 static const int PROGRESS_MAX = 1000;
-
 
 // 【构造函数】：初始化文件下载对话框
 // 参数说明：
@@ -41,15 +40,14 @@ FileDownloadDialog::FileDownloadDialog(const QString &title, QWidget *parent)
     // 继承QProgressDialog，初始化进度条：标题、取消按钮文本、进度范围（0到PROGRESS_MAX）、父窗口
     : QProgressDialog(title, tr("Cancel"), 0, PROGRESS_MAX, parent ? parent : &MAIN)
 {
-    setWindowTitle(title);                  // 设置窗口标题
-    setModal(true);                         // 模态对话框（阻塞操作）
+    setWindowTitle(title);                   // 设置窗口标题
+    setModal(true);                          // 模态对话框（阻塞操作）
     setWindowModality(Qt::ApplicationModal); // 应用级模态（阻塞整个应用，不仅父窗口）
-    setMinimumDuration(0);                  // 立即显示进度条（无延迟）
+    setMinimumDuration(0);                   // 立即显示进度条（无延迟）
 }
 
 // 【析构函数】：空实现（无额外资源需手动释放）
 FileDownloadDialog::~FileDownloadDialog() {}
-
 
 // 【公共方法】：设置下载源地址（URL）
 // 参数：src - 下载文件的网络地址（如"https://xxx.com/file.zip"）
@@ -65,7 +63,6 @@ void FileDownloadDialog::setDst(const QString &dst)
     m_dst = dst; // 保存目标路径到成员变量
 }
 
-
 // 【公共方法】：开始下载任务
 // 返回值：bool - 下载成功返回true，失败/取消返回false
 bool FileDownloadDialog::start()
@@ -74,26 +71,29 @@ bool FileDownloadDialog::start()
     LOG_INFO() << "Download Source" << m_src;
     LOG_INFO() << "Download Destination" << m_dst;
 
-    bool retVal = false;                  // 下载结果（默认失败）
-    QString tmpPath = m_dst + ".tmp";     // 临时文件路径（避免下载中断导致目标文件损坏）
-    m_file = new QFile(tmpPath, this);    // 创建临时文件对象
+    bool retVal = false;               // 下载结果（默认失败）
+    QString tmpPath = m_dst + ".tmp";  // 临时文件路径（避免下载中断导致目标文件损坏）
+    m_file = new QFile(tmpPath, this); // 创建临时文件对象
 
     // 1. 打开临时文件（只写模式），失败则返回
     if (!m_file || !m_file->open(QIODevice::WriteOnly)) {
         LOG_ERROR() << "Unable to open file to write"; // 打印打开失败日志
-        delete m_file; // 释放文件对象
-        return retVal; // 返回失败
+        delete m_file;                                 // 释放文件对象
+        return retVal;                                 // 返回失败
     }
 
     // 2. 初始化网络请求
-    QNetworkAccessManager manager(this);  // 网络访问管理器（发起请求）
-    QUrl url = m_src;                     // 转换源地址为QUrl
-    QNetworkRequest request(url);         // 创建网络请求
-    request.setTransferTimeout(6000);     // 设置超时时间（6秒）
-    m_reply = manager.get(request);       // 发起GET请求，获取网络响应对象
+    QNetworkAccessManager manager(this); // 网络访问管理器（发起请求）
+    QUrl url = m_src;                    // 转换源地址为QUrl
+    QNetworkRequest request(url);        // 创建网络请求
+    request.setTransferTimeout(6000);    // 设置超时时间（6秒）
+    m_reply = manager.get(request);      // 发起GET请求，获取网络响应对象
 
     // 3. 连接网络响应的信号与槽（处理下载进度、数据、完成、SSL错误）
-    QObject::connect(m_reply, &QNetworkReply::downloadProgress, this, &FileDownloadDialog::onDownloadProgress);
+    QObject::connect(m_reply,
+                     &QNetworkReply::downloadProgress,
+                     this,
+                     &FileDownloadDialog::onDownloadProgress);
     QObject::connect(m_reply, &QNetworkReply::readyRead, this, &FileDownloadDialog::onReadyRead);
     QObject::connect(m_reply, &QNetworkReply::finished, this, &FileDownloadDialog::onFinished);
     QObject::connect(m_reply, &QNetworkReply::sslErrors, this, &FileDownloadDialog::sslErrors);
@@ -113,7 +113,7 @@ bool FileDownloadDialog::start()
         // 特殊处理：HTTPS错误时尝试切换为HTTP重试
         if (m_reply->error() == QNetworkReply::UnknownNetworkError && m_src.startsWith("https:")) {
             m_src.replace("https://", "http://"); // 替换为HTTP地址
-            return start(); // 重新调用start()重试
+            return start();                       // 重新调用start()重试
         }
 
         // 非重试错误：删除临时文件，显示失败提示
@@ -124,7 +124,7 @@ bool FileDownloadDialog::start()
     } else {
         // 情况3：下载成功
         m_file->rename(m_dst); // 临时文件重命名为目标路径（完成下载）
-        retVal = true; // 标记下载成功
+        retVal = true;         // 标记下载成功
     }
 
     // 6. 释放资源
@@ -132,7 +132,6 @@ bool FileDownloadDialog::start()
     delete m_file;
     return retVal; // 返回下载结果
 }
-
 
 // 【私有槽函数】：处理下载进度更新
 // 参数：bytesReceived - 已接收字节数；bytesTotal - 总字节数（-1表示未知）
@@ -142,7 +141,7 @@ void FileDownloadDialog::onDownloadProgress(qint64 bytesReceived, qint64 bytesTo
         // 计算进度（已接收/总字节数 × 进度最大值）
         int progress = bytesReceived * PROGRESS_MAX / bytesTotal;
         LOG_INFO() << "Download Progress" << progress / 10; // 打印进度（转换为百分比）
-        setValue(progress); // 更新进度条显示
+        setValue(progress);                                 // 更新进度条显示
     }
 }
 
@@ -178,10 +177,10 @@ void FileDownloadDialog::sslErrors(const QList<QSslError> &errors)
                         message,
                         QMessageBox::No | QMessageBox::Yes,
                         this);
-    qDialog.setDefaultButton(QMessageBox::Yes); // 默认选择"是"
-    qDialog.setEscapeButton(QMessageBox::No);   // 按ESC键选择"否"
+    qDialog.setDefaultButton(QMessageBox::Yes);                  // 默认选择"是"
+    qDialog.setEscapeButton(QMessageBox::No);                    // 按ESC键选择"否"
     qDialog.setWindowModality(QmlApplication::dialogModality()); // 匹配应用模态属性
-    int result = qDialog.exec(); // 显示对话框，等待用户选择
+    int result = qDialog.exec();                                 // 显示对话框，等待用户选择
 
     if (result == QMessageBox::Yes) {
         m_reply->ignoreSslErrors(); // 用户选择忽略，继续下载

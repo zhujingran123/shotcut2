@@ -23,16 +23,16 @@
 #include <QDialog>
 
 // 前向声明：避免包含不必要的头文件，减少编译依赖
-class EditMarkerWidget;       // 自定义标记编辑控件（封装标记编辑的核心UI和逻辑）
-class QAbstractButton;        // Qt抽象按钮类（用于处理按钮点击事件）
-class QDialogButtonBox;       // 对话框按钮组类（整合确定、取消等按钮）
+class EditMarkerWidget; // 自定义标记编辑控件（封装标记编辑的核心UI和逻辑）
+class QAbstractButton;  // Qt抽象按钮类（用于处理按钮点击事件）
+class QDialogButtonBox; // 对话框按钮组类（整合确定、取消等按钮）
 
 // 标记编辑对话框类：用于编辑时间线上标记的文本、颜色、起始/结束帧位置
 class EditMarkerDialog : public QDialog
 {
-    Q_OBJECT  // Qt元对象系统宏，支持信号槽等Qt核心特性
+Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-public:
+    public :
     // 【构造函数】：初始化标记编辑对话框
     // 参数说明：
     // - parent：父窗口指针（用于Qt对象树管理）

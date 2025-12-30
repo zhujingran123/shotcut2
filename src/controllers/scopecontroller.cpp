@@ -49,22 +49,22 @@ ScopeController::ScopeController(QMainWindow *mainWindow, QMenu *menu)
     LOG_DEBUG() << "begin";
     // 在指定的菜单中添加一个名为“Scopes”（示波器）的子菜单
     QMenu *scopeMenu = menu->addMenu(tr("Scopes"));
-    
+
     // 使用模板方法创建所有音频示波器的停靠窗口
-    createScopeDock<AudioLoudnessScopeWidget>(mainWindow, scopeMenu);     // 音频响度
-    createScopeDock<AudioPeakMeterScopeWidget>(mainWindow, scopeMenu);    // 音频峰值表
-    createScopeDock<AudioSpectrumScopeWidget>(mainWindow, scopeMenu);     // 音频频谱
-    createScopeDock<AudioSurroundScopeWidget>(mainWindow, scopeMenu);     // 环绕声
-    createScopeDock<AudioVectorScopeWidget>(mainWindow, scopeMenu);       // 音频矢量图（相位）
-    createScopeDock<AudioWaveformScopeWidget>(mainWindow, scopeMenu);     // 音频波形
+    createScopeDock<AudioLoudnessScopeWidget>(mainWindow, scopeMenu);  // 音频响度
+    createScopeDock<AudioPeakMeterScopeWidget>(mainWindow, scopeMenu); // 音频峰值表
+    createScopeDock<AudioSpectrumScopeWidget>(mainWindow, scopeMenu);  // 音频频谱
+    createScopeDock<AudioSurroundScopeWidget>(mainWindow, scopeMenu);  // 环绕声
+    createScopeDock<AudioVectorScopeWidget>(mainWindow, scopeMenu);    // 音频矢量图（相位）
+    createScopeDock<AudioWaveformScopeWidget>(mainWindow, scopeMenu);  // 音频波形
 
     // 使用模板方法创建所有视频示波器的停靠窗口
-    createScopeDock<VideoHistogramScopeWidget>(mainWindow, scopeMenu);    // 视频直方图
-    createScopeDock<VideoRgbParadeScopeWidget>(mainWindow, scopeMenu);    // RGB 分量示波器
-    createScopeDock<VideoRgbWaveformScopeWidget>(mainWindow, scopeMenu);  // RGB 波形
-    createScopeDock<VideoVectorScopeWidget>(mainWindow, scopeMenu);       // 视频矢量图（色度）
-    createScopeDock<VideoWaveformScopeWidget>(mainWindow, scopeMenu);     // 视频波形（亮度）
-    createScopeDock<VideoZoomScopeWidget>(mainWindow, scopeMenu);         // 视频放大镜
+    createScopeDock<VideoHistogramScopeWidget>(mainWindow, scopeMenu);   // 视频直方图
+    createScopeDock<VideoRgbParadeScopeWidget>(mainWindow, scopeMenu);   // RGB 分量示波器
+    createScopeDock<VideoRgbWaveformScopeWidget>(mainWindow, scopeMenu); // RGB 波形
+    createScopeDock<VideoVectorScopeWidget>(mainWindow, scopeMenu);      // 视频矢量图（色度）
+    createScopeDock<VideoWaveformScopeWidget>(mainWindow, scopeMenu);    // 视频波形（亮度）
+    createScopeDock<VideoZoomScopeWidget>(mainWindow, scopeMenu);        // 视频放大镜
     LOG_DEBUG() << "end";
 }
 
@@ -83,16 +83,16 @@ void ScopeController::createScopeDock(QMainWindow *mainWindow, QMenu *menu)
 {
     // 1. 创建指定类型的示波器 Widget 实例。
     ScopeWidget *scopeWidget = new ScopeTYPE();
-    
+
     // 2. 创建一个停靠窗口，并将示波器 Widget 作为其中心部件。
     ScopeDock *scopeDock = new ScopeDock(this, scopeWidget);
-    
+
     // 3. 初始时隐藏停靠窗口。
     scopeDock->hide();
-    
+
     // 4. 将停靠窗口的切换动作添加到菜单中。用户可以通过此菜单项显示/隐藏示波器。
     menu->addAction(scopeDock->toggleViewAction());
-    
+
     // 5. 将停靠窗口添加到主窗口的右侧停靠区域。
     mainWindow->addDockWidget(Qt::RightDockWidgetArea, scopeDock);
 }

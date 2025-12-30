@@ -30,7 +30,7 @@ class Service;
 class ProxyManager
 {
 private:
-    ProxyManager(){};
+    ProxyManager() {};
 
 public:
     enum ScanMode { Automatic, Progressive, InterlacedTopFieldFirst, InterlacedBottomFieldFirst };

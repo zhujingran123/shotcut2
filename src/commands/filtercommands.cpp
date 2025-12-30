@@ -33,7 +33,7 @@
 class FindProducerParser : public Mlt::Parser
 {
 private:
-    QUuid m_uuid;      ///< 要查找的目标 UUID
+    QUuid m_uuid;             ///< 要查找的目标 UUID
     Mlt::Producer m_producer; ///< 找到的 Producer 对象
 
 public:
@@ -130,7 +130,7 @@ AddCommand::AddCommand(AttachedFiltersModel &model,
                        QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
-    , m_producer(*model.producer()) // 初始时持有 Producer 的引用
+    , m_producer(*model.producer())                 // 初始时持有 Producer 的引用
     , m_producerUuid(MLT.ensureHasUuid(m_producer)) // 获取并确保 Producer 有 UUID
     , m_type(type)
 {
@@ -483,7 +483,7 @@ void UndoParameterCommand::redo()
         if (producer.is_valid() && m_filterController) {
             Mlt::Service service = m_filterController->attachedModel()->doGetService(producer,
                                                                                      m_row);
-            service.inherit(m_after); // 应用修改后的参数
+            service.inherit(m_after);                  // 应用修改后的参数
             m_filterController->onUndoOrRedo(service); // 通知控制器更新 UI
         }
     }
@@ -497,7 +497,7 @@ void UndoParameterCommand::undo()
     Q_ASSERT(producer.is_valid());
     if (producer.is_valid() && m_filterController) {
         Mlt::Service service = m_filterController->attachedModel()->doGetService(producer, m_row);
-        service.inherit(m_before); // 恢复修改前的参数
+        service.inherit(m_before);                 // 恢复修改前的参数
         m_filterController->onUndoOrRedo(service); // 通知控制器更新 UI
     }
 }

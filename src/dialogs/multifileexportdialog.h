@@ -24,21 +24,21 @@
 #include <QStringList>
 
 // 前向声明，减少编译依赖
-class QComboBox;          // 下拉选择框，用于选择文件名字段类型
-class QDialogButtonBox;   // 对话框按钮组，包含确定和取消按钮
-class QLabel;             // 标签控件，用于显示文本提示或错误信息
-class QListWidget;        // 列表控件，用于展示导出文件列表
-class QLineEdit;          // 单行输入框，用于输入路径、前缀等文本
+class QComboBox;        // 下拉选择框，用于选择文件名字段类型
+class QDialogButtonBox; // 对话框按钮组，包含确定和取消按钮
+class QLabel;           // 标签控件，用于显示文本提示或错误信息
+class QListWidget;      // 列表控件，用于展示导出文件列表
+class QLineEdit;        // 单行输入框，用于输入路径、前缀等文本
 namespace Mlt {
-class Playlist;           // MLT播放列表类，存储待导出的媒体片段
+class Playlist; // MLT播放列表类，存储待导出的媒体片段
 }
 
 // 多文件导出对话框类，用于配置并生成多个媒体文件的导出路径
 class MultiFileExportDialog : public QDialog
 {
-    Q_OBJECT  // 启用Qt元对象系统，支持信号和槽
+Q_OBJECT // 启用Qt元对象系统，支持信号和槽
 
-public:
+    public :
     // 【构造函数】：初始化多文件导出对话框
     // 参数说明：
     // - title：对话框标题

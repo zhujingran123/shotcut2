@@ -18,30 +18,29 @@
  ****************************************************************************/
 
 // MPEG4 processing classes.
-// 
+//
 // Functions for loading MP4/MOV files and manipulating boxes.
 
+#include "box.h"
 #include "constants.h"
 #include "container.h"
-#include "box.h"
 
 class Mpeg4Container : public Container
 {
-  public:
-    Mpeg4Container ( );
-    virtual ~Mpeg4Container ( );
+public:
+    Mpeg4Container();
+    virtual ~Mpeg4Container();
 
-    static Mpeg4Container *load ( std::fstream & ); //, uint32_t iPos, uint32_t iEnd );
+    static Mpeg4Container *load(std::fstream &); //, uint32_t iPos, uint32_t iEnd );
 
-    void merge ( Box * );
-    virtual void print_structure ( const char *p="" );
-    virtual void save ( std::fstream &, std::fstream &, int32_t );
+    void merge(Box *);
+    virtual void print_structure(const char *p = "");
+    virtual void save(std::fstream &, std::fstream &, int32_t);
 
 public:
-  Box *m_pMoovBox;
-  Box *m_pFreeBox;
-  Box *m_pFTYPBox;
-  Mpeg4Container *m_pFirstMDatBox;
-  uint32_t m_iFirstMDatPos;
+    Box *m_pMoovBox;
+    Box *m_pFreeBox;
+    Box *m_pFTYPBox;
+    Mpeg4Container *m_pFirstMDatBox;
+    uint32_t m_iFirstMDatPos;
 };
-

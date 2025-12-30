@@ -17,23 +17,23 @@
  */
 
 // 防止头文件重复包含的宏定义
-#ifndef ADDENCODEPRESETDIALOG_H  // 如果未定义ADDENCODEPRESETDIALOG_H
-#define ADDENCODEPRESETDIALOG_H  // 定义ADDENCODEPRESETDIALOG_H
+#ifndef ADDENCODEPRESETDIALOG_H // 如果未定义ADDENCODEPRESETDIALOG_H
+#define ADDENCODEPRESETDIALOG_H // 定义ADDENCODEPRESETDIALOG_H
 
 // 包含Qt对话框基类头文件
 #include <QDialog>
 
 // 声明UI命名空间（用于隔离UI生成的代码）
 namespace Ui {
-class AddEncodePresetDialog;  // 前向声明UI中的对话框类
+class AddEncodePresetDialog; // 前向声明UI中的对话框类
 }
 
 // 定义编码预设添加对话框类，继承自QDialog
 class AddEncodePresetDialog : public QDialog
 {
-    Q_OBJECT  // 启用Qt元对象系统支持（信号槽、反射等）
+Q_OBJECT // 启用Qt元对象系统支持（信号槽、反射等）
 
-public:
+    public :
     // 构造函数，explicit防止隐式转换，parent为父窗口指针（默认nullptr）
     explicit AddEncodePresetDialog(QWidget *parent = 0);
     // 析构函数

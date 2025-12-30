@@ -53,7 +53,7 @@ public:
      * 初始化ALSA配置界面，设置默认参数并加载可用预设。
      */
     explicit AlsaWidget(QWidget *parent = 0);
-    
+
     /**
      * @brief 析构函数
      * 
@@ -74,7 +74,7 @@ public:
      * @note 调用者负责管理返回的生产者对象内存
      */
     Mlt::Producer *newProducer(Mlt::Profile &profile);
-    
+
     /**
      * @brief 获取当前配置的预设属性
      * @return 包含当前配置的MLT属性对象
@@ -83,7 +83,7 @@ public:
      * 用于预设的保存和后续加载。
      */
     Mlt::Properties getPreset() const;
-    
+
     /**
      * @brief 加载预设配置到界面
      * @param preset 包含预设配置的MLT属性对象
@@ -92,7 +92,7 @@ public:
      * 并更新对应的界面控件。
      */
     void loadPreset(Mlt::Properties &preset);
-    
+
     /**
      * @brief 设置生产者并更新界面状态
      * @param producer MLT生产者对象指针
@@ -110,14 +110,14 @@ private slots:
      * 当用户从预设列表中选择预设时触发，加载选中的预设配置。
      */
     void on_preset_selected(void *p);
-    
+
     /**
      * @brief 保存预设槽函数
      * 
      * 当用户点击保存预设按钮时触发，将当前配置保存为新预设。
      */
     void on_preset_saveClicked();
-    
+
     /**
      * @brief 应用配置槽函数
      * 

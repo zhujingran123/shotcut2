@@ -118,7 +118,7 @@ private:
      * 用于位运算，以指示一个片段发生了哪些类型的变化。
      */
     enum ChangeFlags {
-        NoChange = 0x0,        ///< 无变化。
+        NoChange = 0x0,         ///< 无变化。
         ClipInfoModified = 0x1, ///< 片段信息（入出点）被修改。
         XMLModified = 0x2,      ///< 片段的 XML（属性、滤镜等）被修改。
         Moved = 0x4,            ///< 片段被移动。
@@ -130,18 +130,18 @@ private:
      */
     struct Info
     {
-        int oldTrackIndex;      ///< 操作前的轨道索引。
-        int oldClipIndex;       ///< 操作前的片段索引。
-        int newTrackIndex;      ///< 操作后的轨道索引。
-        int newClipIndex;       ///< 操作后的片段索引。
-        bool isBlank;           ///< 是否为空白。
-        QString xml;            ///< 片段的完整 XML 表示（如果未跳过）。
-        int frame_in;           ///< 片段的入点。
-        int frame_out;          ///< 片段的出点。
-        int in_delta;           ///< 入点的变化量（用于撤销时调整滤镜）。
-        int out_delta;          ///< 出点的变化量。
-        int group;              ///< 片段所属的组号。
-        int changes;            ///< 变化标志的位掩码。
+        int oldTrackIndex; ///< 操作前的轨道索引。
+        int oldClipIndex;  ///< 操作前的片段索引。
+        int newTrackIndex; ///< 操作后的轨道索引。
+        int newClipIndex;  ///< 操作后的片段索引。
+        bool isBlank;      ///< 是否为空白。
+        QString xml;       ///< 片段的完整 XML 表示（如果未跳过）。
+        int frame_in;      ///< 片段的入点。
+        int frame_out;     ///< 片段的出点。
+        int in_delta;      ///< 入点的变化量（用于撤销时调整滤镜）。
+        int out_delta;     ///< 出点的变化量。
+        int group;         ///< 片段所属的组号。
+        int changes;       ///< 变化标志的位掩码。
 
         /// 构造函数，初始化所有成员为默认值。
         Info()
@@ -159,12 +159,12 @@ private:
         {}
     };
 
-    QMap<QUuid, Info> m_state;     ///< 核心数据结构：将片段的 UUID 映射到其信息。
-    QList<QUuid> m_clipsAdded;     ///< 在操作中被新添加的片段的 UUID 列表。
-    QList<QUuid> m_insertedOrder;  ///< 记录操作前片段的原始插入顺序，用于撤销时恢复顺序。
-    QSet<int> m_affectedTracks;    ///< 记录所有受影响的轨道索引。
-    MultitrackModel &m_model;      ///< 对多轨道模型的引用。
-    OptimizationHints m_hints;     ///< 当前设置的优化提示。
+    QMap<QUuid, Info> m_state;    ///< 核心数据结构：将片段的 UUID 映射到其信息。
+    QList<QUuid> m_clipsAdded;    ///< 在操作中被新添加的片段的 UUID 列表。
+    QList<QUuid> m_insertedOrder; ///< 记录操作前片段的原始插入顺序，用于撤销时恢复顺序。
+    QSet<int> m_affectedTracks;   ///< 记录所有受影响的轨道索引。
+    MultitrackModel &m_model;     ///< 对多轨道模型的引用。
+    OptimizationHints m_hints;    ///< 当前设置的优化提示。
 };
 
 #endif // UNDOHELPER_H

@@ -45,19 +45,19 @@ AlsaWidget::AlsaWidget(QWidget *parent)
 {
     // 初始化UI组件
     ui->setupUi(this);
-    
+
     // 设置标签高亮颜色
     Util::setColorsToHighlight(ui->label_2);
-    
+
     // 初始隐藏应用按钮
     ui->applyButton->hide();
-    
+
     // 保存当前配置为默认预设
     ui->preset->saveDefaultPreset(getPreset());
-    
+
     // 加载所有可用预设
     ui->preset->loadPresets();
-    
+
     // 从设置中加载音频输入设备名称
     ui->lineEdit->setText(Settings.audioInput());
 }
@@ -90,24 +90,24 @@ Mlt::Producer *AlsaWidget::newProducer(Mlt::Profile &profile)
     // 构建ALSA资源字符串
     QString s("alsa:%1");
     if (ui->lineEdit->text().isEmpty())
-        s = s.arg("default");  // 使用默认设备
+        s = s.arg("default"); // 使用默认设备
     else
-        s = s.arg(ui->lineEdit->text());  // 使用用户指定设备
-    
+        s = s.arg(ui->lineEdit->text()); // 使用用户指定设备
+
     // 如果设置了通道数，添加到资源字符串
     if (ui->alsaChannelsSpinBox->value() > 0)
         s += QStringLiteral("?channels=%1").arg(ui->alsaChannelsSpinBox->value());
-    
+
     // 创建MLT生产者对象
     Mlt::Producer *p = new Mlt::Producer(profile, s.toUtf8().constData());
-    
+
     // 设置生产者属性
-    p->set(kBackgroundCaptureProperty, 1);      // 标记为后台采集
-    p->set(kShotcutCaptionProperty, "ALSA");    // 设置显示名称
-    
+    p->set(kBackgroundCaptureProperty, 1);   // 标记为后台采集
+    p->set(kShotcutCaptionProperty, "ALSA"); // 设置显示名称
+
     // 保存音频输入设置到全局配置
     Settings.setAudioInput(ui->lineEdit->text());
-    
+
     return p;
 }
 
@@ -122,18 +122,18 @@ Mlt::Producer *AlsaWidget::newProducer(Mlt::Profile &profile)
 Mlt::Properties AlsaWidget::getPreset() const
 {
     Mlt::Properties p;
-    
+
     // 构建资源字符串
     QString s("alsa:%1");
     if (ui->lineEdit->text().isEmpty())
-        s = s.arg("default");  // 默认设备
+        s = s.arg("default"); // 默认设备
     else
-        s = s.arg(ui->lineEdit->text());  // 用户指定设备
-    
+        s = s.arg(ui->lineEdit->text()); // 用户指定设备
+
     // 设置属性值
-    p.set("resource", s.toUtf8().constData());  // 资源路径
-    p.set("channels", ui->alsaChannelsSpinBox->value());  // 通道数
-    
+    p.set("resource", s.toUtf8().constData());           // 资源路径
+    p.set("channels", ui->alsaChannelsSpinBox->value()); // 通道数
+
     return p;
 }
 
@@ -149,12 +149,12 @@ void AlsaWidget::loadPreset(Mlt::Properties &p)
 {
     // 获取资源字符串
     QString s(p.get("resource"));
-    
+
     // 解析设备名称（alsa:device_name格式）
     int i = s.indexOf(':');
     if (i > -1)
-        ui->lineEdit->setText(s.mid(i + 1));  // 提取冒号后的设备名称
-    
+        ui->lineEdit->setText(s.mid(i + 1)); // 提取冒号后的设备名称
+
     // 设置通道数（如果预设中包含该属性）
     if (p.get("channels"))
         ui->alsaChannelsSpinBox->setValue(p.get_int("channels"));
@@ -171,10 +171,10 @@ void AlsaWidget::on_preset_selected(void *p)
 {
     // 转换指针类型
     Mlt::Properties *properties = (Mlt::Properties *) p;
-    
+
     // 加载预设配置
     loadPreset(*properties);
-    
+
     // 清理内存
     delete properties;
 }
@@ -201,7 +201,7 @@ void AlsaWidget::setProducer(Mlt::Producer *producer)
 {
     // 显示应用按钮
     ui->applyButton->show();
-    
+
     // 如果生产者有效，加载其配置
     if (producer)
         loadPreset(*producer);
@@ -217,7 +217,7 @@ void AlsaWidget::on_applyButton_clicked()
 {
     // 创建新的生产者并设置到MLT
     MLT.setProducer(newProducer(MLT.profile()));
-    
+
     // 开始播放
     MLT.play();
 }

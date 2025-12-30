@@ -283,13 +283,13 @@ private:
      */
     void loadFilterMetadata();
 
-    QFuture<void> m_future; ///< 用于异步加载的 QFuture 对象（在代码中未使用）。
+    QFuture<void> m_future;                    ///< 用于异步加载的 QFuture 对象（在代码中未使用）。
     QScopedPointer<QmlFilter> m_currentFilter; ///< 当前选中的滤镜对象，使用智能指针管理。
-    Mlt::Service m_mltService; ///< 当前选中滤镜的 MLT 服务。
-    MetadataModel m_metadataModel; ///< 元数据模型实例。
-    MotionTrackerModel m_motionTrackerModel; ///< 运动跟踪模型实例。
-    AttachedFiltersModel m_attachedModel; ///< 附加滤镜模型实例。
-    int m_currentFilterIndex; ///< 当前选中滤镜在附加模型中的索引。
+    Mlt::Service m_mltService;                 ///< 当前选中滤镜的 MLT 服务。
+    MetadataModel m_metadataModel;             ///< 元数据模型实例。
+    MotionTrackerModel m_motionTrackerModel;   ///< 运动跟踪模型实例。
+    AttachedFiltersModel m_attachedModel;      ///< 附加滤镜模型实例。
+    int m_currentFilterIndex;                  ///< 当前选中滤镜在附加模型中的索引。
     QImage getCurrentFrameAsImage(int position);
 };
 #endif // FILTERCONTROLLER_H

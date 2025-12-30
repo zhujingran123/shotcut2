@@ -45,10 +45,9 @@ ColorPickerItem::ColorPickerItem(QObject *parent)
 <<<<<<< HEAD
 #ifdef Q_OS_LINUX
     // 【Linux平台】：注册QColor类型到DBus系统，用于进程间通信
-=======
+    == == == =
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
->>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
-    qDBusRegisterMetaType<QColor>();
+        >>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d qDBusRegisterMetaType<QColor>();
 #endif
 
     // 【信号连接】：将颜色拾取信号转发到屏幕选择器
@@ -68,12 +67,10 @@ void ColorPickerItem::screenSelected(const QRect &rect)
     m_selectedRect = rect; // 保存选择的区域
 #ifdef Q_OS_LINUX
     // 【Linux平台】：根据配置选择DBus方式或传统方式
-=======
-    m_selectedRect = rect;
+    == == == = m_selectedRect = rect;
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
->>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
-    if (m_selector.useDBus())
-        QTimer::singleShot(0, this, &ColorPickerItem::grabColorDBus);
+    >>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d if (m_selector.useDBus())
+            QTimer::singleShot(0, this, &ColorPickerItem::grabColorDBus);
     else
 #endif
         // 【传统方式】：延迟200毫秒，给屏幕选择器窗口消失的时间
@@ -94,7 +91,7 @@ void ColorPickerItem::grabColor()
                                             m_selectedRect.width(),
                                             m_selectedRect.height());
     QImage image = screenGrab.toImage(); // 转换为QImage进行像素级操作
-    
+
     // 计算区域内的像素总数
     int numPixel = qMax(image.width() * image.height(), 1);
     int sumR = 0; // 红色分量总和
@@ -135,7 +132,7 @@ const QDBusArgument &operator>>(const QDBusArgument &arg, QColor &color)
     double red, green, blue;
     arg.beginStructure();
     arg >> red >> green >> blue;
-    color.setRedF(red);    // 设置红色分量
+    color.setRedF(red);     // 设置红色分量
     color.setGreenF(green); // 设置绿色分量
     color.setBlueF(blue);   // 设置蓝色分量
     arg.endStructure();
@@ -154,11 +151,11 @@ void ColorPickerItem::grabColorDBus()
                                          QLatin1String("org.freedesktop.portal.Screenshot"),
                                          QLatin1String("PickColor"));
     message << QLatin1String("x11:") << QVariantMap{}; // 添加调用参数
-    
+
     // 异步调用DBus方法
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
-    
+
     // 设置异步调用完成后的回调处理
     connect(watcher, &QDBusPendingCallWatcher::finished, [=](QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;

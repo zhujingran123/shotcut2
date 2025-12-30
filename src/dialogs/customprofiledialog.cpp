@@ -19,29 +19,29 @@
 // 包含UI文件生成的头文件（用于访问界面控件）
 #include "ui_customprofiledialog.h"
 // 引入依赖的业务逻辑头文件
-#include "mltcontroller.h"  // MLT多媒体框架控制器（管理视频配置文件）
-#include "settings.h"       // 配置类（读取应用数据路径、预览缩放等）
-#include "util.h"           // 工具类（提供帧率归一化、公约数计算等功能）
+#include "mltcontroller.h" // MLT多媒体框架控制器（管理视频配置文件）
+#include "settings.h"      // 配置类（读取应用数据路径、预览缩放等）
+#include "util.h"          // 工具类（提供帧率归一化、公约数计算等功能）
 // 引入Qt相关头文件
 #include <QDesktopServices>
-#include <QDir>                // 目录操作类（用于创建/访问配置文件目录）
-#include <QRegularExpression>     // 正则表达式类（用于过滤文件名非法字符）
+#include <QDir>               // 目录操作类（用于创建/访问配置文件目录）
+#include <QRegularExpression> // 正则表达式类（用于过滤文件名非法字符）
 
 //【构造函数】：初始化自定义配置对话框
 CustomProfileDialog::CustomProfileDialog(QWidget *parent)
-    : QDialog(parent)                    //参数：parent - 父窗口指针
-    , ui(new Ui::CustomProfileDialog)    // 初始化UI指针，创建界面对象
-    , m_fps(0.0)                         // 初始化帧率记录变量（用于检测帧率变化）
+    : QDialog(parent)                 //参数：parent - 父窗口指针
+    , ui(new Ui::CustomProfileDialog) // 初始化UI指针，创建界面对象
+    , m_fps(0.0)                      // 初始化帧率记录变量（用于检测帧率变化）
 {
-    ui->setupUi(this);                    // 加载UI布局，初始化界面控件
-     // 从当前MLT配置中读取参数，初始化界面控件默认值
+    ui->setupUi(this); // 加载UI布局，初始化界面控件
+                       // 从当前MLT配置中读取参数，初始化界面控件默认值
     // 分辨率（宽/高）
     ui->widthSpinner->setValue(MLT.profile().width());
     ui->heightSpinner->setValue(MLT.profile().height());
-     // 显示宽高比（分子/分母）
+    // 显示宽高比（分子/分母）
     ui->aspectNumSpinner->setValue(MLT.profile().display_aspect_num());
     ui->aspectDenSpinner->setValue(MLT.profile().display_aspect_den());
-     // 帧率
+    // 帧率
     ui->fpsSpinner->setValue(MLT.profile().fps());
     // 扫描模式（逐行/隔行）：0=隔行，1=逐行（与下拉框索引对应）
     ui->scanModeCombo->setCurrentIndex(MLT.profile().progressive());
@@ -61,7 +61,7 @@ CustomProfileDialog::CustomProfileDialog(QWidget *parent)
 // 【析构函数】：释放UI资源
 CustomProfileDialog::~CustomProfileDialog()
 {
-    delete ui;        // 释放UI对象占用的内存
+    delete ui; // 释放UI对象占用的内存
 }
 
 // 【公共方法】：获取合法的配置文件名
@@ -91,7 +91,7 @@ void CustomProfileDialog::on_buttonBox_accepted()
     // 公式：SAR = (显示宽高比分子 × 高度) : (显示宽高比分母 × 宽度)
     QSize sar(ui->aspectNumSpinner->value() * ui->heightSpinner->value(),
               ui->aspectDenSpinner->value() * ui->widthSpinner->value());
-     // 计算SAR分子和分母的最大公约数（用于约分，得到最简比）
+    // 计算SAR分子和分母的最大公约数（用于约分，得到最简比）
     auto gcd = Util::greatestCommonDivisor(sar.width(), sar.height());
     MLT.profile().set_sample_aspect(sar.width() / gcd, sar.height() / gcd);
     // 3. 归一化帧率并设置（将浮点数帧率转换为分数形式，如29.97→30000/1001）
@@ -100,7 +100,7 @@ void CustomProfileDialog::on_buttonBox_accepted()
     MLT.profile().set_frame_rate(numerator, denominator);
     // 4. 设置扫描模式（逐行/隔行）
     MLT.profile().set_progressive(ui->scanModeCombo->currentIndex());
-     // 5. 设置色彩空间（根据下拉框索引对应值）
+    // 5. 设置色彩空间（根据下拉框索引对应值）
     switch (ui->colorspaceCombo->currentIndex()) {
     case 0:
         MLT.profile().set_colorspace(601);
@@ -112,7 +112,7 @@ void CustomProfileDialog::on_buttonBox_accepted()
         MLT.profile().set_colorspace(709);
         break;
     }
-     // 6. 更新预览配置（使新配置生效）
+    // 6. 更新预览配置（使新配置生效）
     MLT.updatePreviewProfile();
     MLT.setPreviewScale(Settings.playerPreviewScale());
     // 7. 保存配置文件到本地（如果用户输入了文件名）
@@ -148,7 +148,7 @@ void CustomProfileDialog::on_buttonBox_accepted()
 // 【槽函数】：宽度输入框编辑完成事件
 void CustomProfileDialog::on_widthSpinner_editingFinished()
 {
-     // 将宽度值调整为"特定倍数"（如偶数，由Util::coerceMultiple实现），确保符合视频标准
+    // 将宽度值调整为"特定倍数"（如偶数，由Util::coerceMultiple实现），确保符合视频标准
     ui->widthSpinner->setValue(Util::coerceMultiple(ui->widthSpinner->value()));
 }
 // 【槽函数】：高度输入框编辑完成事件
@@ -180,7 +180,7 @@ void CustomProfileDialog::on_fpsComboBox_textActivated(const QString &arg1)
 {
     if (arg1.isEmpty())
         return;
-     // 将下拉框选择的文本（如"24"）转换为浮点数，设置到帧率输入框
+    // 将下拉框选择的文本（如"24"）转换为浮点数，设置到帧率输入框
     ui->fpsSpinner->setValue(arg1.toDouble());
 }
 // 【槽函数】：分辨率下拉框文本激活事件
@@ -188,7 +188,7 @@ void CustomProfileDialog::on_resolutionComboBox_textActivated(const QString &arg
 {
     if (arg1.isEmpty())
         return;
-   // 拆分分辨率文本（如"1920 x 1080"→["1920", "x", "1080"]）
+    // 拆分分辨率文本（如"1920 x 1080"→["1920", "x", "1080"]）
     auto parts = arg1.split(' ');
     // 将宽、高分别设置到对应的输入框
     ui->widthSpinner->setValue(parts[0].toInt());
@@ -199,7 +199,7 @@ void CustomProfileDialog::on_aspectRatioComboBox_textActivated(const QString &ar
 {
     if (arg1.isEmpty())
         return;
-     // 拆分宽高比文本（如"16:9 (1.78)"→["16:9", "(1.78)"]→["16", "9"]）
+    // 拆分宽高比文本（如"16:9 (1.78)"→["16:9", "(1.78)"]→["16", "9"]）
     auto parts = arg1.split(' ')[0].split(':');
     // 将宽高比分子、分母设置到对应的输入框
     ui->aspectNumSpinner->setValue(parts[0].toInt());

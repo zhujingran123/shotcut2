@@ -23,18 +23,18 @@
 #include <QDialog>
 
 // 前向声明：避免包含不必要的头文件，减少编译依赖
-class QComboBox;                // 下拉选择框（用于展示可选日期列表）
-class QDateTimeEdit;            // 日期时间编辑框（用于手动修改日期时间）
+class QComboBox;     // 下拉选择框（用于展示可选日期列表）
+class QDateTimeEdit; // 日期时间编辑框（用于手动修改日期时间）
 namespace Mlt {
-class Producer;                 // MLT生产者类（关联待设置日期的音视频文件）
+class Producer; // MLT生产者类（关联待设置日期的音视频文件）
 }
 
 // 文件日期设置对话框类：用于设置或修改音视频文件的创建日期时间
 class FileDateDialog : public QDialog
 {
-    Q_OBJECT  // Qt元对象系统宏，支持信号槽等Qt核心特性
+Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-public:
+    public :
     // 【构造函数】：初始化文件日期设置对话框
     // 参数说明：
     // - title：对话框标题前缀（如“视频”“音频”，最终标题为“XXX File Date”）

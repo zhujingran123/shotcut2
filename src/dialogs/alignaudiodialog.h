@@ -28,24 +28,24 @@
 #include <QUuid>
 
 // 【前向声明】：避免包含不必要的头文件，减少编译依赖，提升编译效率
-class QComboBox;          // 下拉选择框控件（用于选择参考轨道、速度调整范围）
-class QDialogButtonBox;   // 对话框按钮组控件（整合确定、取消、应用等按钮）
-class QLabel;             // 文本标签控件（用于显示提示文本）
-class QListWidget;        // 列表控件（此处未实际使用，可能为预留或历史兼容）
-class QLineEdit;          // 单行文本输入框（此处未实际使用，可能为预留或历史兼容）
-class QPushButton;        // 按钮控件（用于自定义功能按钮，如“处理”“应用”）
-class QTreeView;          // 树状视图控件（用于显示待对齐剪辑的列表及状态）
+class QComboBox;        // 下拉选择框控件（用于选择参考轨道、速度调整范围）
+class QDialogButtonBox; // 对话框按钮组控件（整合确定、取消、应用等按钮）
+class QLabel;           // 文本标签控件（用于显示提示文本）
+class QListWidget;      // 列表控件（此处未实际使用，可能为预留或历史兼容）
+class QLineEdit;        // 单行文本输入框（此处未实际使用，可能为预留或历史兼容）
+class QPushButton;      // 按钮控件（用于自定义功能按钮，如“处理”“应用”）
+class QTreeView;        // 树状视图控件（用于显示待对齐剪辑的列表及状态）
 
 class AlignTableDelegate; // 前向声明自定义表格委托类（用于自定义QTreeView单元格绘制，如进度条、状态图标）
-class MultitrackModel;    // 前向声明多轨道数据模型类（管理时间线中的轨道和剪辑数据）
-class LongUiTask;         // 前向声明长时间UI任务类（用于显示音频对齐过程中的进度窗口）
+class MultitrackModel; // 前向声明多轨道数据模型类（管理时间线中的轨道和剪辑数据）
+class LongUiTask;      // 前向声明长时间UI任务类（用于显示音频对齐过程中的进度窗口）
 
 // 定义音频对齐对话框类，继承自Qt标准对话框QDialog
 class AlignAudioDialog : public QDialog
 {
-    Q_OBJECT  // Qt元对象系统宏：启用信号槽机制、运行时类型信息等Qt核心功能
+Q_OBJECT // Qt元对象系统宏：启用信号槽机制、运行时类型信息等Qt核心功能
 
-public:
+    public :
     // 构造函数：初始化音频对齐对话框
     // 参数说明：
     // - title：对话框窗口标题
@@ -80,17 +80,17 @@ private slots:
 
 private:
     // 私有成员变量：存储对话框的核心组件和数据
-    AlignTableDelegate *m_delegate;          // 自定义表格委托指针（用于QTreeView的单元格自定义绘制）
-    MultitrackModel *m_model;                // 多轨道数据模型指针（指向外部传入的时间线轨道数据）
-    AlignClipsModel m_alignClipsModel;       // 对齐剪辑数据模型对象（管理待对齐剪辑的名称、进度、对齐参数等）
-    QVector<QUuid> m_uuids;                  // 待对齐剪辑的唯一标识列表（存储需要处理的剪辑UUID）
-    QComboBox *m_trackCombo;                 // 参考轨道下拉框指针（用于选择哪个轨道作为对齐基准）
-    QComboBox *m_speedCombo;                 // 速度调整范围下拉框指针（用于选择对齐时允许的速度补偿范围）
-    QTreeView *m_table;                      // 剪辑列表视图指针（显示待对齐剪辑的信息，如名称、进度、偏移量）
-    QDialogButtonBox *m_buttonBox;           // 对话框按钮组指针（整合取消、处理、应用等按钮）
-    QPushButton *m_applyButton;              // “应用”按钮指针（单独触发应用对齐结果的操作）
-    QPushButton *m_processAndApplyButton;    // “处理并应用”按钮指针（触发“分析+应用”的合并操作）
-    LongUiTask *m_uiTask;                    // 长时间任务指针（显示音频分析过程中的进度窗口，提升用户体验）
+    AlignTableDelegate *m_delegate; // 自定义表格委托指针（用于QTreeView的单元格自定义绘制）
+    MultitrackModel *m_model;       // 多轨道数据模型指针（指向外部传入的时间线轨道数据）
+    AlignClipsModel m_alignClipsModel; // 对齐剪辑数据模型对象（管理待对齐剪辑的名称、进度、对齐参数等）
+    QVector<QUuid> m_uuids;            // 待对齐剪辑的唯一标识列表（存储需要处理的剪辑UUID）
+    QComboBox *m_trackCombo;           // 参考轨道下拉框指针（用于选择哪个轨道作为对齐基准）
+    QComboBox *m_speedCombo;           // 速度调整范围下拉框指针（用于选择对齐时允许的速度补偿范围）
+    QTreeView *m_table;            // 剪辑列表视图指针（显示待对齐剪辑的信息，如名称、进度、偏移量）
+    QDialogButtonBox *m_buttonBox; // 对话框按钮组指针（整合取消、处理、应用等按钮）
+    QPushButton *m_applyButton;    // “应用”按钮指针（单独触发应用对齐结果的操作）
+    QPushButton *m_processAndApplyButton; // “处理并应用”按钮指针（触发“分析+应用”的合并操作）
+    LongUiTask *m_uiTask; // 长时间任务指针（显示音频分析过程中的进度窗口，提升用户体验）
 };
 
 // 结束头文件保护宏：如果已定义ALIGNAUDIODIALOG_H，则跳过上述内容

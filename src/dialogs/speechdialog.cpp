@@ -25,23 +25,22 @@
 #include "settings.h"                // 配置类（读取/保存语音语言、声音等偏好设置）
 
 // 引入Qt相关头文件
-#include <QComboBox>                 // 下拉选择框（用于选择语言、声音）
-#include <QDialogButtonBox>          // 对话框按钮组（后续可扩展确定/取消按钮）
-#include <QDoubleSpinBox>            // 双精度数值输入框（预留，如语速调节）
-#include <QFileDialog>               // 文件对话框（预留，如导出语音文件）
-#include <QGridLayout>               // 网格布局管理器（排列界面控件）
-#include <QHBoxLayout>               // 水平布局管理器（排列声音选择框和预览按钮）
-#include <QLabel>                    // 标签控件（显示文本提示）
-#include <QLineEdit>                 // 单行输入框（预留，如输入文本内容）
-#include <QPushButton>               // 按钮控件（语音预览按钮）
-#include <QStringList>               // 字符串列表（存储语言、声音选项）
-
+#include <QComboBox>        // 下拉选择框（用于选择语言、声音）
+#include <QDialogButtonBox> // 对话框按钮组（后续可扩展确定/取消按钮）
+#include <QDoubleSpinBox>   // 双精度数值输入框（预留，如语速调节）
+#include <QFileDialog>      // 文件对话框（预留，如导出语音文件）
+#include <QGridLayout>      // 网格布局管理器（排列界面控件）
+#include <QHBoxLayout>      // 水平布局管理器（排列声音选择框和预览按钮）
+#include <QLabel>           // 标签控件（显示文本提示）
+#include <QLineEdit>        // 单行输入框（预留，如输入文本内容）
+#include <QPushButton>      // 按钮控件（语音预览按钮）
+#include <QStringList>      // 字符串列表（存储语言、声音选项）
 
 // 【构造函数】：初始化文本转语音对话框
 // 参数：parent - 父窗口指针
 SpeechDialog::SpeechDialog(QWidget *parent)
 {
-    setWindowTitle(tr("Text to Speech"));  // 设置对话框标题（“文本转语音”）
+    setWindowTitle(tr("Text to Speech")); // 设置对话框标题（“文本转语音”）
     // 设置对话框模态属性（与QML应用保持一致，确保阻塞父窗口操作）
     setWindowModality(QmlApplication::dialogModality());
 
@@ -57,15 +56,15 @@ SpeechDialog::SpeechDialog(QWidget *parent)
     // 创建语言下拉框（存储语言选项）
     m_language = new QComboBox(this);
     // 向下拉框添加语言选项：文本显示用户可见名称，数据存储语言标识（如“a”代表美式英语）
-    m_language->addItem(tr("American English"), QStringLiteral("a"));    // 美式英语
-    m_language->addItem(tr("British English"), QStringLiteral("b"));     // 英式英语
-    m_language->addItem(tr("Spanish"), QStringLiteral("e"));             // 西班牙语
-    m_language->addItem(tr("French"), QStringLiteral("f"));              // 法语
-    m_language->addItem(tr("Hindi"), QStringLiteral("h"));               // 印地语
-    m_language->addItem(tr("Italian"), QStringLiteral("i"));             // 意大利语
-    m_language->addItem(tr("Portuguese"), QStringLiteral("p"));          // 葡萄牙语
-    m_language->addItem(tr("Japanese"), QStringLiteral("j"));            // 日语
-    m_language->addItem(tr("Mandarin Chinese"), QStringLiteral("z"));    // 普通话中文
+    m_language->addItem(tr("American English"), QStringLiteral("a")); // 美式英语
+    m_language->addItem(tr("British English"), QStringLiteral("b"));  // 英式英语
+    m_language->addItem(tr("Spanish"), QStringLiteral("e"));          // 西班牙语
+    m_language->addItem(tr("French"), QStringLiteral("f"));           // 法语
+    m_language->addItem(tr("Hindi"), QStringLiteral("h"));            // 印地语
+    m_language->addItem(tr("Italian"), QStringLiteral("i"));          // 意大利语
+    m_language->addItem(tr("Portuguese"), QStringLiteral("p"));       // 葡萄牙语
+    m_language->addItem(tr("Japanese"), QStringLiteral("j"));         // 日语
+    m_language->addItem(tr("Mandarin Chinese"), QStringLiteral("z")); // 普通话中文
 
     // 从配置中读取已保存的语言选择，自动选中对应选项
     const QString savedLang = Settings.speechLanguage();
@@ -84,7 +83,7 @@ SpeechDialog::SpeechDialog(QWidget *parent)
     // 3. 声音选择行（标签 + 下拉框 + 预览按钮）
     // 创建声音标签（右对齐）
     auto voiceLabel = new QLabel(tr("Voice"), this);
-    grid->addWidget(voiceLabel, 1, 0, Qt::AlignRight);  // 添加到网格第1行第0列
+    grid->addWidget(voiceLabel, 1, 0, Qt::AlignRight); // 添加到网格第1行第0列
 
     // 创建声音下拉框（设置最小宽度，确保显示完整）
     m_voice = new QComboBox(this);
@@ -94,16 +93,16 @@ SpeechDialog::SpeechDialog(QWidget *parent)
     auto icon = QIcon::fromTheme("media-playback-start",
                                  QIcon(":/icons/oxygen/32x32/actions/media-playback-start.png"));
     auto voiceButton = new QPushButton(icon, QString(), this);
-    voiceButton->setToolTip(tr("Preview this voice"));  // 预览按钮提示文本
+    voiceButton->setToolTip(tr("Preview this voice")); // 预览按钮提示文本
 
     // 创建水平布局，包裹声音下拉框和预览按钮（避免控件分散）
     auto voiceRow = new QWidget(this);
     auto voiceLayout = new QHBoxLayout(voiceRow);
-    voiceLayout->setContentsMargins(0, 0, 0, 0);  // 取消布局边距
-    voiceLayout->setSpacing(4);                   // 控件间距4像素
-    voiceLayout->addWidget(m_voice);              // 添加声音下拉框
-    voiceLayout->addWidget(voiceButton);          // 添加预览按钮
-    voiceLayout->addStretch();                    // 拉伸空间，将控件靠左对齐
+    voiceLayout->setContentsMargins(0, 0, 0, 0); // 取消布局边距
+    voiceLayout->setSpacing(4);                  // 控件间距4像素
+    voiceLayout->addWidget(m_voice);             // 添加声音下拉框
+    voiceLayout->addWidget(voiceButton);         // 添加预览按钮
+    voiceLayout->addStretch();                   // 拉伸空间，将控件靠左对齐
 
     // 将声音选择行添加到网格布局（第1行，跨第1-2列，避免与其他列重叠）
     grid->addWidget(voiceRow, 1, 1, 1, 2);
@@ -116,11 +115,11 @@ SpeechDialog::SpeechDialog(QWidget *parent)
         dir.cd("voices");
         // 2. 拼接声音文件路径：目录 + 选中声音的标识 + ".opus"（声音文件格式）
         const auto filename = dir.filePath(m_voice->currentData().toString().append(".opus"));
-        LOG_DEBUG() << filename;  // 打印声音文件路径（调试用）
+        LOG_DEBUG() << filename; // 打印声音文件路径（调试用）
 
         // 3. 创建MLT音频生产者（加载声音文件）
         Mlt::Producer p(MLT.profile(), filename.toLocal8Bit().constData());
-        
+
         // 4. 停止当前正在播放的音频（避免多音频叠加）
         if (m_consumer && m_consumer->is_valid())
             m_consumer->stop();
@@ -128,13 +127,13 @@ SpeechDialog::SpeechDialog(QWidget *parent)
         // 5. 创建MLT音频消费者（使用SDL2音频输出，仅播放音频，不显示视频）
         m_consumer.reset(new Mlt::Consumer(MLT.profile(), "sdl2_audio"));
         if (!m_consumer || !m_consumer->is_valid())
-            return;  // 消费者创建失败则返回
+            return; // 消费者创建失败则返回
 
         // 6. 连接生产者与消费者，配置播放参数并开始播放
         m_consumer->connect(p);
-        m_consumer->set("terminate_on_pause", 1);  // 暂停时终止播放
-        m_consumer->set("video_off", 1);           // 关闭视频输出（仅音频）
-        m_consumer->start();                       // 开始播放音频
+        m_consumer->set("terminate_on_pause", 1); // 暂停时终止播放
+        m_consumer->set("video_off", 1);          // 关闭视频输出（仅音频）
+        m_consumer->start();                      // 开始播放音频
     });
 
     // 5. 初始化声音选项（根据初始选中的语言加载对应声音）
@@ -157,127 +156,123 @@ SpeechDialog::SpeechDialog(QWidget *parent)
     }
 }
 
-    // 【控件布局】：语速选择行（标签 + 双精度数值输入框）
-    auto speedLabel = new QLabel(tr("Speed"), this);  // 语速标签（显示“语速”）
-    m_speed = new QDoubleSpinBox(this);               // 语速输入框（双精度，支持小数调节）
-    m_speed->setRange(0.5, 2.0);                      // 设置语速范围：0.5倍（慢）~2.0倍（快）
-    m_speed->setDecimals(2);                          // 设置显示小数位数：2位（如1.05、1.50）
-    m_speed->setSingleStep(0.05);                     // 设置步长：每次点击增减0.05倍
-    m_speed->setValue(Settings.speechSpeed());        // 初始值：从配置中读取已保存的语速
+// 【控件布局】：语速选择行（标签 + 双精度数值输入框）
+auto speedLabel = new QLabel(tr("Speed"), this); // 语速标签（显示“语速”）
+m_speed = new QDoubleSpinBox(this);              // 语速输入框（双精度，支持小数调节）
+m_speed->setRange(0.5, 2.0);                     // 设置语速范围：0.5倍（慢）~2.0倍（快）
+m_speed->setDecimals(2);                         // 设置显示小数位数：2位（如1.05、1.50）
+m_speed->setSingleStep(0.05);                    // 设置步长：每次点击增减0.05倍
+m_speed->setValue(Settings.speechSpeed());       // 初始值：从配置中读取已保存的语速
 
-    // 创建水平布局包裹语速输入框（避免与其他控件错位）
-    auto speedRow = new QWidget(this);
-    auto speedLayout = new QHBoxLayout(speedRow);
-    speedLayout->setContentsMargins(0, 0, 0, 0);  // 取消布局边距
-    speedLayout->setSpacing(4);                   // 控件间距4像素
-    speedLayout->addWidget(m_speed);              // 添加语速输入框
-    speedLayout->addStretch();                    // 拉伸空间，将输入框靠左对齐
+// 创建水平布局包裹语速输入框（避免与其他控件错位）
+auto speedRow = new QWidget(this);
+auto speedLayout = new QHBoxLayout(speedRow);
+speedLayout->setContentsMargins(0, 0, 0, 0); // 取消布局边距
+speedLayout->setSpacing(4);                  // 控件间距4像素
+speedLayout->addWidget(m_speed);             // 添加语速输入框
+speedLayout->addStretch();                   // 拉伸空间，将输入框靠左对齐
 
-    // 将语速标签和输入框行添加到网格布局（第2行：标签在0列右对齐，输入框行跨1-2列）
-    grid->addWidget(speedLabel, 2, 0, Qt::AlignRight);
-    grid->addWidget(speedRow, 2, 1, 1, 2);
+// 将语速标签和输入框行添加到网格布局（第2行：标签在0列右对齐，输入框行跨1-2列）
+grid->addWidget(speedLabel, 2, 0, Qt::AlignRight);
+grid->addWidget(speedRow, 2, 1, 1, 2);
 
+// 【控件布局】：输出文件行（标签 + 输入框 + 浏览按钮）
+auto outputLabel = new QLabel(tr("Output file"), this); // 输出文件标签（显示“输出文件”）
+m_outputFile = new QLineEdit(this);                     // 输出文件路径输入框
+m_outputFile->setMinimumWidth(300);                     // 设置输入框最小宽度（确保显示完整路径）
+m_outputFile->setPlaceholderText(tr("Click the button to set the file")); // 占位提示文本
+m_outputFile->setDisabled(true); // 设置输入框禁用（只能通过浏览按钮修改）
+// 初始值：从QML应用获取默认文件名（格式“speech-xxx.wav”，避免重复）
+m_outputFile->setText(QmlApplication::getNextProjectFile("speech-.wav"));
 
-    // 【控件布局】：输出文件行（标签 + 输入框 + 浏览按钮）
-    auto outputLabel = new QLabel(tr("Output file"), this);  // 输出文件标签（显示“输出文件”）
-    m_outputFile = new QLineEdit(this);                      // 输出文件路径输入框
-    m_outputFile->setMinimumWidth(300);                      // 设置输入框最小宽度（确保显示完整路径）
-    m_outputFile->setPlaceholderText(tr("Click the button to set the file"));  // 占位提示文本
-    m_outputFile->setDisabled(true);                         // 设置输入框禁用（只能通过浏览按钮修改）
-    // 初始值：从QML应用获取默认文件名（格式“speech-xxx.wav”，避免重复）
-    m_outputFile->setText(QmlApplication::getNextProjectFile("speech-.wav"));
+// 创建“浏览”按钮（使用系统主题图标或本地图标，无文本）
+icon = QIcon::fromTheme("document-save", QIcon(":/icons/oxygen/32x32/actions/document-save.png"));
+auto browseButton = new QPushButton(icon, QString(), this);
 
-    // 创建“浏览”按钮（使用系统主题图标或本地图标，无文本）
-    icon = QIcon::fromTheme("document-save",
-                            QIcon(":/icons/oxygen/32x32/actions/document-save.png"));
-    auto browseButton = new QPushButton(icon, QString(), this);
+// 将输出文件标签添加到网格布局（第3行0列，右对齐）
+grid->addWidget(outputLabel, 3, 0, Qt::AlignRight);
 
-    // 将输出文件标签添加到网格布局（第3行0列，右对齐）
-    grid->addWidget(outputLabel, 3, 0, Qt::AlignRight);
+// 创建水平布局包裹输出输入框和浏览按钮
+auto outputRow = new QWidget(this);
+auto outputLayout = new QHBoxLayout(outputRow);
+outputLayout->setContentsMargins(0, 0, 0, 0); // 取消布局边距
+outputLayout->setSpacing(4);                  // 控件间距4像素
+outputLayout->addWidget(m_outputFile);        // 添加输出路径输入框
+outputLayout->addWidget(browseButton);        // 添加浏览按钮
 
-    // 创建水平布局包裹输出输入框和浏览按钮
-    auto outputRow = new QWidget(this);
-    auto outputLayout = new QHBoxLayout(outputRow);
-    outputLayout->setContentsMargins(0, 0, 0, 0);  // 取消布局边距
-    outputLayout->setSpacing(4);                   // 控件间距4像素
-    outputLayout->addWidget(m_outputFile);         // 添加输出路径输入框
-    outputLayout->addWidget(browseButton);         // 添加浏览按钮
+// 将输出文件行添加到网格布局（第3行，跨1-2列）
+grid->addWidget(outputRow, 3, 1, 1, 2);
 
-    // 将输出文件行添加到网格布局（第3行，跨1-2列）
-    grid->addWidget(outputRow, 3, 1, 1, 2);
+// 【信号槽连接】：浏览按钮点击事件（选择输出文件路径）
+connect(browseButton, &QPushButton::clicked, this, [this]() {
+    // 打开文件保存对话框：标题“保存音频文件”，默认路径为配置中的保存目录，过滤.wav文件
+    const QString selected = QFileDialog::getSaveFileName(this,
+                                                          tr("Save Audio File"),
+                                                          Settings.savePath(),
+                                                          tr("WAV files (*.wav)"));
+    if (!selected.isEmpty()) { // 若用户选择了路径
+        QString path = selected;
+        // 若路径未以.wav结尾（不区分大小写），自动添加.wav后缀
+        if (!path.endsWith(QStringLiteral(".wav"), Qt::CaseInsensitive)) {
+            path += QStringLiteral(".wav");
+        }
+        m_outputFile->setText(path); // 更新输入框显示的路径
+        // 将当前选择的目录保存到配置（作为下次默认目录）
+        Settings.setSavePath(QFileInfo(selected).path());
+    }
+});
 
+// 【控件布局】：按钮组（确定 + 取消按钮）
+auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+// 将按钮组添加到网格布局（第4行，跨0-2列，居中显示）
+grid->addWidget(buttonBox, 4, 0, 1, 3);
 
-    // 【信号槽连接】：浏览按钮点击事件（选择输出文件路径）
-    connect(browseButton, &QPushButton::clicked, this, [this]() {
-        // 打开文件保存对话框：标题“保存音频文件”，默认路径为配置中的保存目录，过滤.wav文件
+// 【信号槽连接】：取消按钮点击事件（关闭对话框）
+connect(buttonBox->button(QDialogButtonBox::Cancel),
+        &QAbstractButton::clicked,
+        this,
+        &QDialog::close);
+
+// 【信号槽连接】：确定按钮点击事件（保存配置 + 触发语音生成）
+connect(buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, [&] {
+    // 1. 获取当前用户选择的参数
+    const QString lang = m_language->currentData().toString(); // 语言标识（如“a”=美式英语）
+    const QString voice = m_voice->currentData().toString();   // 声音标识（对应具体语音文件）
+    const double speed = m_speed->value();                     // 语速（0.5~2.0倍）
+
+    // 2. 处理输出文件路径（确保路径有效）
+    QString path = m_outputFile->text().trimmed();
+    if (path.isEmpty()) { // 若未选择路径，重新弹出文件选择对话框
+        LOG_DEBUG() << Settings.savePath();
         const QString selected = QFileDialog::getSaveFileName(this,
                                                               tr("Save Audio File"),
                                                               Settings.savePath(),
                                                               tr("WAV files (*.wav)"));
-        if (!selected.isEmpty()) {  // 若用户选择了路径
-            QString path = selected;
-            // 若路径未以.wav结尾（不区分大小写），自动添加.wav后缀
-            if (!path.endsWith(QStringLiteral(".wav"), Qt::CaseInsensitive)) {
-                path += QStringLiteral(".wav");
-            }
-            m_outputFile->setText(path);  // 更新输入框显示的路径
-            // 将当前选择的目录保存到配置（作为下次默认目录）
-            Settings.setSavePath(QFileInfo(selected).path());
+        if (selected.isEmpty()) {
+            return; // 用户取消选择，终止操作
         }
-    });
+        path = selected;
+        // 更新配置中的默认保存目录
+        Settings.setSavePath(QFileInfo(selected).path());
+    }
+    // 确保路径以.wav结尾（不区分大小写）
+    if (!path.endsWith(QStringLiteral(".wav"), Qt::CaseInsensitive)) {
+        path += QStringLiteral(".wav");
+    }
+    m_outputFile->setText(path); // 更新输入框显示的最终路径
 
+    // 3. 保存当前配置（下次打开对话框自动应用）
+    Settings.setSpeechLanguage(lang); // 保存语言选择
+    Settings.setSpeechVoice(voice);   // 保存声音选择
+    Settings.setSpeechSpeed(speed);   // 保存语速选择
 
-    // 【控件布局】：按钮组（确定 + 取消按钮）
-    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    // 将按钮组添加到网格布局（第4行，跨0-2列，居中显示）
-    grid->addWidget(buttonBox, 4, 0, 1, 3);
+    // 4. 打印调试日志（记录用户选择的参数）
+    LOG_DEBUG() << "OK clicked, language code:" << lang << "voice:" << voice << "speed:" << speed
+                << "file:" << path;
 
-    // 【信号槽连接】：取消按钮点击事件（关闭对话框）
-    connect(buttonBox->button(QDialogButtonBox::Cancel),
-            &QAbstractButton::clicked,
-            this,
-            &QDialog::close);
-
-    // 【信号槽连接】：确定按钮点击事件（保存配置 + 触发语音生成）
-    connect(buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, [&] {
-        // 1. 获取当前用户选择的参数
-        const QString lang = m_language->currentData().toString();    // 语言标识（如“a”=美式英语）
-        const QString voice = m_voice->currentData().toString();      // 声音标识（对应具体语音文件）
-        const double speed = m_speed->value();                        // 语速（0.5~2.0倍）
-
-        // 2. 处理输出文件路径（确保路径有效）
-        QString path = m_outputFile->text().trimmed();
-        if (path.isEmpty()) {  // 若未选择路径，重新弹出文件选择对话框
-            LOG_DEBUG() << Settings.savePath();
-            const QString selected = QFileDialog::getSaveFileName(this,
-                                                                  tr("Save Audio File"),
-                                                                  Settings.savePath(),
-                                                                  tr("WAV files (*.wav)"));
-            if (selected.isEmpty()) {
-                return;  // 用户取消选择，终止操作
-            }
-            path = selected;
-            // 更新配置中的默认保存目录
-            Settings.setSavePath(QFileInfo(selected).path());
-        }
-        // 确保路径以.wav结尾（不区分大小写）
-        if (!path.endsWith(QStringLiteral(".wav"), Qt::CaseInsensitive)) {
-            path += QStringLiteral(".wav");
-        }
-        m_outputFile->setText(path);  // 更新输入框显示的最终路径
-
-        // 3. 保存当前配置（下次打开对话框自动应用）
-        Settings.setSpeechLanguage(lang);    // 保存语言选择
-        Settings.setSpeechVoice(voice);      // 保存声音选择
-        Settings.setSpeechSpeed(speed);      // 保存语速选择
-
-        // 4. 打印调试日志（记录用户选择的参数）
-        LOG_DEBUG() << "OK clicked, language code:" << lang << "voice:" << voice
-                    << "speed:" << speed << "file:" << path;
-
-        // 5. 关闭对话框并返回“成功”状态（后续可触发语音生成逻辑）
-        accept();
-    });
+    // 5. 关闭对话框并返回“成功”状态（后续可触发语音生成逻辑）
+    accept();
+});
 }
 
 // 【私有方法】：根据语言标识加载对应的声音选项
@@ -315,8 +310,8 @@ void SpeechDialog::populateVoices(const QString &langCode)
         QStringLiteral("zm_yunxia"),   QStringLiteral("zm_yunyang"),
     };
 
-    m_voice->clear();  // 清空当前声音下拉框的选项（避免残留旧语言的声音）
-    if (langCode.isEmpty()) {  // 若语言标识为空，直接返回（无声音可加载）
+    m_voice->clear();         // 清空当前声音下拉框的选项（避免残留旧语言的声音）
+    if (langCode.isEmpty()) { // 若语言标识为空，直接返回（无声音可加载）
         return;
     }
 

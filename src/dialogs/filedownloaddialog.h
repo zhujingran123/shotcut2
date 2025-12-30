@@ -25,15 +25,15 @@
 #include <QSslError>
 
 // 前向声明：避免包含不必要的头文件，减少编译依赖
-class QFile;                // 文件类（用于写入下载的文件数据）
-class QNetworkReply;        // 网络响应类（接收下载进度、数据和错误信息）
+class QFile;         // 文件类（用于写入下载的文件数据）
+class QNetworkReply; // 网络响应类（接收下载进度、数据和错误信息）
 
 // 文件下载对话框类：用于通过网络下载文件，展示下载进度并处理相关异常
 class FileDownloadDialog : public QProgressDialog
 {
-    Q_OBJECT  // Qt元对象系统宏，支持信号槽等Qt核心特性
+Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-public:
+    public :
     // 【构造函数】：初始化文件下载对话框
     // 参数说明：
     // - title：对话框标题（显示下载任务名称，如“Downloading File”）

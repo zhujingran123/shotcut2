@@ -109,7 +109,7 @@ public:
     int bottomVideoTrackIndex() const;
     void cropSource(const QRectF &rect);
     void getMarkerRange(int position, int *start, int *end);
-    void getSelectionRange(int *start, int *end); 
+    void getSelectionRange(int *start, int *end);
     Mlt::Playlist *binPlaylist();
     void showInFiles(const QString &filePath);
     void setupExportFrameAction();

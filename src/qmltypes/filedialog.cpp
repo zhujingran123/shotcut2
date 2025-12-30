@@ -29,7 +29,7 @@ FileDialog::FileDialog(QObject *parent)
 {
     // 创建文件对话框实例，设置主窗口为父对象确保正确的窗口层级
     m_fileDialog.reset(new QFileDialog(&MAIN));
-    
+
     // 【信号连接】：将底层对话框信号转发到QML可用的信号
     connect(m_fileDialog.get(), &QDialog::accepted, this, &FileDialog::accepted);
     connect(m_fileDialog.get(), &QDialog::rejected, this, &FileDialog::rejected);
@@ -101,18 +101,18 @@ void FileDialog::open()
         m_fileDialog->setAcceptMode(QFileDialog::AcceptSave); // 保存模式
         m_fileDialog->setDirectory(Settings.savePath());      // 设置默认保存目录
     }
-    
+
     // 【平台差异处理】：不同操作系统的模态设置
     // macOS使用非模态对话框，其他系统使用应用模态对话框
 #ifdef Q_OS_MAC
-    m_fileDialog->setWindowModality(Qt::NonModal);    // macOS：非模态
+    m_fileDialog->setWindowModality(Qt::NonModal); // macOS：非模态
 #else
     m_fileDialog->setWindowModality(Qt::ApplicationModal); // 其他系统：应用模态
 #endif
-    
+
     // 应用工具类中的文件对话框选项配置
     m_fileDialog->setOptions(Util::getFileDialogOptions());
-    
+
     // 显示对话框给用户
     m_fileDialog->open();
 }

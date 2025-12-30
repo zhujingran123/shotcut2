@@ -36,13 +36,13 @@ public:
     // 【枚举】：标准按钮类型定义
     // 【说明】：包装QMessageBox的标准按钮，便于QML使用
     enum StandardButtons {
-        Ok = QMessageBox::Ok,         // 确定按钮
-        Yes = QMessageBox::Yes,       // 是按钮
-        No = QMessageBox::No,         // 否按钮
-        Cancel = QMessageBox::Cancel  // 取消按钮
+        Ok = QMessageBox::Ok,        // 确定按钮
+        Yes = QMessageBox::Yes,      // 是按钮
+        No = QMessageBox::No,        // 否按钮
+        Cancel = QMessageBox::Cancel // 取消按钮
     };
-    Q_ENUM(StandardButtons)  // 注册到QML系统
-    
+    Q_ENUM(StandardButtons) // 注册到QML系统
+
     // 【构造函数】
     explicit MessageDialog(QObject *parent = nullptr);
 
@@ -63,9 +63,9 @@ signals:
     void rejected();
 
 private:
-    QString m_title;    // 存储对话框标题
-    QString m_text;     // 存储消息正文内容
-    int m_buttons;      // 存储按钮组合标志
+    QString m_title; // 存储对话框标题
+    QString m_text;  // 存储消息正文内容
+    int m_buttons;   // 存储按钮组合标志
 
     // 【私有方法】：获取对话框标题
     QString title() const { return m_title; }

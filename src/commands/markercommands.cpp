@@ -26,10 +26,10 @@ namespace Markers {
  * @brief 封装“删除标记”操作的撤销/重做命令。
  */
 DeleteCommand::DeleteCommand(MarkersModel &model, const Marker &delMarker, int index)
-    : QUndoCommand(0) // 没有父命令
-    , m_model(model)   // 持有对 MarkersModel 的引用
+    : QUndoCommand(0)        // 没有父命令
+    , m_model(model)         // 持有对 MarkersModel 的引用
     , m_delMarker(delMarker) // 保存被删除的标记，以便 undo 时恢复
-    , m_index(index)   // 保存被删除标记的索引
+    , m_index(index)         // 保存被删除标记的索引
 {
     // 设置在撤销历史中显示的文本
     setText(QObject::tr("Delete marker: %1").arg(m_delMarker.text));
@@ -135,7 +135,7 @@ bool UpdateCommand::mergeWith(const QUndoCommand *other)
     }
     // 情况2：新命令只改变了文本/颜色，与上一个编辑操作合并
     else if (that->m_newMarker.end == m_oldMarker.end
-               && that->m_newMarker.start == m_oldMarker.start) {
+             && that->m_newMarker.start == m_oldMarker.start) {
         merge = true;
     }
 

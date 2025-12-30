@@ -24,19 +24,19 @@
 
 // 声明UI命名空间（隔离Qt Designer生成的界面代码）
 namespace Ui {
-class ListSelectionDialog;  // 前向声明UI中的对话框类，避免提前包含头文件
+class ListSelectionDialog; // 前向声明UI中的对话框类，避免提前包含头文件
 }
 
 // 前向声明：减少编译依赖
-class QListWidgetItem;       // 列表项类（用于处理列表中的单个选项）
-class QDialogButtonBox;      // 对话框按钮组类（整合确定、取消等按钮）
+class QListWidgetItem;  // 列表项类（用于处理列表中的单个选项）
+class QDialogButtonBox; // 对话框按钮组类（整合确定、取消等按钮）
 
 // 列表选择对话框类：用于展示可勾选的选项列表，支持通用选项和颜色选项两种模式
 class ListSelectionDialog : public QDialog
 {
-    Q_OBJECT  // Qt元对象系统宏，支持信号槽等Qt核心特性
+Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-public:
+    public :
     // 【构造函数】：初始化列表选择对话框（通用选项模式）
     // 参数说明：
     // - list：待展示的选项文本列表（如["选项1", "选项2"]）

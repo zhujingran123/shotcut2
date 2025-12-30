@@ -20,8 +20,8 @@
 #define LONGUITASK_H
 
 // 引入Qt相关头文件
-#include <QFuture>                  // Qt异步任务结果类（接收并发任务的返回值）
-#include <QProgressDialog>          // Qt进度对话框类（LongUiTask继承自此，用于展示任务进度）
+#include <QFuture>                   // Qt异步任务结果类（接收并发任务的返回值）
+#include <QProgressDialog>           // Qt进度对话框类（LongUiTask继承自此，用于展示任务进度）
 #include <QtConcurrent/QtConcurrent> // Qt并发框架（用于执行异步任务）
 
 // 长时间UI任务类：封装异步任务执行与进度展示，避免UI卡死
@@ -44,14 +44,14 @@ public:
     template<class Ret>
     Ret wait(QString text, const QFuture<Ret> &future)
     {
-        setLabelText(text);             // 设置进度提示文本
-        setRange(0, 0);                 // 进度范围设为0-0（表示“忙”状态，进度条滚动）
-        while (!future.isFinished()) {  // 循环直到任务完成
-            setValue(0);                // 更新进度条（维持滚动状态）
+        setLabelText(text);                    // 设置进度提示文本
+        setRange(0, 0);                        // 进度范围设为0-0（表示“忙”状态，进度条滚动）
+        while (!future.isFinished()) {         // 循环直到任务完成
+            setValue(0);                       // 更新进度条（维持滚动状态）
             QCoreApplication::processEvents(); // 处理UI事件，避免界面卡死
-            QThread::msleep(100);       // 休眠100毫秒，降低CPU占用
+            QThread::msleep(100);              // 休眠100毫秒，降低CPU占用
         }
-        return future.result();         // 返回异步任务的执行结果
+        return future.result(); // 返回异步任务的执行结果
     }
 
     // 【模板公共方法】：异步执行任务并等待完成

@@ -35,10 +35,10 @@ namespace Playlist {
  * 这些 ID 被 QUndoCommand::id() 方法返回，用于在命令合并时区分不同类型的命令。
  * 只有 ID 相同的命令才有可能被合并。
  */
-enum { 
-    UndoIdTrimClipIn = 0,  ///< 裁剪片段入点命令的 ID
-    UndoIdTrimClipOut,     ///< 裁剪片段出点命令的 ID
-    UndoIdUpdate           ///< 更新播放列表项命令的 ID
+enum {
+    UndoIdTrimClipIn = 0, ///< 裁剪片段入点命令的 ID
+    UndoIdTrimClipOut,    ///< 裁剪片段出点命令的 ID
+    UndoIdUpdate          ///< 更新播放列表项命令的 ID
 };
 
 /**
@@ -65,9 +65,9 @@ public:
 
 private:
     PlaylistModel &m_model; ///< 对播放列表模型的引用。
-    QString m_xml;           ///< 保存要追加的片段的 XML。
-    bool m_emitModified;     ///< 是否发出修改信号。
-    QUuid m_uuid;            ///< 保存片段的 UUID，用于在撤销/重做时保持关联。
+    QString m_xml;          ///< 保存要追加的片段的 XML。
+    bool m_emitModified;    ///< 是否发出修改信号。
+    QUuid m_uuid;           ///< 保存片段的 UUID，用于在撤销/重做时保持关联。
 };
 
 /**
@@ -91,9 +91,9 @@ public:
 
 private:
     PlaylistModel &m_model; ///< 对播放列表模型的引用。
-    QString m_xml;           ///< 保存要插入的片段的 XML。
-    int m_row;               ///< 保存插入的目标行号。
-    QUuid m_uuid;            ///< 保存片段的 UUID。
+    QString m_xml;          ///< 保存要插入的片段的 XML。
+    int m_row;              ///< 保存插入的目标行号。
+    QUuid m_uuid;           ///< 保存片段的 UUID。
 };
 
 /**
@@ -116,7 +116,7 @@ public:
     void undo(); ///< 撤销更新操作。
 
 protected:
-    int id() const { return UndoIdUpdate; } ///< 返回命令的唯一 ID。
+    int id() const { return UndoIdUpdate; }    ///< 返回命令的唯一 ID。
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并。
 
 private:
@@ -147,9 +147,9 @@ public:
 
 private:
     PlaylistModel &m_model; ///< 对播放列表模型的引用。
-    QString m_xml;           ///< 保存被删除片段的 XML，用于撤销。
-    int m_row;               ///< 保存被删除的行号。
-    QUuid m_uuid;            ///< 保存被删除片段的 UUID。
+    QString m_xml;          ///< 保存被删除片段的 XML，用于撤销。
+    int m_row;              ///< 保存被删除的行号。
+    QUuid m_uuid;           ///< 保存被删除片段的 UUID。
 };
 
 /**
@@ -195,9 +195,9 @@ public:
     void undo(); ///< 撤销清空操作。
 
 private:
-    PlaylistModel &m_model;     ///< 对播放列表模型的引用。
-    QString m_xml;               ///< 保存清空前整个播放列表的 XML。
-    QVector<QUuid> m_uuids;      ///< 保存清空前所有片段的 UUID 列表。
+    PlaylistModel &m_model; ///< 对播放列表模型的引用。
+    QString m_xml;          ///< 保存清空前整个播放列表的 XML。
+    QVector<QUuid> m_uuids; ///< 保存清空前所有片段的 UUID 列表。
 };
 
 /**
@@ -220,11 +220,11 @@ public:
     void undo(); ///< 撤销排序操作。
 
 private:
-    PlaylistModel &m_model;     ///< 对播放列表模型的引用。
-    int m_column;               ///< 排序依据的列。
-    Qt::SortOrder m_order;      ///< 排序方式。
-    QString m_xml;               ///< 保存排序前整个播放列表的 XML。
-    QVector<QUuid> m_uuids;      ///< 保存排序前所有片段的 UUID 列表。
+    PlaylistModel &m_model; ///< 对播放列表模型的引用。
+    int m_column;           ///< 排序依据的列。
+    Qt::SortOrder m_order;  ///< 排序方式。
+    QString m_xml;          ///< 保存排序前整个播放列表的 XML。
+    QVector<QUuid> m_uuids; ///< 保存排序前所有片段的 UUID 列表。
 };
 
 /**
@@ -341,9 +341,9 @@ public:
     void undo(); ///< 撤销新建操作。
 
 private:
-    PlaylistModel &m_model;   ///< 对播放列表模型的引用。
-    QTreeWidget *m_binTree;   ///< 指向箱子树形控件的指针。
-    QString m_bin;            ///< 新箱子的名称。
+    PlaylistModel &m_model;    ///< 对播放列表模型的引用。
+    QTreeWidget *m_binTree;    ///< 指向箱子树形控件的指针。
+    QString m_bin;             ///< 新箱子的名称。
     Mlt::Properties m_oldBins; ///< 保存操作前的所有箱子配置，用于撤销。
 };
 
@@ -379,8 +379,8 @@ private:
     /// 用于保存每个项目移动前所属的箱子
     typedef struct
     {
-        int row;      ///< 项目在播放列表中的行号
-        QString bin;  ///< 项目原来所属的箱子名称
+        int row;     ///< 项目在播放列表中的行号
+        QString bin; ///< 项目原来所属的箱子名称
     } oldData;
     QList<oldData> m_oldData; ///< 保存所有被移动项目的原始信息
 };
@@ -408,7 +408,7 @@ public:
 
     void redo(); ///< 执行重命名/删除操作。
     void undo(); ///< 撤销重命名/删除操作。
-    
+
     /**
      * @brief 静态辅助函数，用于根据 UI 上的箱子树重建 MLT 属性中的箱子列表。
      * @param model 播放列表模型。

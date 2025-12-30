@@ -41,13 +41,13 @@
 
 AbstractJob::AbstractJob(const QString &name, QThread::Priority priority)
     : QProcess(0)
-    , m_item(0)                  ///< 在任务列表中显示的 QStandardItem
-    , m_ran(false)               ///< 标记任务是否已启动
-    , m_killed(false)            ///< 标记任务是否被用户停止
-    , m_label(name)              ///< 任务的标签/名称
-    , m_startingPercent(0)       ///< 用于估算剩余时间的起始百分比
-    , m_priority(priority)       ///< 任务进程的优先级
-    , m_isPaused(false)          ///< 标记任务是否处于暂停状态
+    , m_item(0)            ///< 在任务列表中显示的 QStandardItem
+    , m_ran(false)         ///< 标记任务是否已启动
+    , m_killed(false)      ///< 标记任务是否被用户停止
+    , m_label(name)        ///< 任务的标签/名称
+    , m_startingPercent(0) ///< 用于估算剩余时间的起始百分比
+    , m_priority(priority) ///< 任务进程的优先级
+    , m_isPaused(false)    ///< 标记任务是否处于暂停状态
 {
     setObjectName(name);
     // 连接 QProcess 的信号到本类的槽函数
@@ -87,8 +87,8 @@ void AbstractJob::start()
 {
     m_killed = false;
     m_ran = true;
-    m_estimateTime.start(); // 启动用于估算剩余时间的计时器
-    m_totalTime.start();    // 启动总计时器
+    m_estimateTime.start();          // 启动用于估算剩余时间的计时器
+    m_totalTime.start();             // 启动总计时器
     emit progressUpdated(m_item, 0); // 发出进度更新信号，初始为 0%
 }
 
@@ -150,9 +150,9 @@ void AbstractJob::start(const QString &program, const QStringList &arguments)
         prog = "nice";
     }
 #endif
-    QProcess::start(prog, args); // 调用 QProcess 的 start 方法
-    AbstractJob::start();        // 调用本类的 start 方法进行初始化
-    m_actionPause->setEnabled(true);  // 启用暂停按钮
+    QProcess::start(prog, args);       // 调用 QProcess 的 start 方法
+    AbstractJob::start();              // 调用本类的 start 方法进行初始化
+    m_actionPause->setEnabled(true);   // 启用暂停按钮
     m_actionResume->setEnabled(false); // 禁用恢复按钮
     m_isPaused = false;
 }
@@ -222,8 +222,7 @@ void AbstractJob::resume()
  * @param exitCode 进程的退出码。
  * @param exitStatus 进程的退出状态（正常退出或崩溃）。
  */
-=======
-void AbstractJob::setKilled(bool killed)
+== == == = void AbstractJob::setKilled(bool killed)
 {
     m_killed = killed;
 }
@@ -307,11 +306,12 @@ void AbstractJob::onProgressUpdated(QStandardItem *, int percent)
 <<<<<<< HEAD
     // 在首次报告大于 0 的百分比时，启动估算计时器
     if (percent > 0 && (percent == 1 || m_startingPercent < 0)) {
-=======
-    // Start timer on first reported percentage > 0.
-    if (percent == 1 || m_startingPercent < 0) {
+        == == == =
+            // Start timer on first reported percentage > 0.
+            if (percent == 1 || m_startingPercent < 0)
+        {
 >>>>>>> 99569656ee5a8cd97959b39f6f18bbcc6014139d
-        m_estimateTime.restart();
-        m_startingPercent = percent;
+            m_estimateTime.restart();
+            m_startingPercent = percent;
+        }
     }
-}

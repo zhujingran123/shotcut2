@@ -20,16 +20,16 @@
 #define BITRATEDIALOG_H
 
 // 引入依赖的Qt头文件
-#include <QDialog>       // Qt标准对话框类，BitrateDialog继承自此
-#include <QJsonArray>    // Qt的JSON数组类，用于接收比特率数据
-#include <QString>       // Qt字符串类，用于接收资源名称
+#include <QDialog>    // Qt标准对话框类，BitrateDialog继承自此
+#include <QJsonArray> // Qt的JSON数组类，用于接收比特率数据
+#include <QString>    // Qt字符串类，用于接收资源名称
 
 // 比特率查看对话框类：用于展示音频/视频文件的比特率变化图表
 class BitrateDialog : public QDialog
 {
-    Q_OBJECT  // Qt元对象系统宏，支持信号槽等Qt特性（此处虽未显式用信号槽，符合类设计规范）
+Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt特性（此处虽未显式用信号槽，符合类设计规范）
 
-public:
+    public :
     // 构造函数：初始化比特率查看对话框
     // 参数说明：
     // - resource：待查看的资源名称（如音频/视频文件路径，用于图表标题）

@@ -34,7 +34,7 @@ InsertTrackCommand::InsertTrackCommand(SubtitlesModel &model,
     : QUndoCommand(0)
     , m_model(model)
     , m_track(track) // 保存要插入的轨道对象
-    , m_index(index)  // 保存插入的位置
+    , m_index(index) // 保存插入的位置
 {
     setText(QObject::tr("Add subtitle track: %1").arg(m_track.name));
 }

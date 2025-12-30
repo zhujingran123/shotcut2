@@ -22,27 +22,26 @@
 // 包含UI文件生成的头文件（用于访问界面控件）
 #include "ui_durationdialog.h"
 
-
-//【 构造函数 】：初始化时长设置对话框 
+//【 构造函数 】：初始化时长设置对话框
 DurationDialog::DurationDialog(QWidget *parent)
-    : QDialog(parent)  // 初始化父类QDialog，指定父窗口
-    , ui(new Ui::DurationDialog)  // 初始化UI指针，创建界面对象
+    : QDialog(parent)            // 初始化父类QDialog，指定父窗口
+    , ui(new Ui::DurationDialog) // 初始化UI指针，创建界面对象
 {
-    ui->setupUi(this);  // 加载UI布局，初始化界面控件（如时间输入框）
-    
+    ui->setupUi(this); // 加载UI布局，初始化界面控件（如时间输入框）
+
     // 设置时间输入框（spinBox）的最大值为MLT支持的最大帧计数
     // 确保输入的时长不超过视频的最大可能帧数
     ui->spinBox->setMaximum(MLT.maxFrameCount());
-    
+
     // 连接时间输入框的"确认"信号到对话框的"接受"槽函数
     // 当用户在输入框中确认输入（如按回车）时，直接关闭对话框并返回确认状态
     connect(ui->spinBox, &TimeSpinBox::accepted, this, &QDialog::accept);
 }
 
-//【 析构函数 】：释放资源 
+//【 析构函数 】：释放资源
 DurationDialog::~DurationDialog()
 {
-    delete ui;  // 释放UI对象占用的内存，避免内存泄漏
+    delete ui; // 释放UI对象占用的内存，避免内存泄漏
 }
 
 // 【 公共方法】：设置对话框的初始时长（帧单位）

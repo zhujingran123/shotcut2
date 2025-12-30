@@ -28,10 +28,10 @@ class FrameData : public QSharedData
 {
 public:
     FrameData()
-        : f(nullptr){};
+        : f(nullptr) {};
     FrameData(Mlt::Frame &frame)
-        : f(frame){};
-    ~FrameData(){};
+        : f(frame) {};
+    ~FrameData() {};
 
     Mlt::Frame f;
     std::mutex m;

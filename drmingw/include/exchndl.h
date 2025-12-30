@@ -16,24 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-
 #pragma once
 
-
 #include <windows.h>
-
 
 // Set the unhandled exception handler.
 // Must be called when exchndll.dll is statically loaded (as opposed to loaded
 // dynamically via LoadLibrary)
-EXTERN_C VOID APIENTRY
-ExcHndlInit(void);
-
+EXTERN_C VOID APIENTRY ExcHndlInit(void);
 
 // Override the report file name.
 //
 // Default is prog_name.RPT, in the same directory as the main executable.
 //
 // You can also pass "-" for stderr.
-EXTERN_C BOOL APIENTRY
-ExcHndlSetLogFileNameA(const char *szLogFileName);
+EXTERN_C BOOL APIENTRY ExcHndlSetLogFileNameA(const char *szLogFileName);

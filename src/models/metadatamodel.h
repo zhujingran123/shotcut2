@@ -105,7 +105,7 @@ class InternalMetadataModel : public QAbstractListModel
 {
 public:
     explicit InternalMetadataModel(QObject *parent = 0)
-        : QAbstractListModel(parent){};
+        : QAbstractListModel(parent) {};
 
     // Implement QAbstractListModel
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

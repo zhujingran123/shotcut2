@@ -36,7 +36,7 @@ AppendCommand::AppendCommand(PlaylistModel &model,
                              QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_model(model)
-    , m_xml(xml) // 保存要追加的片段的 XML
+    , m_xml(xml)                   // 保存要追加的片段的 XML
     , m_emitModified(emitModified) // 标记是否需要发出“已修改”信号
 {
     setText(QObject::tr("Append playlist item %1").arg(m_model.rowCount() + 1));
@@ -368,7 +368,7 @@ TrimClipOutCommand::TrimClipOutCommand(PlaylistModel &model, int row, int out, Q
     : QUndoCommand(parent)
     , m_model(model)
     , m_row(row)
-    , m_in(-1)     // 入点将在构造函数体中获取
+    , m_in(-1)      // 入点将在构造函数体中获取
     , m_oldOut(out) // 初始化为当前值，将被覆盖
     , m_newOut(out) // 保存新的出点
 {

@@ -23,8 +23,8 @@
 // AddEncodePresetDialog类的构造函数
 // 参数parent为父窗口指针，用于Qt的对象树管理
 AddEncodePresetDialog::AddEncodePresetDialog(QWidget *parent)
-    : QDialog(parent)  // 初始化父类QDialog，指定父窗口
-    , ui(new Ui::AddEncodePresetDialog)  // 初始化UI指针，创建UI对象
+    : QDialog(parent)                   // 初始化父类QDialog，指定父窗口
+    , ui(new Ui::AddEncodePresetDialog) // 初始化UI指针，创建UI对象
 {
     // 调用UI的setupUi方法，初始化对话框界面（加载UI布局、创建控件等）
     ui->setupUi(this);
@@ -49,7 +49,7 @@ void AddEncodePresetDialog::setProperties(const QString &properties)
 // 返回值为用户在名称输入框中输入的文本
 QString AddEncodePresetDialog::presetName() const
 {
-    return ui->nameEdit->text();  // 从nameEdit控件（单行文本框）获取文本
+    return ui->nameEdit->text(); // 从nameEdit控件（单行文本框）获取文本
 }
 
 // 获取编码预设的完整属性（包含扩展信息）

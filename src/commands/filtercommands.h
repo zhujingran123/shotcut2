@@ -39,13 +39,13 @@ namespace Filter {
  * 只有 ID 相同的命令才有可能被合并。
  */
 enum {
-    UndoIdAdd = 300,              ///< 添加滤镜命令的 ID
-    UndoIdMove,                   ///< 移动滤镜命令的 ID
-    UndoIdDisable,                ///< 禁用/启用滤镜命令的 ID
-    UndoIdChangeParameter,        ///< 修改滤镜参数命令的 ID
-    UndoIdChangeAddKeyframe,      ///< 添加关键帧命令的 ID
-    UndoIdChangeRemoveKeyframe,   ///< 删除关键帧命令的 ID
-    UndoIdChangeKeyframe,         ///< 修改关键帧命令的 ID (似乎未使用)
+    UndoIdAdd = 300,            ///< 添加滤镜命令的 ID
+    UndoIdMove,                 ///< 移动滤镜命令的 ID
+    UndoIdDisable,              ///< 禁用/启用滤镜命令的 ID
+    UndoIdChangeParameter,      ///< 修改滤镜参数命令的 ID
+    UndoIdChangeAddKeyframe,    ///< 添加关键帧命令的 ID
+    UndoIdChangeRemoveKeyframe, ///< 删除关键帧命令的 ID
+    UndoIdChangeKeyframe,       ///< 修改关键帧命令的 ID (似乎未使用)
 };
 
 /**
@@ -59,9 +59,9 @@ public:
      * @brief 定义添加操作的类型。
      */
     typedef enum {
-        AddSingle,   ///< 添加单个滤镜
-        AddSet,      ///< 添加滤镜集中的一个滤镜（非最后一个）
-        AddSetLast,  ///< 添加滤镜集的最后一个滤镜
+        AddSingle,  ///< 添加单个滤镜
+        AddSet,     ///< 添加滤镜集中的一个滤镜（非最后一个）
+        AddSetLast, ///< 添加滤镜集的最后一个滤镜
     } AddType;
 
     /**
@@ -84,16 +84,16 @@ public:
     void undo(); ///< 撤销添加操作。
 
 protected:
-    int id() const { return UndoIdAdd; } ///< 返回命令的唯一 ID。
+    int id() const { return UndoIdAdd; }       ///< 返回命令的唯一 ID。
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并。
 
 private:
-    AttachedFiltersModel &m_model;      ///< 对滤镜模型的引用。
-    std::vector<int> m_rows;            ///< 要添加的滤镜的行号列表（支持批量添加）。
+    AttachedFiltersModel &m_model;        ///< 对滤镜模型的引用。
+    std::vector<int> m_rows;              ///< 要添加的滤镜的行号列表（支持批量添加）。
     std::vector<Mlt::Service> m_services; ///< 要添加的 MLT 服务列表。
-    Mlt::Producer m_producer;           ///< 目标 Producer 的引用（仅在第一次 redo 前有效）。
-    QUuid m_producerUuid;               ///< 目标 Producer 的唯一标识符，用于后续查找。
-    AddType m_type;                     ///< 添加操作的类型。
+    Mlt::Producer m_producer;             ///< 目标 Producer 的引用（仅在第一次 redo 前有效）。
+    QUuid m_producerUuid;                 ///< 目标 Producer 的唯一标识符，用于后续查找。
+    AddType m_type;                       ///< 添加操作的类型。
 };
 
 /**
@@ -189,7 +189,7 @@ public:
     void undo(); ///< 撤销操作（即恢复到相反状态）。
 
 protected:
-    int id() const { return UndoIdDisable; } ///< 返回命令的唯一 ID。
+    int id() const { return UndoIdDisable; }   ///< 返回命令的唯一 ID。
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并（此处被禁用）。
 
 private:
@@ -262,15 +262,15 @@ public:
 
 protected:
     int id() const { return UndoIdChangeParameter; } ///< 返回命令的唯一 ID。
-    bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并。
+    bool mergeWith(const QUndoCommand *other);       ///< 尝试与另一个命令合并。
 
 private:
-    int m_row;                         ///< 滤镜所在的行号。
-    QUuid m_producerUuid;              ///< 目标 Producer 的 UUID。
-    Mlt::Properties m_before;          ///< 修改前的参数状态。
-    Mlt::Properties m_after;           ///< 修改后的参数状态。
+    int m_row;                            ///< 滤镜所在的行号。
+    QUuid m_producerUuid;                 ///< 目标 Producer 的 UUID。
+    Mlt::Properties m_before;             ///< 修改前的参数状态。
+    Mlt::Properties m_after;              ///< 修改后的参数状态。
     FilterController *m_filterController; ///< 滤镜控制器指针。
-    bool m_firstRedo;                  ///< 标记是否是第一次调用 redo()。
+    bool m_firstRedo;                     ///< 标记是否是第一次调用 redo()。
 };
 
 /**
@@ -298,7 +298,10 @@ public:
 
 protected:
     int id() const { return UndoIdChangeAddKeyframe; } ///< 返回唯一的 ID。
-    bool mergeWith(const QUndoCommand *other) { return false; } ///< 禁止合并，因为每次添加都是独立的操作。
+    bool mergeWith(const QUndoCommand *other)
+    {
+        return false;
+    } ///< 禁止合并，因为每次添加都是独立的操作。
 };
 
 /**
@@ -316,7 +319,7 @@ public:
     {}
 
 protected:
-    int id() const { return UndoIdChangeRemoveKeyframe; } ///< 返回唯一的 ID。
+    int id() const { return UndoIdChangeRemoveKeyframe; }       ///< 返回唯一的 ID。
     bool mergeWith(const QUndoCommand *other) { return false; } ///< 禁止合并。
 };
 
@@ -339,7 +342,10 @@ public:
     {}
 
 protected:
-    int id() const { return UndoIdChangeRemoveKeyframe; } ///< 注意：这里返回的 ID 可能是笔误，应为 UndoIdChangeKeyframe。
+    int id() const
+    {
+        return UndoIdChangeRemoveKeyframe;
+    } ///< 注意：这里返回的 ID 可能是笔误，应为 UndoIdChangeKeyframe。
     bool mergeWith(const QUndoCommand *other)
     {
         // 只有当修改的是同一个参数的同一个关键帧时，才允许合并。
@@ -358,4 +364,3 @@ private:
 } // namespace Filter
 
 #endif // FILTERCOMMANDS_H
-

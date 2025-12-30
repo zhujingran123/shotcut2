@@ -19,16 +19,15 @@
 #include "editmarkerdialog.h"
 
 // 引入依赖的头文件（日志、自定义控件等）
-#include "Logger.h"                  // 日志工具类，用于打印调试信息
-#include "widgets/editmarkerwidget.h"// 自定义的标记编辑控件（封装标记的文本、颜色、时间范围等编辑功能）
+#include "Logger.h"                   // 日志工具类，用于打印调试信息
+#include "widgets/editmarkerwidget.h" // 自定义的标记编辑控件（封装标记的文本、颜色、时间范围等编辑功能）
 
 // 引入Qt基础组件头文件
 #include <QDebug>
-#include <QDialogButtonBox>          // 对话框按钮组（包含确定、取消等按钮）
-#include <QVBoxLayout>               // 垂直布局管理器（用于排列控件）
+#include <QDialogButtonBox> // 对话框按钮组（包含确定、取消等按钮）
+#include <QVBoxLayout>      // 垂直布局管理器（用于排列控件）
 
-
-// 【构造函数】：初始化标记编辑对话框 
+// 【构造函数】：初始化标记编辑对话框
 // 参数说明：
 // - parent：父窗口指针
 // - text：标记的初始文本
@@ -38,38 +37,38 @@
 // - maxEnd：标记结束帧的最大值（限制结束帧不能超过此值）
 EditMarkerDialog::EditMarkerDialog(
     QWidget *parent, const QString &text, const QColor &color, int start, int end, int maxEnd)
-    : QDialog(parent)  // 初始化父类QDialog，指定父窗口
+    : QDialog(parent) // 初始化父类QDialog，指定父窗口
 {
-    setWindowTitle(tr("Edit Marker"));  // 设置对话框标题（"编辑标记"）
+    setWindowTitle(tr("Edit Marker")); // 设置对话框标题（"编辑标记"）
 
     // 1. 创建垂直布局（管理对话框内的控件排列）
     QVBoxLayout *VLayout = new QVBoxLayout(this);
 
     // 2. 创建自定义标记编辑控件（EditMarkerWidget），并传入初始参数
     m_sWidget = new EditMarkerWidget(this, text, color, start, end, maxEnd);
-    VLayout->addWidget(m_sWidget);  // 将自定义控件添加到垂直布局
+    VLayout->addWidget(m_sWidget); // 将自定义控件添加到垂直布局
 
     // 3. 创建按钮组（包含"确定"和"取消"按钮）
     m_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-    VLayout->addWidget(m_buttonBox);  // 将按钮组添加到垂直布局
+    VLayout->addWidget(m_buttonBox); // 将按钮组添加到垂直布局
 
     // 4. 连接按钮点击信号到自定义槽函数（处理确定/取消逻辑）
     connect(m_buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(clicked(QAbstractButton *)));
 
     // 5. 设置对话框布局及属性
-    setLayout(VLayout);                // 为对话框设置布局
-    setModal(true);                    // 模态对话框（阻塞父窗口操作）
-    layout()->setSizeConstraint(QLayout::SetFixedSize);  // 固定对话框大小（不可拉伸）
+    setLayout(VLayout);                                 // 为对话框设置布局
+    setModal(true);                                     // 模态对话框（阻塞父窗口操作）
+    layout()->setSizeConstraint(QLayout::SetFixedSize); // 固定对话框大小（不可拉伸）
 }
 
-// 【公共方法】：获取标记的文本 
+// 【公共方法】：获取标记的文本
 QString EditMarkerDialog::getText()
 {
     // 调用自定义控件的getText()方法，获取用户编辑后的标记文本
     return m_sWidget->getText();
 }
 
-//【公共方法】：获取标记的颜色 
+//【公共方法】：获取标记的颜色
 QColor EditMarkerDialog::getColor()
 {
     // 调用自定义控件的getColor()方法，获取用户选择的标记颜色
@@ -83,19 +82,19 @@ int EditMarkerDialog::getStart()
     return m_sWidget->getStart();
 }
 
-// 【 公共方法】：获取标记的结束帧位置 
+// 【 公共方法】：获取标记的结束帧位置
 int EditMarkerDialog::getEnd()
 {
     // 调用自定义控件的getEnd()方法，获取用户设置的标记结束帧
     return m_sWidget->getEnd();
 }
 
-//【槽函数】：处理按钮点击事件 
+//【槽函数】：处理按钮点击事件
 void EditMarkerDialog::clicked(QAbstractButton *button)
 {
     // 获取点击按钮的角色（确定/取消/其他）
     QDialogButtonBox::ButtonRole role = m_buttonBox->buttonRole(button);
-    
+
     if (role == QDialogButtonBox::AcceptRole) {
         // 确定按钮（AcceptRole）：关闭对话框并返回"成功"状态
         accept();

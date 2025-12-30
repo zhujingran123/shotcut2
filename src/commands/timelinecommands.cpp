@@ -126,7 +126,7 @@ AppendCommand::AppendCommand(MultitrackModel &model,
     , m_xml(xml)
     , m_undoHelper(m_model)
     , m_skipProxy(skipProxy) // 是否跳过代理生成
-    , m_seek(seek) // 操作完成后是否跳转到新片段
+    , m_seek(seek)           // 操作完成后是否跳转到新片段
 {
     setText(QObject::tr("Append to track"));
 }
@@ -158,9 +158,9 @@ void AppendCommand::redo()
             QScopedPointer<Mlt::ClipInfo> info(playlist.clip_info(i));
             Mlt::Producer clip = Mlt::Producer(info->producer);
             if (!m_skipProxy)
-                ProxyManager::generateIfNotExists(clip); // 生成代理文件（如果需要）
+                ProxyManager::generateIfNotExists(clip);          // 生成代理文件（如果需要）
             clip.set_in_and_out(info->frame_in, info->frame_out); // 设置入点和出点
-            MLT.setUuid(clip.parent(), m_uuids[i]); // 恢复 UUID
+            MLT.setUuid(clip.parent(), m_uuids[i]);               // 恢复 UUID
             bool lastClip = i == (count - 1);
             m_model.appendClip(m_trackIndex, clip, false, lastClip); // 调用模型追加片段
         }
@@ -171,7 +171,7 @@ void AppendCommand::redo()
         m_model.appendClip(m_trackIndex, *producer, m_seek);
     }
     longTask.reportProgress(QObject::tr("Finishing"), 0, 0);
-    delete producer; // 释放内存
+    delete producer;                 // 释放内存
     m_undoHelper.recordAfterState(); // 记录操作后的状态
 }
 
@@ -203,7 +203,7 @@ InsertCommand::InsertCommand(MultitrackModel &model,
     , m_seek(seek)
     , m_rippleAllTracks(Settings.timelineRippleAllTracks()) // 是否波纹所有轨道
     , m_rippleMarkers(Settings.timelineRippleMarkers())     // 是否波纹标记
-    , m_markersShift(0) // 记录标记移动的量
+    , m_markersShift(0)                                     // 记录标记移动的量
 {
     setText(QObject::tr("Insert into track"));
     m_undoHelper.setHints(UndoHelper::RestoreTracks); // 提示 UndoHelper 需要恢复轨道结构
@@ -936,7 +936,6 @@ void AddTransitionCommand::redo()
 // 注意：AddTransitionCommand 的 undo() 方法未在提供的代码片段中显示，
 // 但根据模式，它会调用 m_undoHelper.undoChanges() 并恢复标记。
 
-
 /**
  * @class AddTransitionCommand
  * @brief “添加转场”命令
@@ -1389,7 +1388,6 @@ void RemoveTrackCommand::redo()
 // 注意：RemoveTrackCommand 的 undo() 方法未在提供的代码片段中显示，
 // 但根据模式，它会使用保存的信息（类型、名称、UUID、滤镜）重新创建轨道。
 
-
 /**
  * @class RemoveTrackCommand
  * @brief “移除轨道”命令
@@ -1413,7 +1411,7 @@ void RemoveTrackCommand::undo()
     QScopedPointer<Mlt::Producer> producer(m_model.tractor()->track(mlt_index));
     Mlt::Playlist playlist(*producer);
     if (playlist.is_valid() && m_filtersProducer && m_filtersProducer->is_valid()) {
-        MLT.setUuid(playlist, m_uuid); // 恢复 UUID
+        MLT.setUuid(playlist, m_uuid);                 // 恢复 UUID
         MLT.copyFilters(*m_filtersProducer, playlist); // 复制滤镜
         // 通知模型轨道的滤镜状态已更改
         QModelIndex modelIndex = m_model.index(m_trackIndex);
@@ -1524,7 +1522,7 @@ UpdateCommand::UpdateCommand(
 
 void UpdateCommand::setXmlAfter(const QString &xml)
 {
-    m_xmlAfter = xml; // 设置更新后的 XML
+    m_xmlAfter = xml;                     // 设置更新后的 XML
     m_ripple = Settings.timelineRipple(); // 重新读取波纹设置
     m_rippleAllTracks = Settings.timelineRippleAllTracks();
 }
@@ -1591,7 +1589,7 @@ DetachAudioCommand::DetachAudioCommand(TimelineDock &timeline,
     , m_clipIndex(clipIndex)
     , m_position(position)
     , m_targetTrackIndex(-1) // 目标音频轨道索引
-    , m_xml(xml) // 原始片段的 XML
+    , m_xml(xml)             // 原始片段的 XML
     , m_undoHelper(*timeline.model())
     , m_trackAdded(false) // 标记是否添加了新轨道
 {
@@ -1726,7 +1724,6 @@ AlignClipsCommand::AlignClipsCommand(MultitrackModel &model, QUndoCommand *paren
 }
 // 注意：AlignClipsCommand 的 redo() 和 undo() 方法未在提供的代码片段中显示，
 // 但根据模式，redo() 会调用模型的对齐逻辑，undo() 会使用 m_undoHelper 恢复状态。
-
 
 /**
  * @class AlignClipsCommand

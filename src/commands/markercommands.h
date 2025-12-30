@@ -54,8 +54,8 @@ public:
 
 private:
     MarkersModel &m_model; ///< 对标记模型的引用。
-    Marker m_delMarker;     ///< 保存被删除的标记数据。
-    int m_index;            ///< 保存被删除标记的索引。
+    Marker m_delMarker;    ///< 保存被删除的标记数据。
+    int m_index;           ///< 保存被删除标记的索引。
 };
 
 /**
@@ -78,8 +78,8 @@ public:
 
 private:
     MarkersModel &m_model; ///< 对标记模型的引用。
-    Marker m_newMarker;     ///< 保存新添加的标记数据。
-    int m_index;            ///< 保存新标记的索引。
+    Marker m_newMarker;    ///< 保存新添加的标记数据。
+    int m_index;           ///< 保存新标记的索引。
 };
 
 /**
@@ -102,14 +102,14 @@ public:
     void undo(); ///< 撤销更新操作（即恢复到旧状态）。
 
 protected:
-    int id() const { return UndoIdUpdate; } ///< 返回命令的唯一 ID，用于合并。
+    int id() const { return UndoIdUpdate; }    ///< 返回命令的唯一 ID，用于合并。
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并。
 
 private:
     MarkersModel &m_model; ///< 对标记模型的引用。
-    Marker m_newMarker;     ///< 保存标记的新状态。
-    Marker m_oldMarker;     ///< 保存标记的旧状态。
-    int m_index;            ///< 保存被更新标记的索引。
+    Marker m_newMarker;    ///< 保存标记的新状态。
+    Marker m_oldMarker;    ///< 保存标记的旧状态。
+    int m_index;           ///< 保存被更新标记的索引。
 };
 
 /**

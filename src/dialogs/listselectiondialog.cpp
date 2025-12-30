@@ -23,16 +23,15 @@
 // 引入Qt列表控件头文件
 #include <QListWidget>
 
-
-// 【构造函数】：初始化列表选择对话框（通用列表模式）
-// 参数说明：
-// - list：待显示的选项文本列表（如["选项1", "选项2"]）
-// - parent：父窗口指针
-ListSelectionDialog::ListSelectionDialog(const QStringList &list, QWidget *parent)
+    // 【构造函数】：初始化列表选择对话框（通用列表模式）
+    // 参数说明：
+    // - list：待显示的选项文本列表（如["选项1", "选项2"]）
+    // - parent：父窗口指针
+    ListSelectionDialog::ListSelectionDialog(const QStringList &list, QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::ListSelectionDialog)  // 初始化UI指针，创建界面对象
+, ui(new Ui::ListSelectionDialog) // 初始化UI指针，创建界面对象
 {
-    ui->setupUi(this);  // 加载UI布局，初始化界面控件（列表、按钮组等）
+    ui->setupUi(this); // 加载UI布局，初始化界面控件（列表、按钮组等）
 
     // 遍历选项列表，为每个文本创建列表项并添加到列表控件
     for (auto &text : list) {
@@ -52,9 +51,8 @@ ListSelectionDialog::ListSelectionDialog(const QStringList &list, QWidget *paren
 // 【析构函数】：释放UI资源
 ListSelectionDialog::~ListSelectionDialog()
 {
-    delete ui;  // 释放UI对象占用的内存
+    delete ui; // 释放UI对象占用的内存
 }
-
 
 // 【公共方法】：设置颜色列表（特殊模式：列表项以颜色为背景，默认勾选）
 // 参数：list - 颜色字符串列表（如["#FF0000", "red", "255,0,0"]）
@@ -89,10 +87,10 @@ void ListSelectionDialog::setColors(const QStringList &list)
 // 参数：selection - 初始需要勾选的选项文本列表
 void ListSelectionDialog::setSelection(const QStringList &selection)
 {
-    int n = ui->listWidget->count();  // 获取列表项总数
+    int n = ui->listWidget->count(); // 获取列表项总数
     // 遍历所有列表项
     for (int i = 0; i < n; ++i) {
-        QListWidgetItem *item = ui->listWidget->item(i);  // 获取当前列表项
+        QListWidgetItem *item = ui->listWidget->item(i); // 获取当前列表项
         // 若当前项文本在选中列表中，设置为已勾选
         if (selection.indexOf(item->text()) > -1)
             item->setCheckState(Qt::Checked);
@@ -103,11 +101,11 @@ void ListSelectionDialog::setSelection(const QStringList &selection)
 // 返回值：QStringList - 所有已勾选选项的文本列表
 QStringList ListSelectionDialog::selection() const
 {
-    QStringList result;  // 存储选中结果的列表
-    int n = ui->listWidget->count();  // 获取列表项总数
+    QStringList result;              // 存储选中结果的列表
+    int n = ui->listWidget->count(); // 获取列表项总数
     // 遍历所有列表项
     for (int i = 0; i < n; ++i) {
-        QListWidgetItem *item = ui->listWidget->item(i);  // 获取当前列表项
+        QListWidgetItem *item = ui->listWidget->item(i); // 获取当前列表项
         // 若当前项为已勾选状态，将其文本添加到结果列表
         if (item->checkState() == Qt::Checked)
             result << item->text();
@@ -119,9 +117,8 @@ QStringList ListSelectionDialog::selection() const
 // 返回值：QDialogButtonBox* - 对话框底部的按钮组（如确定、取消按钮）
 QDialogButtonBox *ListSelectionDialog::buttonBox() const
 {
-    return ui->buttonBox;  // 返回UI中的按钮组对象
+    return ui->buttonBox; // 返回UI中的按钮组对象
 }
-
 
 // 【私有槽函数】：处理列表项激活事件（切换勾选状态）
 // 参数：item - 被激活的列表项
