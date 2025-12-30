@@ -37,19 +37,18 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
-<<<<<<< HEAD
-extern MainWindow *MAIN;
-=======
+<<<<<<< HEAD extern MainWindow *MAIN;
+== == == =
 #include <QFileDialog>
 #include <QStandardPaths>
 
-#include <QImage>
+#include <QApplication>
 #include <QFileInfo>
+#include <QImage>
 #include <QMessageBox>
 #include <QStatusBar>
-#include <QApplication>
 
-/**
+    /**
  * @class FilterController
  * @brief 滤镜控制器
  * 
@@ -62,11 +61,11 @@ extern MainWindow *MAIN;
  */
 >>>>>>> master
 
-FilterController::FilterController(QObject *parent)
+    FilterController::FilterController(QObject * parent)
     : QObject(parent)
-    , m_metadataModel(this) // 元数据模型，存储所有可用滤镜的信息
-    , m_attachedModel(this) // 附加滤镜模型，存储当前 Producer 上的滤镜列表
-    , m_currentFilterIndex(QmlFilter::NoCurrentFilter) // 初始化时没有选中的滤镜
+, m_metadataModel(this)                            // 元数据模型，存储所有可用滤镜的信息
+, m_attachedModel(this)                            // 附加滤镜模型，存储当前 Producer 上的滤镜列表
+, m_currentFilterIndex(QmlFilter::NoCurrentFilter) // 初始化时没有选中的滤镜
 {
     startTimer(0); // 启动一个 0 毫秒的定时器，以便在事件循环启动后立即加载数据
     // 连接附加滤镜模型的信号，以便在其变化时做出响应
@@ -131,8 +130,9 @@ void FilterController::loadFilterMetadata()
                 }
 
                 // 检查 mlt_service 是否在 MLT 中可用，以及特殊依赖（如 glaxnimate）是否存在
-                if (mltFilters->get_data(meta->mlt_service().toLatin1().constData()) &&
-                    ("maskGlaxnimate" != meta->objectName() || mltProducers->get_data("glaxnimate"))
+                if (mltFilters->get_data(meta->mlt_service().toLatin1().constData())
+                    && ("maskGlaxnimate" != meta->objectName()
+                        || mltProducers->get_data("glaxnimate"))
                     && (version.isEmpty() || meta->isMltVersion(version))) {
                     LOG_DEBUG() << "added filter" << meta->name();
                     meta->loadSettings(); // 加载滤镜的默认设置
@@ -192,7 +192,7 @@ void FilterController::onUndoOrRedo(Mlt::Service &service)
 void FilterController::timerEvent(QTimerEvent *event)
 {
     loadFilterMetadata();
-    loadFilterSets(); // 加载滤镜组合
+    loadFilterSets();            // 加载滤镜组合
     killTimer(event->timerId()); // 执行一次后停止定时器
 }
 
@@ -241,7 +241,9 @@ void FilterController::setCurrentFilter(int attachedIndex)
     QmlMetadata *meta = m_attachedModel.getMetadata(m_currentFilterIndex);
     QmlFilter *filter = 0;
     if (meta) {
-        emit currentFilterChanged(nullptr, nullptr, QmlFilter::NoCurrentFilter); // 先通知旧滤镜已取消
+        emit currentFilterChanged(nullptr,
+                                  nullptr,
+                                  QmlFilter::NoCurrentFilter);           // 先通知旧滤镜已取消
         m_mltService = m_attachedModel.getService(m_currentFilterIndex); // 获取 MLT 服务
         if (!m_mltService.is_valid())
             return;
@@ -472,16 +474,13 @@ delete frame;
 return result.convertToFormat(QImage::Format_ARGB32);
 }
 //王奇琪
-=======
-void FilterController::exportCurrentFrame()
+== == == = void FilterController::exportCurrentFrame()
 {
     qDebug() << "Export frame - step 2: dialog test";
-    
-    QFileDialog::getSaveFileName(
-        nullptr,
-        "Test Export",
-        QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
-        "Images (*.png)"
-    );
+
+    QFileDialog::getSaveFileName(nullptr,
+                                 "Test Export",
+                                 QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
+                                 "Images (*.png)");
 }
 >>>>>>> master
