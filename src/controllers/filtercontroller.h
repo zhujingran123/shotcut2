@@ -70,6 +70,7 @@ public slots:
     void onProducerChanged();
     void pauseUndoTracking();
     void resumeUndoTracking();
+    //王奇琪
     void exportCurrentFrame();
 
 private slots:
@@ -82,6 +83,7 @@ private slots:
     void handleAttachDuplicateFailed(int index);
     void onQmlFilterChanged(const QString &name);
     QImage getCurrentFrameAsImage(int position);
+    //王奇琪
 
 private:
     void loadFilterSets();
