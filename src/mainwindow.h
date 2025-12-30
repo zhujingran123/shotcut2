@@ -175,6 +175,7 @@ private:
     bool confirmProfileChange();
     bool confirmRestartExternalMonitor();
     void resetFilterMenuIfNeeded();
+    void setupExportFrameAction();
 
     Ui::MainWindow *ui;
     Player *m_player;
