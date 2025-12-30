@@ -96,6 +96,5 @@ private:
     MotionTrackerModel m_motionTrackerModel;
     AttachedFiltersModel m_attachedModel;
     int m_currentFilterIndex;
-
 };
 #endif // FILTERCONTROLLER_H

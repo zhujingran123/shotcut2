@@ -27,16 +27,16 @@
 #include "shotcut_mlt_properties.h"
 
 #include <QFileDialog>
-#include <QStandardPaths>
 #include <QFileInfo>
 #include <QImage>
+#include <QStandardPaths>
 
+#include "mainwindow.h"
 #include <MltLink.h>
 #include <QDir>
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimerEvent>
-#include "mainwindow.h"
 extern MainWindow *MAIN;
 
 FilterController::FilterController(QObject *parent)
@@ -462,31 +462,29 @@ void FilterController::exportCurrentFrame()
         QMessageBox::warning(nullptr, tr("警告"), tr("没有可用的视频源"));
         return;
     }
-    
+
     // 获取当前播放位置
     int position = m_position;
-    
+
     // 弹出文件保存对话框
     QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
     QString defaultName = QString("frame_%1.png").arg(position);
-    QString filePath = QFileDialog::getSaveFileName(
-        nullptr,
-        tr("导出当前帧"),
-        QDir(defaultDir).filePath(defaultName),
-        tr("图像文件 (*.png *.jpg *.bmp)")
-    );
-    
+    QString filePath = QFileDialog::getSaveFileName(nullptr,
+                                                    tr("导出当前帧"),
+                                                    QDir(defaultDir).filePath(defaultName),
+                                                    tr("图像文件 (*.png *.jpg *.bmp)"));
+
     if (filePath.isEmpty()) {
         return; // 用户取消
     }
-    
+
     // 获取帧图像
     QImage frameImage = getCurrentFrameAsImage(position);
     if (frameImage.isNull()) {
         QMessageBox::warning(nullptr, tr("错误"), tr("无法获取当前帧图像"));
         return;
     }
-    
+
     // 保存图像
     if (frameImage.save(filePath)) {
         MAIN.showStatusMessage(tr("帧已保存到: %1").arg(QFileInfo(filePath).fileName()));
@@ -500,36 +498,36 @@ QImage FilterController::getCurrentFrameAsImage(int position)
     if (!m_producer || !m_producer->is_valid()) {
         return QImage();
     }
-    
+
     // 获取当前帧
-    Mlt::Frame* frame = m_producer->get_frame(position);
+    Mlt::Frame *frame = m_producer->get_frame(position);
     if (!frame || !frame->is_valid()) {
         delete frame;
         return QImage();
     }
-    
+
     // 获取图像数据
     mlt_image_format format = mlt_image_rgba;
-    const uchar* imageData = frame->get_image(format);
+    const uchar *imageData = frame->get_image(format);
     int width = frame->get_image_width();
     int height = frame->get_image_height();
-    
+
     if (!imageData || width <= 0 || height <= 0) {
         delete frame;
         return QImage();
     }
-    
+
     // 创建QImage（注意：MLT的rgba格式可能是大端或小端）
     QImage image(imageData, width, height, QImage::Format_RGBA8888);
-    
+
     // 复制图像数据（因为frame会被删除）
     QImage copiedImage = image.copy();
-    
+
     delete frame;
     return copiedImage;
 }
-    
-    delete frame;
-    return result.convertToFormat(QImage::Format_ARGB32);
+
+delete frame;
+return result.convertToFormat(QImage::Format_ARGB32);
 }
 //王奇琪
