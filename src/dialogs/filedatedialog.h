@@ -32,15 +32,15 @@ class Producer; // MLT生产者类（关联待设置日期的音视频文件）
 // 文件日期设置对话框类：用于设置或修改音视频文件的创建日期时间
 class FileDateDialog : public QDialog
 {
-Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
+    Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-    public :
-    // 【构造函数】：初始化文件日期设置对话框
-    // 参数说明：
-    // - title：对话框标题前缀（如“视频”“音频”，最终标题为“XXX File Date”）
-    // - producer：MLT生产者对象（关联待设置日期的音视频文件，用于读取/写入日期）
-    // - parent：父窗口指针（默认值0，用于Qt对象树管理）
-    explicit FileDateDialog(QString title, Mlt::Producer *producer, QWidget *parent = 0);
+        public :
+        // 【构造函数】：初始化文件日期设置对话框
+        // 参数说明：
+        // - title：对话框标题前缀（如“视频”“音频”，最终标题为“XXX File Date”）
+        // - producer：MLT生产者对象（关联待设置日期的音视频文件，用于读取/写入日期）
+        // - parent：父窗口指针（默认值0，用于Qt对象树管理）
+        explicit FileDateDialog(QString title, Mlt::Producer *producer, QWidget *parent = 0);
 
 private slots:
     // 【私有槽函数】：处理“确定”按钮点击事件

@@ -109,7 +109,7 @@ SubtitleTrackDialog::SubtitleTrackDialog(const QString &name, const QString &lan
     // 5. 配置对话框属性
     setLayout(grid);      // 设置对话框布局
     this->setModal(true); // 模态对话框（阻塞父窗口操作）
-    m_name->setFocus();   // 初始焦点设置在名称输入框（方便用户直接修改名称）
+    m_name->setFocus(); // 初始焦点设置在名称输入框（方便用户直接修改名称）
 }
 
 // 【公共方法】：获取用户输入的字幕轨道名称

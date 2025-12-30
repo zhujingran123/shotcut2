@@ -48,8 +48,8 @@ public:
      * 用于向 UndoHelper 提供如何更高效地记录状态的提示。
      */
     enum OptimizationHints {
-        NoHints,      ///< 无提示，记录所有信息。
-        SkipXML,      ///< 跳过保存片段的 XML。适用于只改变片段位置或入出点的操作，可提高性能。
+        NoHints, ///< 无提示，记录所有信息。
+        SkipXML, ///< 跳过保存片段的 XML。适用于只改变片段位置或入出点的操作，可提高性能。
         RestoreTracks ///< 使用“恢复轨道”模式。适用于复杂操作（如分割），它会清空受影响的轨道并完全重建。
     };
 
@@ -159,12 +159,12 @@ private:
         {}
     };
 
-    QMap<QUuid, Info> m_state;    ///< 核心数据结构：将片段的 UUID 映射到其信息。
-    QList<QUuid> m_clipsAdded;    ///< 在操作中被新添加的片段的 UUID 列表。
+    QMap<QUuid, Info> m_state; ///< 核心数据结构：将片段的 UUID 映射到其信息。
+    QList<QUuid> m_clipsAdded; ///< 在操作中被新添加的片段的 UUID 列表。
     QList<QUuid> m_insertedOrder; ///< 记录操作前片段的原始插入顺序，用于撤销时恢复顺序。
-    QSet<int> m_affectedTracks;   ///< 记录所有受影响的轨道索引。
-    MultitrackModel &m_model;     ///< 对多轨道模型的引用。
-    OptimizationHints m_hints;    ///< 当前设置的优化提示。
+    QSet<int> m_affectedTracks; ///< 记录所有受影响的轨道索引。
+    MultitrackModel &m_model;   ///< 对多轨道模型的引用。
+    OptimizationHints m_hints;  ///< 当前设置的优化提示。
 };
 
 #endif // UNDOHELPER_H

@@ -36,23 +36,23 @@ class Playlist; // MLT播放列表类，存储待导出的媒体片段
 // 多文件导出对话框类，用于配置并生成多个媒体文件的导出路径
 class MultiFileExportDialog : public QDialog
 {
-Q_OBJECT // 启用Qt元对象系统，支持信号和槽
+    Q_OBJECT // 启用Qt元对象系统，支持信号和槽
 
-    public :
-    // 【构造函数】：初始化多文件导出对话框
-    // 参数说明：
-    // - title：对话框标题
-    // - playlist：待导出的MLT播放列表
-    // - directory：默认导出目录
-    // - prefix：文件名前缀
-    // - extension：文件扩展名
-    // - parent：父窗口指针
-    explicit MultiFileExportDialog(QString title,
-                                   Mlt::Playlist *playlist,
-                                   const QString &directory,
-                                   const QString &prefix,
-                                   const QString &extension,
-                                   QWidget *parent = 0);
+        public :
+        // 【构造函数】：初始化多文件导出对话框
+        // 参数说明：
+        // - title：对话框标题
+        // - playlist：待导出的MLT播放列表
+        // - directory：默认导出目录
+        // - prefix：文件名前缀
+        // - extension：文件扩展名
+        // - parent：父窗口指针
+        explicit MultiFileExportDialog(QString title,
+                                       Mlt::Playlist *playlist,
+                                       const QString &directory,
+                                       const QString &prefix,
+                                       const QString &extension,
+                                       QWidget *parent = 0);
 
     // 【公共方法】：获取所有导出文件的路径列表
     // 返回值：包含所有导出文件完整路径的字符串列表

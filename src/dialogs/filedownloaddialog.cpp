@@ -71,8 +71,8 @@ bool FileDownloadDialog::start()
     LOG_INFO() << "Download Source" << m_src;
     LOG_INFO() << "Download Destination" << m_dst;
 
-    bool retVal = false;               // 下载结果（默认失败）
-    QString tmpPath = m_dst + ".tmp";  // 临时文件路径（避免下载中断导致目标文件损坏）
+    bool retVal = false;              // 下载结果（默认失败）
+    QString tmpPath = m_dst + ".tmp"; // 临时文件路径（避免下载中断导致目标文件损坏）
     m_file = new QFile(tmpPath, this); // 创建临时文件对象
 
     // 1. 打开临时文件（只写模式），失败则返回
@@ -180,7 +180,7 @@ void FileDownloadDialog::sslErrors(const QList<QSslError> &errors)
     qDialog.setDefaultButton(QMessageBox::Yes);                  // 默认选择"是"
     qDialog.setEscapeButton(QMessageBox::No);                    // 按ESC键选择"否"
     qDialog.setWindowModality(QmlApplication::dialogModality()); // 匹配应用模态属性
-    int result = qDialog.exec();                                 // 显示对话框，等待用户选择
+    int result = qDialog.exec(); // 显示对话框，等待用户选择
 
     if (result == QMessageBox::Yes) {
         m_reply->ignoreSslErrors(); // 用户选择忽略，继续下载

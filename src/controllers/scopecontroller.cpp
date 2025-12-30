@@ -55,16 +55,16 @@ ScopeController::ScopeController(QMainWindow *mainWindow, QMenu *menu)
     createScopeDock<AudioPeakMeterScopeWidget>(mainWindow, scopeMenu); // 音频峰值表
     createScopeDock<AudioSpectrumScopeWidget>(mainWindow, scopeMenu);  // 音频频谱
     createScopeDock<AudioSurroundScopeWidget>(mainWindow, scopeMenu);  // 环绕声
-    createScopeDock<AudioVectorScopeWidget>(mainWindow, scopeMenu);    // 音频矢量图（相位）
-    createScopeDock<AudioWaveformScopeWidget>(mainWindow, scopeMenu);  // 音频波形
+    createScopeDock<AudioVectorScopeWidget>(mainWindow, scopeMenu);   // 音频矢量图（相位）
+    createScopeDock<AudioWaveformScopeWidget>(mainWindow, scopeMenu); // 音频波形
 
     // 使用模板方法创建所有视频示波器的停靠窗口
     createScopeDock<VideoHistogramScopeWidget>(mainWindow, scopeMenu);   // 视频直方图
     createScopeDock<VideoRgbParadeScopeWidget>(mainWindow, scopeMenu);   // RGB 分量示波器
     createScopeDock<VideoRgbWaveformScopeWidget>(mainWindow, scopeMenu); // RGB 波形
-    createScopeDock<VideoVectorScopeWidget>(mainWindow, scopeMenu);      // 视频矢量图（色度）
-    createScopeDock<VideoWaveformScopeWidget>(mainWindow, scopeMenu);    // 视频波形（亮度）
-    createScopeDock<VideoZoomScopeWidget>(mainWindow, scopeMenu);        // 视频放大镜
+    createScopeDock<VideoVectorScopeWidget>(mainWindow, scopeMenu);   // 视频矢量图（色度）
+    createScopeDock<VideoWaveformScopeWidget>(mainWindow, scopeMenu); // 视频波形（亮度）
+    createScopeDock<VideoZoomScopeWidget>(mainWindow, scopeMenu);     // 视频放大镜
     LOG_DEBUG() << "end";
 }
 

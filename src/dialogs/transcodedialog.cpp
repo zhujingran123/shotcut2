@@ -63,10 +63,10 @@ TranscodeDialog::TranscodeDialog(const QString &message, bool isProgressive, QWi
     ui->fpsWidget->setFps(MLT.profile().fps());
 
     // 4. 填充帧率转换模式下拉框（文本显示用户可见名称，数据存储模式标识）
-    ui->frcComboBox->addItem(tr("Duplicate (fast)"), QVariant("dup"));           // 复制帧（快速）
-    ui->frcComboBox->addItem(tr("Blend"), QVariant("blend"));                    // 混合帧
+    ui->frcComboBox->addItem(tr("Duplicate (fast)"), QVariant("dup")); // 复制帧（快速）
+    ui->frcComboBox->addItem(tr("Blend"), QVariant("blend"));          // 混合帧
     ui->frcComboBox->addItem(tr("Motion Compensation (slow)"), QVariant("mci")); // 运动补偿（慢速）
-    ui->frcComboBox->setCurrentIndex(0);                                         // 默认选中“复制帧”
+    ui->frcComboBox->setCurrentIndex(0); // 默认选中“复制帧”
 
     // 5. 添加“高级”按钮（控制高级配置区的显示/隐藏）
     QPushButton *advancedButton = new QPushButton(tr("Advanced"));
@@ -77,7 +77,7 @@ TranscodeDialog::TranscodeDialog(const QString &message, bool isProgressive, QWi
     if (!Settings.convertAdvanced()) {
         ui->advancedWidget->hide();
     }
-    advancedButton->setChecked(Settings.convertAdvanced());       // 按钮初始勾选状态与配置一致
+    advancedButton->setChecked(Settings.convertAdvanced()); // 按钮初始勾选状态与配置一致
     ui->advancedCheckBox->setChecked(Settings.convertAdvanced()); // 高级模式复选框与配置一致
     // 将“高级”按钮添加到按钮组（动作角色）
     ui->buttonBox->addButton(advancedButton, QDialogButtonBox::ActionRole);

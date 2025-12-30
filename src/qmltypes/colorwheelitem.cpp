@@ -376,7 +376,7 @@ void ColorWheelItem::drawWheelDot(QPainter &painter)
 // 【功能】：在滑动条上绘制当前亮度指示条
 void ColorWheelItem::drawSliderBar(QPainter &painter)
 {
-    qreal value = 1.0 - m_color.valueF();            // 亮度值反转（从上到下：亮→暗）
+    qreal value = 1.0 - m_color.valueF(); // 亮度值反转（从上到下：亮→暗）
     int ws = wheelSize() * MAIN.devicePixelRatioF(); // 考虑高DPI缩放
     int w = (qreal) ws / WHEEL_SLIDER_RATIO;
     int h = ws - m_margin * 2;

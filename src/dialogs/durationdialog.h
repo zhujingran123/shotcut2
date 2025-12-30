@@ -30,12 +30,12 @@ class DurationDialog; // 前向声明UI中的对话框类，避免提前包含�
 // 时长设置对话框类：用于设置或修改视频/音频的时长（以帧为单位）
 class DurationDialog : public QDialog
 {
-Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
+    Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-    public :
-    // 构造函数：初始化时长对话框
-    // 参数parent：父窗口指针（默认值0，用于Qt对象树管理）
-    explicit DurationDialog(QWidget *parent = 0);
+        public :
+        // 构造函数：初始化时长对话框
+        // 参数parent：父窗口指针（默认值0，用于Qt对象树管理）
+        explicit DurationDialog(QWidget *parent = 0);
     // 析构函数：释放UI对象资源
     ~DurationDialog();
 

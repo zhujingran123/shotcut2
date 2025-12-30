@@ -52,18 +52,18 @@
 // 【功能】读取单个音频资源的特征数据（如音量平均值），用于后续对齐分析
 class AudioReader : public QObject
 {
-Q_OBJECT // 启用Qt信号槽机制
-    public :
-    // 构造函数：初始化音频读取参数
-    // producerXml：MLT生产者的XML描述（包含音频资源信息）
-    // array：存储音频特征数据的数组（输出结果）
-    // in/out：音频的入点/出点（仅处理指定时间段，-1表示全段）
-    AudioReader(QString producerXml, AlignmentArray *array, int in = -1, int out = -1)
-    : QObject()
-    , m_producerXml(producerXml) // 保存MLT生产者XML
-    , m_array(array)             // 保存特征数据数组指针
-    , m_in(in)                   // 保存音频入点
-    , m_out(out)                 // 保存音频出点
+    Q_OBJECT // 启用Qt信号槽机制
+        public :
+        // 构造函数：初始化音频读取参数
+        // producerXml：MLT生产者的XML描述（包含音频资源信息）
+        // array：存储音频特征数据的数组（输出结果）
+        // in/out：音频的入点/出点（仅处理指定时间段，-1表示全段）
+        AudioReader(QString producerXml, AlignmentArray *array, int in = -1, int out = -1)
+        : QObject()
+        , m_producerXml(producerXml) // 保存MLT生产者XML
+        , m_array(array)             // 保存特征数据数组指针
+        , m_in(in)                   // 保存音频入点
+        , m_out(out)                 // 保存音频出点
     {}
 
     // 【初始化特征数据数组】：设置数组最大长度（避免越界）
@@ -141,18 +141,19 @@ private:
 // 【功能】：读取单个剪辑的音频特征，并与参考轨道的音频特征对比，计算对齐参数（偏移量、速度）
 class ClipAudioReader : public QObject
 {
-Q_OBJECT // 启用Qt信号槽机制
-    public :
-    // 构造函数：初始化剪辑音频读取和对齐分析参数
-    // producerXml：剪辑的MLT生产者XML
-    // referenceArray：参考轨道的音频特征数组（用于对比）
-    // index：剪辑在列表中的索引（标识当前处理的剪辑）
-    // in/out：剪辑的音频入点/出点
-    ClipAudioReader(QString producerXml, AlignmentArray &referenceArray, int index, int in, int out)
-    : QObject()
-    , m_referenceArray(referenceArray)             // 参考轨道特征数组（引用，避免拷贝）
-    , m_reader(producerXml, &m_clipArray, in, out) // 初始化音频读取器（输出到内部数组）
-    , m_index(index)                               // 剪辑在列表中的索引
+    Q_OBJECT // 启用Qt信号槽机制
+        public :
+        // 构造函数：初始化剪辑音频读取和对齐分析参数
+        // producerXml：剪辑的MLT生产者XML
+        // referenceArray：参考轨道的音频特征数组（用于对比）
+        // index：剪辑在列表中的索引（标识当前处理的剪辑）
+        // in/out：剪辑的音频入点/出点
+        ClipAudioReader(
+            QString producerXml, AlignmentArray &referenceArray, int index, int in, int out)
+        : QObject()
+        , m_referenceArray(referenceArray) // 参考轨道特征数组（引用，避免拷贝）
+        , m_reader(producerXml, &m_clipArray, in, out) // 初始化音频读取器（输出到内部数组）
+        , m_index(index)                               // 剪辑在列表中的索引
     {
         // 连接AudioReader的进度信号到当前类的槽函数（转发进度）
         connect(&m_reader, SIGNAL(progressUpdate(int)), this, SLOT(onReaderProgressUpdate(int)));
@@ -225,13 +226,14 @@ private:
 // 【功能】：自定义QTreeView的单元格绘制逻辑（显示进度条、状态图标等）
 class AlignTableDelegate : public QStyledItemDelegate
 {
-Q_OBJECT // 启用Qt信号槽机制
-    public :
-    // 重写绘制函数：自定义单元格显示内容
-    // painter：绘图工具
-    // option：单元格样式选项（如位置、大小）
-    // index：单元格的模型索引（标识行/列）
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    Q_OBJECT // 启用Qt信号槽机制
+        public :
+        // 重写绘制函数：自定义单元格显示内容
+        // painter：绘图工具
+        // option：单元格样式选项（如位置、大小）
+        // index：单元格的模型索引（标识行/列）
+        void
+        paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
         // 将模型索引转换为AlignClipsModel（安全转换，获取自定义模型数据）
         const AlignClipsModel *model = dynamic_cast<const AlignClipsModel *>(index.model());
@@ -383,11 +385,11 @@ AlignAudioDialog::AlignAudioDialog(QString title,
     // 配置视图属性
     m_table->setSelectionMode(QAbstractItemView::NoSelection); // 禁用选择（仅显示）
     m_table->setItemsExpandable(false);                        // 禁用项目展开
-    m_table->setRootIsDecorated(false);                        // 禁用根节点装饰（无折叠图标）
-    m_table->setUniformRowHeights(true);                       // 所有行高度一致（优化绘制）
-    m_table->setSortingEnabled(false);                         // 禁用排序
-    m_table->setModel(&m_alignClipsModel);                     // 设置数据模型（显示剪辑数据）
-    m_table->setWordWrap(false);                               // 禁用文本换行
+    m_table->setRootIsDecorated(false);    // 禁用根节点装饰（无折叠图标）
+    m_table->setUniformRowHeights(true);   // 所有行高度一致（优化绘制）
+    m_table->setSortingEnabled(false);     // 禁用排序
+    m_table->setModel(&m_alignClipsModel); // 设置数据模型（显示剪辑数据）
+    m_table->setWordWrap(false);           // 禁用文本换行
     // 设置自定义委托（用于绘制进度条、状态图标）
     m_delegate = new AlignTableDelegate();
     m_table->setItemDelegate(m_delegate);
@@ -427,7 +429,7 @@ AlignAudioDialog::AlignAudioDialog(QString title,
     // 6.3 添加"应用"按钮（ApplyRole：应用结果按钮）
     m_applyButton = m_buttonBox->addButton(tr("Apply"), QDialogButtonBox::ApplyRole);
     connect(m_applyButton, SIGNAL(pressed()), this, SLOT(apply())); // 点击触发应用逻辑
-    m_applyButton->setEnabled(false);                               // 初始禁用（未处理时无法应用）
+    m_applyButton->setEnabled(false); // 初始禁用（未处理时无法应用）
 
     // 6.4 添加"处理并应用"按钮（AcceptRole：确认按钮，优先级高）
     m_processAndApplyButton = m_buttonBox->addButton(tr("Process + Apply"),
@@ -505,7 +507,7 @@ void AlignAudioDialog::rebuildClipList()
             m_alignClipsModel.addClip(clipName,
                                       AlignClipsModel::INVALID_OFFSET, // 初始无效偏移量
                                       AlignClipsModel::INVALID_OFFSET, // 初始无效速度
-                                      error);                          // 错误信息（空表示正常）
+                                      error); // 错误信息（空表示正常）
         }
     }
 }
@@ -523,11 +525,11 @@ void AlignAudioDialog::process()
     // 创建参考轨道的MLT生产者（智能指针管理）
     QScopedPointer<Mlt::Producer> track(m_model->tractor()->track(mlt_index));
     int maxLength = track->get_playtime(); // 参考轨道总帧数（作为特征数组最大长度）
-    bool validClip = false;                // 是否存在可对齐的有效剪辑（避免空处理）
-    QString xml = MLT.XML(track.data());   // 参考轨道的MLT XML描述
+    bool validClip = false; // 是否存在可对齐的有效剪辑（避免空处理）
+    QString xml = MLT.XML(track.data()); // 参考轨道的MLT XML描述
 
     // 3. 初始化参考轨道音频处理（读取特征数据）
-    AlignmentArray trackArray;                                   // 参考轨道的音频特征数组
+    AlignmentArray trackArray; // 参考轨道的音频特征数组
     AudioReader trackReader(MLT.XML(track.data()), &trackArray); // 参考轨道音频读取器
     // 连接参考轨道进度信号到更新槽函数（显示参考轨道分析进度）
     connect(&trackReader, SIGNAL(progressUpdate(int)), this, SLOT(updateReferenceProgress(int)));
@@ -535,7 +537,7 @@ void AlignAudioDialog::process()
     // 4. 初始化所有待对齐剪辑的音频读取器
     QList<ClipAudioReader *> m_clipReaders; // 剪辑音频读取器列表
     for (const auto &uuid : m_uuids) {
-        int trackIndex, clipIndex;                                        // 剪辑所在轨道/剪辑索引
+        int trackIndex, clipIndex; // 剪辑所在轨道/剪辑索引
         auto info = m_model->findClipByUuid(uuid, trackIndex, clipIndex); // 查找剪辑信息
 
         // 跳过无效剪辑（不存在或MLT剪切对象非法）
@@ -629,11 +631,11 @@ void AlignAudioDialog::apply()
     Timeline::AlignClipsCommand *command = new Timeline::AlignClipsCommand(*m_model);
     int referenceTrackIndex = m_trackCombo->currentData().toInt(); // 参考轨道索引
     int alignmentCount = 0;                                        // 实际对齐的剪辑数量
-    int modelIndex = 0;                                            // 剪辑在数据模型中的索引
+    int modelIndex = 0; // 剪辑在数据模型中的索引
 
     // 2. 遍历所有待对齐的剪辑UUID，应用对齐参数
     for (const auto &uuid : m_uuids) {
-        int trackIndex, clipIndex;                                        // 剪辑所在轨道/剪辑索引
+        int trackIndex, clipIndex; // 剪辑所在轨道/剪辑索引
         auto info = m_model->findClipByUuid(uuid, trackIndex, clipIndex); // 查找剪辑信息
 
         // 跳过无效剪辑或参考轨道上的剪辑

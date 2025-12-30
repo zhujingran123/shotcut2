@@ -19,7 +19,7 @@
 #include "editmarkerdialog.h"
 
 // 引入依赖的头文件（日志、自定义控件等）
-#include "Logger.h"                   // 日志工具类，用于打印调试信息
+#include "Logger.h" // 日志工具类，用于打印调试信息
 #include "widgets/editmarkerwidget.h" // 自定义的标记编辑控件（封装标记的文本、颜色、时间范围等编辑功能）
 
 // 引入Qt基础组件头文件
@@ -56,8 +56,8 @@ EditMarkerDialog::EditMarkerDialog(
     connect(m_buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(clicked(QAbstractButton *)));
 
     // 5. 设置对话框布局及属性
-    setLayout(VLayout);                                 // 为对话框设置布局
-    setModal(true);                                     // 模态对话框（阻塞父窗口操作）
+    setLayout(VLayout); // 为对话框设置布局
+    setModal(true);     // 模态对话框（阻塞父窗口操作）
     layout()->setSizeConstraint(QLayout::SetFixedSize); // 固定对话框大小（不可拉伸）
 }
 

@@ -100,7 +100,7 @@ signals:
 
 private:
     FileDialog::FileMode m_fileMode{FileDialog::OpenFile}; // 默认模式为打开文件
-    std::unique_ptr<QFileDialog> m_fileDialog;             // 使用智能指针管理Qt文件对话框实例
+    std::unique_ptr<QFileDialog> m_fileDialog; // 使用智能指针管理Qt文件对话框实例
 };
 
 #endif // FILEDIALOG_H

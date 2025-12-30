@@ -91,10 +91,11 @@ QDir Database::thumbnailsDir()
                         img.save(dir.filePath(fileName));
                         auto accessed = query.value(1).toDateTime();
                         auto offset = accessed.timeZone().offsetFromUtc(accessed);
-                        struct utimbuf utimes{static_cast<time_t>(accessed.toSecsSinceEpoch()
-                                                                  + offset),
-                                              static_cast<time_t>(accessed.toSecsSinceEpoch()
-                                                                  + offset)};
+                        struct utimbuf utimes
+                        {
+                            static_cast<time_t>(accessed.toSecsSinceEpoch() + offset),
+                                static_cast<time_t>(accessed.toSecsSinceEpoch() + offset)
+                        };
                         ::utime(dir.filePath(fileName).toUtf8().constData(), &utimes);
                     }
                 }

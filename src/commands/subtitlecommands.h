@@ -79,9 +79,9 @@ public:
     void undo(); ///< 撤销删除操作。
 
 private:
-    SubtitlesModel &m_model;                        ///< 对字幕模型的引用。
-    int m_trackIndex;                               ///< 被删除轨道的索引。
-    SubtitlesModel::SubtitleTrack m_saveTrack;      ///< 保存被删除轨道的数据，用于撤销。
+    SubtitlesModel &m_model;                   ///< 对字幕模型的引用。
+    int m_trackIndex;                          ///< 被删除轨道的索引。
+    SubtitlesModel::SubtitleTrack m_saveTrack; ///< 保存被删除轨道的数据，用于撤销。
     QList<Subtitles::SubtitleItem> m_saveSubtitles; ///< 保存被删除轨道上的所有字幕项，用于撤销。
 };
 

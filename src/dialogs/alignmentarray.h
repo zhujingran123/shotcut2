@@ -34,10 +34,10 @@ public:
     // 构造函数与析构函数
     AlignmentArray();                    // 默认构造函数：初始化成员变量
     AlignmentArray(size_t minimum_size); // 带参构造函数：指定最小数组大小并初始化
-    virtual ~AlignmentArray();           // 虚析构函数：释放FFT相关资源（避免内存泄漏）
+    virtual ~AlignmentArray(); // 虚析构函数：释放FFT相关资源（避免内存泄漏）
 
     // 公共成员函数（外部调用接口）
-    void init(size_t minimum_size);                    // 初始化：设置数组大小，释放旧资源
+    void init(size_t minimum_size); // 初始化：设置数组大小，释放旧资源
     void setValues(const std::vector<double> &values); // 设置音频特征数据，标记未变换状态
     // 计算仅时间偏移量（不考虑速度变化），返回对齐质量，offset为输出参数
     double calculateOffset(AlignmentArray &from, int *offset);
@@ -60,8 +60,8 @@ private:
     double m_autocorrelationMax;         // 自相关最大值（用于对齐质量归一化）
     size_t m_minimumSize;                // 初始化时指定的最小数组大小
     size_t m_actualComplexSize;          // 实际FFT复数数组大小（由minimumSize计算）
-    bool m_isTransformed;                // 变换状态标记（true=已完成FFT，无需重复执行）
-    QMutex m_transformMutex;             // 变换互斥锁（保护多线程下的变换操作）
+    bool m_isTransformed;    // 变换状态标记（true=已完成FFT，无需重复执行）
+    QMutex m_transformMutex; // 变换互斥锁（保护多线程下的变换操作）
 };
 
 // 结束头文件保护宏

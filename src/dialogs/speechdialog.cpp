@@ -19,10 +19,10 @@
 #include "speechdialog.h"
 
 // 引入依赖的业务逻辑头文件
-#include "Logger.h"                  // 日志工具类，用于打印调试信息
-#include "mltcontroller.h"           // MLT控制器（获取视频配置、创建音频生产者/消费者）
+#include "Logger.h"        // 日志工具类，用于打印调试信息
+#include "mltcontroller.h" // MLT控制器（获取视频配置、创建音频生产者/消费者）
 #include "qmltypes/qmlapplication.h" // QML应用类（获取数据目录、对话框模态属性）
-#include "settings.h"                // 配置类（读取/保存语音语言、声音等偏好设置）
+#include "settings.h" // 配置类（读取/保存语音语言、声音等偏好设置）
 
 // 引入Qt相关头文件
 #include <QComboBox>        // 下拉选择框（用于选择语言、声音）
@@ -158,11 +158,11 @@ SpeechDialog::SpeechDialog(QWidget *parent)
 
 // 【控件布局】：语速选择行（标签 + 双精度数值输入框）
 auto speedLabel = new QLabel(tr("Speed"), this); // 语速标签（显示“语速”）
-m_speed = new QDoubleSpinBox(this);              // 语速输入框（双精度，支持小数调节）
-m_speed->setRange(0.5, 2.0);                     // 设置语速范围：0.5倍（慢）~2.0倍（快）
-m_speed->setDecimals(2);                         // 设置显示小数位数：2位（如1.05、1.50）
-m_speed->setSingleStep(0.05);                    // 设置步长：每次点击增减0.05倍
-m_speed->setValue(Settings.speechSpeed());       // 初始值：从配置中读取已保存的语速
+m_speed = new QDoubleSpinBox(this);        // 语速输入框（双精度，支持小数调节）
+m_speed->setRange(0.5, 2.0);               // 设置语速范围：0.5倍（慢）~2.0倍（快）
+m_speed->setDecimals(2);                   // 设置显示小数位数：2位（如1.05、1.50）
+m_speed->setSingleStep(0.05);              // 设置步长：每次点击增减0.05倍
+m_speed->setValue(Settings.speechSpeed()); // 初始值：从配置中读取已保存的语速
 
 // 创建水平布局包裹语速输入框（避免与其他控件错位）
 auto speedRow = new QWidget(this);
@@ -179,7 +179,7 @@ grid->addWidget(speedRow, 2, 1, 1, 2);
 // 【控件布局】：输出文件行（标签 + 输入框 + 浏览按钮）
 auto outputLabel = new QLabel(tr("Output file"), this); // 输出文件标签（显示“输出文件”）
 m_outputFile = new QLineEdit(this);                     // 输出文件路径输入框
-m_outputFile->setMinimumWidth(300);                     // 设置输入框最小宽度（确保显示完整路径）
+m_outputFile->setMinimumWidth(300); // 设置输入框最小宽度（确保显示完整路径）
 m_outputFile->setPlaceholderText(tr("Click the button to set the file")); // 占位提示文本
 m_outputFile->setDisabled(true); // 设置输入框禁用（只能通过浏览按钮修改）
 // 初始值：从QML应用获取默认文件名（格式“speech-xxx.wav”，避免重复）
@@ -237,8 +237,8 @@ connect(buttonBox->button(QDialogButtonBox::Cancel),
 connect(buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, [&] {
     // 1. 获取当前用户选择的参数
     const QString lang = m_language->currentData().toString(); // 语言标识（如“a”=美式英语）
-    const QString voice = m_voice->currentData().toString();   // 声音标识（对应具体语音文件）
-    const double speed = m_speed->value();                     // 语速（0.5~2.0倍）
+    const QString voice = m_voice->currentData().toString(); // 声音标识（对应具体语音文件）
+    const double speed = m_speed->value();                   // 语速（0.5~2.0倍）
 
     // 2. 处理输出文件路径（确保路径有效）
     QString path = m_outputFile->text().trimmed();
@@ -310,7 +310,7 @@ void SpeechDialog::populateVoices(const QString &langCode)
         QStringLiteral("zm_yunxia"),   QStringLiteral("zm_yunyang"),
     };
 
-    m_voice->clear();         // 清空当前声音下拉框的选项（避免残留旧语言的声音）
+    m_voice->clear(); // 清空当前声音下拉框的选项（避免残留旧语言的声音）
     if (langCode.isEmpty()) { // 若语言标识为空，直接返回（无声音可加载）
         return;
     }

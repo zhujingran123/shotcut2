@@ -30,19 +30,23 @@ class QDialogButtonBox; // 对话框按钮组类（整合确定、取消等按�
 // 标记编辑对话框类：用于编辑时间线上标记的文本、颜色、起始/结束帧位置
 class EditMarkerDialog : public QDialog
 {
-Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
+    Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-    public :
-    // 【构造函数】：初始化标记编辑对话框
-    // 参数说明：
-    // - parent：父窗口指针（用于Qt对象树管理）
-    // - text：标记的初始文本（编辑前的内容）
-    // - color：标记的初始颜色（编辑前的颜色）
-    // - start：标记的初始起始帧位置
-    // - end：标记的初始结束帧位置
-    // - maxEnd：标记结束帧的最大值（限制结束帧不能超过此值，避免超出视频范围）
-    explicit EditMarkerDialog(
-        QWidget *parent, const QString &text, const QColor &color, int start, int end, int maxEnd);
+        public :
+        // 【构造函数】：初始化标记编辑对话框
+        // 参数说明：
+        // - parent：父窗口指针（用于Qt对象树管理）
+        // - text：标记的初始文本（编辑前的内容）
+        // - color：标记的初始颜色（编辑前的颜色）
+        // - start：标记的初始起始帧位置
+        // - end：标记的初始结束帧位置
+        // - maxEnd：标记结束帧的最大值（限制结束帧不能超过此值，避免超出视频范围）
+        explicit EditMarkerDialog(QWidget *parent,
+                                  const QString &text,
+                                  const QColor &color,
+                                  int start,
+                                  int end,
+                                  int maxEnd);
 
     // 【公共方法】：获取用户编辑后的标记文本
     // 返回值：编辑完成后的标记文本

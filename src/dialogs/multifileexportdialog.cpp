@@ -64,8 +64,8 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
     : QDialog(parent)
     , m_playlist(playlist) // 保存播放列表对象（用于获取剪辑信息）
 {
-    int col = 0;                                         // 网格布局的列索引（用于定位控件）
-    setWindowTitle(title);                               // 设置对话框标题
+    int col = 0;           // 网格布局的列索引（用于定位控件）
+    setWindowTitle(title); // 设置对话框标题
     setWindowModality(QmlApplication::dialogModality()); // 设置模态属性（与应用一致）
 
     // 1. 创建网格布局（管理对话框内所有控件的排列）
@@ -149,15 +149,15 @@ MultiFileExportDialog::MultiFileExportDialog(QString title,
     m_errorIcon = new QLabel();
     QIcon icon = QIcon(":/icons/oxygen/32x32/status/task-reject.png"); // 错误图标
     m_errorIcon->setPixmap(icon.pixmap(QSize(24, 24)));                // 设置图标大小
-    glayout->addWidget(m_errorIcon, col, 0, Qt::AlignRight);           // 错误图标（右对齐）
-    m_errorText = new QLabel();                                        // 错误文本标签
-    glayout->addWidget(m_errorText, col++, 1, Qt::AlignLeft);          // 错误文本（左对齐）
+    glayout->addWidget(m_errorIcon, col, 0, Qt::AlignRight);  // 错误图标（右对齐）
+    m_errorText = new QLabel();                               // 错误文本标签
+    glayout->addWidget(m_errorText, col++, 1, Qt::AlignLeft); // 错误文本（左对齐）
 
     // 9. 添加“导出文件列表”控件（列表控件）
     m_list = new QListWidget();
     m_list->setSelectionMode(QAbstractItemView::NoSelection); // 禁用选择模式
-    m_list->setIconSize(QSize(16, 16));                       // 设置图标大小（显示文件状态图标）
-    glayout->addWidget(m_list, col++, 0, 1, 2);               // 列表占2列（跨列布局）
+    m_list->setIconSize(QSize(16, 16));         // 设置图标大小（显示文件状态图标）
+    glayout->addWidget(m_list, col++, 0, 1, 2); // 列表占2列（跨列布局）
 
     // 10. 添加“按钮组”控件（确定、取消按钮）
     m_buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

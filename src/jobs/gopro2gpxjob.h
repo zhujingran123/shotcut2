@@ -27,7 +27,7 @@ class GoPro2GpxJob : public AbstractJob
     Q_OBJECT
 public:
     GoPro2GpxJob(const QString &name, const QStringList &args);
-    virtual ~GoPro2GpxJob() {};
+    virtual ~GoPro2GpxJob(){};
     void start();
 
 private:

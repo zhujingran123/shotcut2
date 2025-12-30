@@ -35,8 +35,8 @@ static QMutex s_fftwPlanningMutex;
 // ------------------------------ 构造函数与析构函数 ------------------------------
 // 默认构造函数：初始化成员变量
 AlignmentArray::AlignmentArray()
-    : m_forwardBuf(nullptr)                                    // FFT正向变换缓冲区（复数数组）
-    , m_backwardBuf(nullptr)                                   // FFT反向变换缓冲区（复数数组）
+    : m_forwardBuf(nullptr)  // FFT正向变换缓冲区（复数数组）
+    , m_backwardBuf(nullptr) // FFT反向变换缓冲区（复数数组）
     , m_autocorrelationMax(std::numeric_limits<double>::min()) // 自相关最大值（初始化为最小值）
     , m_isTransformed(false) // 标记是否已完成FFT变换（初始未变换）
 {}
@@ -88,8 +88,8 @@ void AlignmentArray::init(size_t minimumSize)
 void AlignmentArray::setValues(const std::vector<double> &values)
 {
     QMutexLocker locker(&m_transformMutex); // 加锁保护数据修改
-    m_values = values;                      // 保存原始音频特征值（如每帧音量平均值）
-    m_isTransformed = false;                // 数据更新后，之前的FFT变换失效，需重新计算
+    m_values = values;       // 保存原始音频特征值（如每帧音量平均值）
+    m_isTransformed = false; // 数据更新后，之前的FFT变换失效，需重新计算
 }
 
 // ------------------------------ 音频对齐核心算法 ------------------------------

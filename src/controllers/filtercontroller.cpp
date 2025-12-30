@@ -242,7 +242,7 @@ void FilterController::setCurrentFilter(int attachedIndex)
     if (meta) {
         emit currentFilterChanged(nullptr,
                                   nullptr,
-                                  QmlFilter::NoCurrentFilter);           // 先通知旧滤镜已取消
+                                  QmlFilter::NoCurrentFilter); // 先通知旧滤镜已取消
         m_mltService = m_attachedModel.getService(m_currentFilterIndex); // 获取 MLT 服务
         if (!m_mltService.is_valid())
             return;

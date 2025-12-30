@@ -37,12 +37,12 @@ static const unsigned int editorWidth = 180;
 // 自定义快捷键编辑器部件类，用于编辑快捷键序列
 class ShortcutEditor : public QWidget
 {
-Q_OBJECT // 启用 Qt 的元对象系统，支持信号与槽机制
+    Q_OBJECT // 启用 Qt 的元对象系统，支持信号与槽机制
 
-    public :
-    // 构造函数，parent 为父部件
-    ShortcutEditor(QWidget *parent = nullptr)
-    : QWidget(parent)
+        public :
+        // 构造函数，parent 为父部件
+        ShortcutEditor(QWidget *parent = nullptr)
+        : QWidget(parent)
     {
         // 设置部件最小宽度
         setMinimumWidth(editorWidth);
@@ -123,12 +123,12 @@ signals:
 // 【自定义项委托类】：用于在 QTreeView 中编辑快捷键相关列
 class ShortcutItemDelegate : public QStyledItemDelegate
 {
-Q_OBJECT // 启用 Qt 元对象系统
+    Q_OBJECT // 启用 Qt 元对象系统
 
-    public :
-    // 构造函数，parent 为父对象
-    ShortcutItemDelegate(QObject *parent = nullptr)
-    : QStyledItemDelegate(parent)
+        public :
+        // 构造函数，parent 为父对象
+        ShortcutItemDelegate(QObject *parent = nullptr)
+        : QStyledItemDelegate(parent)
     {}
 
     // 【创建编辑器部件】：根据列索引判断是否创建 ShortcutEditor
@@ -196,11 +196,11 @@ private:
 // 自定义事件过滤器类，处理按键事件（比如回车关闭窗口）
 class KeyPressFilter : public QObject
 {
-Q_OBJECT // 启用 Qt 元对象系统
-    public :
-    // 构造函数，parent 为父对象
-    KeyPressFilter(QObject *parent = 0)
-    : QObject(parent)
+    Q_OBJECT // 启用 Qt 元对象系统
+        public :
+        // 构造函数，parent 为父对象
+        KeyPressFilter(QObject *parent = 0)
+        : QObject(parent)
     {}
 
 protected:
@@ -227,12 +227,12 @@ protected:
 // 自定义 QTreeView 子类，用于处理编辑相关的自定义逻辑
 class PrivateTreeView : public QTreeView
 {
-Q_OBJECT // 启用 Qt 元对象系统
+    Q_OBJECT // 启用 Qt 元对象系统
 
-    public :
-    // 构造函数，parent 为父部件
-    PrivateTreeView(QWidget *parent = nullptr)
-    : QTreeView(parent)
+        public :
+        // 构造函数，parent 为父部件
+        PrivateTreeView(QWidget *parent = nullptr)
+        : QTreeView(parent)
     {}
 
     // 重写编辑方法，处理编辑状态相关逻辑
@@ -282,12 +282,12 @@ signals:
 // 自定义事件过滤器类，处理搜索栏的按键事件（上下键聚焦搜索结果）
 class SearchKeyPressFilter : public QObject
 {
-Q_OBJECT // 启用 Qt 元对象系统
+    Q_OBJECT // 启用 Qt 元对象系统
 
-    public :
-    // 构造函数，parent 为父对象
-    SearchKeyPressFilter(QObject *parent = 0)
-    : QObject(parent)
+        public :
+        // 构造函数，parent 为父对象
+        SearchKeyPressFilter(QObject *parent = 0)
+        : QObject(parent)
     {}
 
 protected:

@@ -60,19 +60,19 @@ BitrateDialog::BitrateDialog(const QString &resource,
     setSizeGripEnabled(true);             // 启用右下角大小调整手柄
 
     // 2. 初始化统计变量（用于计算比特率相关指标）
-    double time = 0.0;                                    // 当前累计时间（秒）
-    double maxSize = 0.0;                                 // 最大数据大小（未实际使用）
-    double firstTime = 0.0;                               // 第一个数据点的时间（用于时间偏移校准）
-    double keySubtotal = 0.0;                             // 关键帧（I帧）累计比特率（Kb）
-    double interSubtotal = 0.0;                           // 非关键帧（P/B帧）累计比特率（Kb）
-    double totalKbps = 0.0;                               // 总比特率（Kb）
+    double time = 0.0;          // 当前累计时间（秒）
+    double maxSize = 0.0;       // 最大数据大小（未实际使用）
+    double firstTime = 0.0;     // 第一个数据点的时间（用于时间偏移校准）
+    double keySubtotal = 0.0;   // 关键帧（I帧）累计比特率（Kb）
+    double interSubtotal = 0.0; // 非关键帧（P/B帧）累计比特率（Kb）
+    double totalKbps = 0.0;     // 总比特率（Kb）
     double minKbps = std::numeric_limits<double>().max(); // 最小每秒比特率（初始为最大值）
     double maxKbps = 0.0;                                 // 最大每秒比特率（初始为0）
-    int periodCount = 0;                                  // 周期计数（每个周期为1秒，用于图表X轴）
-    double previousSecond = 0.0;                          // 上一个周期的起始秒数（用于划分1秒周期）
+    int periodCount = 0;         // 周期计数（每个周期为1秒，用于图表X轴）
+    double previousSecond = 0.0; // 上一个周期的起始秒数（用于划分1秒周期）
 
     // 3. 初始化图表组件
-    QQueue<double> window;                  // 滑动窗口队列（存储最近30个周期的比特率）
+    QQueue<double> window; // 滑动窗口队列（存储最近30个周期的比特率）
     auto barSeries = new QStackedBarSeries; // 堆叠柱状图系列（显示I帧和P/B帧比特率）
     auto averageLine = new QSplineSeries;   // 平滑曲线系列（显示滑动平均比特率）
     QBarSet *interSet = nullptr;            // 非关键帧（P/B帧）数据组（视频专用）
@@ -90,8 +90,8 @@ BitrateDialog::BitrateDialog(const QString &resource,
 
     // 5. 解析比特率数据（遍历JSON数组，计算每个周期的比特率）
     for (int i = 0; i < data.size(); ++i) {
-        auto o = data[i].toObject();                              // 取当前数据点（JSON对象）
-        auto pts = o["pts_time"].toString().toDouble();           // 当前数据点的时间戳（秒）
+        auto o = data[i].toObject();                    // 取当前数据点（JSON对象）
+        auto pts = o["pts_time"].toString().toDouble(); // 当前数据点的时间戳（秒）
         auto duration = o["duration_time"].toString().toDouble(); // 数据点时长（秒）
         // 计算当前数据点的比特率（size为字节，转换为Kb：字节×8/1000）
         auto size = o["size"].toString().toDouble() * 8.0 / 1000.0;
@@ -223,6 +223,6 @@ BitrateDialog::BitrateDialog(const QString &resource,
     // 13. 配置图表视图大小
     chartView->setMinimumWidth(qMax(1010, periodCount * 5)); // 最小宽度：取1010或周期数×5的较大值
     chartView->setMinimumHeight(520);                        // 最小高度520像素
-    resize(1024, 576);                                       // 对话框初始大小（1024×576像素）
-    show();                                                  // 显示对话框
+    resize(1024, 576); // 对话框初始大小（1024×576像素）
+    show();            // 显示对话框
 }

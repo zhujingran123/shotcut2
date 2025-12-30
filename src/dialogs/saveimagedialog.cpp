@@ -53,7 +53,7 @@ SaveImageDialog::SaveImageDialog(QWidget *parent, const QString &caption, QImage
 {
     setModal(true);                         // 设置为模态对话框（阻塞父窗口操作）
     setAcceptMode(QFileDialog::AcceptSave); // 设置对话框模式为"保存"（而非"打开"）
-    setFileMode(QFileDialog::AnyFile);      // 设置文件模式为"任意文件"（允许保存新文件）
+    setFileMode(QFileDialog::AnyFile); // 设置文件模式为"任意文件"（允许保存新文件）
     setOptions(
         Util::getFileDialogOptions()); // 应用工具类定义的文件对话框选项（如原生风格、支持多选等）
     setDirectory(Settings.savePath()); // 设置默认保存目录（从配置中读取）
@@ -171,6 +171,6 @@ void SaveImageDialog::onFileSelected(const QString &file)
     m_image.save(m_saveFile, Q_NULLPTR, (fi.suffix() == "webp") ? 80 : -1);
 
     // 5. 更新配置：保存当前保存目录和后缀，作为下次默认值
-    Settings.setSavePath(fi.path());                                  // 保存当前目录为默认保存目录
+    Settings.setSavePath(fi.path()); // 保存当前目录为默认保存目录
     Settings.setExportFrameSuffix(QStringLiteral(".") + fi.suffix()); // 保存当前后缀为默认导出后缀
 }

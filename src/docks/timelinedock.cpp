@@ -2037,7 +2037,7 @@ void TimelineDock::emitSelectedChanged(const QVector<int> &roles)
         return;
     auto point = selection().first();
     auto index = model()->makeIndex(point.y(), point.x());
-    emit model() -> dataChanged(index, index, roles);
+    emit model()->dataChanged(index, index, roles);
 }
 
 void TimelineDock::clearSelectionIfInvalid()

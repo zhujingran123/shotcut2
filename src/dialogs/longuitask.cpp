@@ -36,8 +36,8 @@ LongUiTask::LongUiTask(QString title)
     setModal(true);                          // 模态对话框（阻塞操作）
     setWindowModality(Qt::ApplicationModal); // 应用级模态（阻塞整个应用）
     setMinimumDuration(2000);                // 延迟2秒显示（避免短任务频繁弹窗）
-    setRange(0, 0);                          // 初始进度范围（0-0表示“忙”状态，进度条滚动）
-    g_instance = this;                       // 赋值全局实例指针，供外部调用
+    setRange(0, 0);    // 初始进度范围（0-0表示“忙”状态，进度条滚动）
+    g_instance = this; // 赋值全局实例指针，供外部调用
 }
 
 // 【析构函数】：重置全局实例指针
@@ -53,9 +53,9 @@ LongUiTask::~LongUiTask()
 // - max：进度最大值（如10）
 void LongUiTask::reportProgress(QString text, int value, int max)
 {
-    setLabelText(text);                // 更新进度文本
-    setRange(0, max - 1);              // 设置进度范围（最大值减1，使value能达到“完成”状态）
-    setValue(value);                   // 更新当前进度值
+    setLabelText(text); // 更新进度文本
+    setRange(0, max - 1); // 设置进度范围（最大值减1，使value能达到“完成”状态）
+    setValue(value);      // 更新当前进度值
     QCoreApplication::processEvents(); // 处理未完成的事件（避免界面卡死）
 }
 

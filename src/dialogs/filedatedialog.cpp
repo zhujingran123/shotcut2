@@ -86,8 +86,8 @@ FileDateDialog::FileDateDialog(QString title, Mlt::Producer *producer, QWidget *
     m_dtEdit->setDisplayFormat("yyyy-MM-dd HH:mm:ss"); // 设置显示格式（年-月-日 时:分:秒）
     m_dtEdit->setCalendarPopup(true);                  // 启用日历弹窗（方便选择日期）
     m_dtEdit->setTimeSpec(Qt::LocalTime);              // 设置时间标准为本地时间
-    m_dtEdit->setDateTime(creation_time);              // 设置初始日期（生产者当前时间）
-    VLayout->addWidget(m_dtEdit);                      // 将编辑框添加到布局
+    m_dtEdit->setDateTime(creation_time); // 设置初始日期（生产者当前时间）
+    VLayout->addWidget(m_dtEdit);         // 将编辑框添加到布局
 
     // 5. 创建按钮组（包含“确定”和“取消”按钮）
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok

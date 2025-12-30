@@ -53,8 +53,8 @@ SlideshowGeneratorDialog::SlideshowGeneratorDialog(QWidget *parent, Mlt::Playlis
     connect(m_buttonBox, SIGNAL(clicked(QAbstractButton *)), this, SLOT(clicked(QAbstractButton *)));
 
     // 4. 设置对话框布局及属性
-    setLayout(VLayout);                                 // 为对话框设置布局
-    setModal(true);                                     // 模态对话框（阻塞父窗口操作）
+    setLayout(VLayout); // 为对话框设置布局
+    setModal(true);     // 模态对话框（阻塞父窗口操作）
     layout()->setSizeConstraint(QLayout::SetFixedSize); // 固定对话框大小（不可拉伸）
 }
 

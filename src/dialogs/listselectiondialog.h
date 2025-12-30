@@ -34,14 +34,14 @@ class QDialogButtonBox; // 对话框按钮组类（整合确定、取消等按�
 // 列表选择对话框类：用于展示可勾选的选项列表，支持通用选项和颜色选项两种模式
 class ListSelectionDialog : public QDialog
 {
-Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
+    Q_OBJECT // Qt元对象系统宏，支持信号槽等Qt核心特性
 
-    public :
-    // 【构造函数】：初始化列表选择对话框（通用选项模式）
-    // 参数说明：
-    // - list：待展示的选项文本列表（如["选项1", "选项2"]）
-    // - parent：父窗口指针（默认值0，用于Qt对象树管理）
-    explicit ListSelectionDialog(const QStringList &list, QWidget *parent = 0);
+        public :
+        // 【构造函数】：初始化列表选择对话框（通用选项模式）
+        // 参数说明：
+        // - list：待展示的选项文本列表（如["选项1", "选项2"]）
+        // - parent：父窗口指针（默认值0，用于Qt对象树管理）
+        explicit ListSelectionDialog(const QStringList &list, QWidget *parent = 0);
 
     // 【析构函数】：释放UI资源
     ~ListSelectionDialog();

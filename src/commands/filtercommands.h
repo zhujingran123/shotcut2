@@ -88,12 +88,12 @@ protected:
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并。
 
 private:
-    AttachedFiltersModel &m_model;        ///< 对滤镜模型的引用。
-    std::vector<int> m_rows;              ///< 要添加的滤镜的行号列表（支持批量添加）。
+    AttachedFiltersModel &m_model; ///< 对滤镜模型的引用。
+    std::vector<int> m_rows;       ///< 要添加的滤镜的行号列表（支持批量添加）。
     std::vector<Mlt::Service> m_services; ///< 要添加的 MLT 服务列表。
-    Mlt::Producer m_producer;             ///< 目标 Producer 的引用（仅在第一次 redo 前有效）。
-    QUuid m_producerUuid;                 ///< 目标 Producer 的唯一标识符，用于后续查找。
-    AddType m_type;                       ///< 添加操作的类型。
+    Mlt::Producer m_producer; ///< 目标 Producer 的引用（仅在第一次 redo 前有效）。
+    QUuid m_producerUuid;     ///< 目标 Producer 的唯一标识符，用于后续查找。
+    AddType m_type;           ///< 添加操作的类型。
 };
 
 /**
@@ -189,7 +189,7 @@ public:
     void undo(); ///< 撤销操作（即恢复到相反状态）。
 
 protected:
-    int id() const { return UndoIdDisable; }   ///< 返回命令的唯一 ID。
+    int id() const { return UndoIdDisable; } ///< 返回命令的唯一 ID。
     bool mergeWith(const QUndoCommand *other); ///< 尝试与另一个命令合并（此处被禁用）。
 
 private:

@@ -158,7 +158,7 @@ void AppendCommand::redo()
             QScopedPointer<Mlt::ClipInfo> info(playlist.clip_info(i));
             Mlt::Producer clip = Mlt::Producer(info->producer);
             if (!m_skipProxy)
-                ProxyManager::generateIfNotExists(clip);          // 生成代理文件（如果需要）
+                ProxyManager::generateIfNotExists(clip); // 生成代理文件（如果需要）
             clip.set_in_and_out(info->frame_in, info->frame_out); // 设置入点和出点
             MLT.setUuid(clip.parent(), m_uuids[i]);               // 恢复 UUID
             bool lastClip = i == (count - 1);

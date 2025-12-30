@@ -34,10 +34,10 @@ class QKeySequenceEdit;
 // 定义ActionsDialog类，继承自QDialog
 class ActionsDialog : public QDialog
 {
-Q_OBJECT // Qt元对象系统宏，用于支持信号和槽等特性
-    public :
-    // 构造函数，explicit关键字防止隐式转换，parent为父窗口指针，默认值为0
-    explicit ActionsDialog(QWidget *parent = 0);
+    Q_OBJECT // Qt元对象系统宏，用于支持信号和槽等特性
+        public :
+        // 构造函数，explicit关键字防止隐式转换，parent为父窗口指针，默认值为0
+        explicit ActionsDialog(QWidget *parent = 0);
     // 保存当前编辑器内容的函数声明
     void saveCurrentEditor();
 

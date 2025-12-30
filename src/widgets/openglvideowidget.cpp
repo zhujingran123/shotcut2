@@ -29,8 +29,7 @@
 
 #ifdef QT_NO_DEBUG
 #define check_error(fn) \
-    { \
-    }
+    {}
 #else
 #define check_error(fn) \
     { \

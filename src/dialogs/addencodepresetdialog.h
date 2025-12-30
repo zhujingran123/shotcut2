@@ -31,11 +31,11 @@ class AddEncodePresetDialog; // 前向声明UI中的对话框类
 // 定义编码预设添加对话框类，继承自QDialog
 class AddEncodePresetDialog : public QDialog
 {
-Q_OBJECT // 启用Qt元对象系统支持（信号槽、反射等）
+    Q_OBJECT // 启用Qt元对象系统支持（信号槽、反射等）
 
-    public :
-    // 构造函数，explicit防止隐式转换，parent为父窗口指针（默认nullptr）
-    explicit AddEncodePresetDialog(QWidget *parent = 0);
+        public :
+        // 构造函数，explicit防止隐式转换，parent为父窗口指针（默认nullptr）
+        explicit AddEncodePresetDialog(QWidget *parent = 0);
     // 析构函数
     ~AddEncodePresetDialog();
     // 设置属性文本的方法，参数为属性字符串
