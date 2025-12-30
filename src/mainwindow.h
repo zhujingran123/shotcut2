@@ -109,7 +109,7 @@ public:
     int bottomVideoTrackIndex() const;
     void cropSource(const QRectF &rect);
     void getMarkerRange(int position, int *start, int *end);
-    void getSelectionRange(int *start, int *end); 
+    void getSelectionRange(int *start, int *end);
     Mlt::Playlist *binPlaylist();
     void showInFiles(const QString &filePath);
     void setupExportFrameAction();
@@ -149,6 +149,7 @@ private:
     void setupSettingsMenu();
     void setupOpenOtherMenu();
     void setupActions();
+    void setupExportFrameAction();
     QAction *addProfile(QActionGroup *actionGroup, const QString &desc, const QString &name);
     QAction *addLayout(QActionGroup *actionGroup, const QString &name);
     void readPlayerSettings();
@@ -176,6 +177,7 @@ private:
     bool confirmProfileChange();
     bool confirmRestartExternalMonitor();
     void resetFilterMenuIfNeeded();
+    void setupExportFrameAction();
 
     Ui::MainWindow *ui;
     Player *m_player;

@@ -27,47 +27,46 @@
 #include <stdint.h>
 
 #include <fstream>
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "box.h"
 
 class SA3DBox : public Box
 {
-  public:
+public:
     enum ePosition { None };
 
-    SA3DBox ();
-    virtual ~SA3DBox ( );
+    SA3DBox();
+    virtual ~SA3DBox();
 
     // Loads the SA3D box located at position pos in a mp4 file.
-    static Box *load ( std::fstream &fs, uint32_t iPos, uint32_t iEnd );
+    static Box *load(std::fstream &fs, uint32_t iPos, uint32_t iEnd);
 
-    static Box *create ( int32_t iNumChannels );
+    static Box *create(int32_t iNumChannels);
 
-    virtual void save ( std::fstream &fsIn, std::fstream &fsOut, int32_t );
-    const char *ambisonic_type_name ( );
-    const char *ambisonic_channel_ordering_name ( );
-    const char *ambisonic_normalization_name ( );
-    void print_box ( );
+    virtual void save(std::fstream &fsIn, std::fstream &fsOut, int32_t);
+    const char *ambisonic_type_name();
+    const char *ambisonic_channel_ordering_name();
+    const char *ambisonic_normalization_name();
+    void print_box();
 
-    std::string get_metadata_string ( );
+    std::string get_metadata_string();
 
-  private:
-    std::string mapToString ( );
+private:
+    std::string mapToString();
 
-  public:
+public:
     std::map<std::string, int32_t> m_AmbisonicTypes;
     std::map<std::string, int32_t> m_AmbisonicOrderings;
     std::map<std::string, int32_t> m_AmbisonicNormalizations;
 
-//    int32_t  m_iPosition;
-    uint8_t  m_iVersion;
-    uint8_t  m_iAmbisonicType;
+    //    int32_t  m_iPosition;
+    uint8_t m_iVersion;
+    uint8_t m_iAmbisonicType;
     uint32_t m_iAmbisonicOrder;
-    uint8_t  m_iAmbisonicChannelOrdering;
-    uint8_t  m_iAmbisonicNormalization;
+    uint8_t m_iAmbisonicChannelOrdering;
+    uint8_t m_iAmbisonicNormalization;
     uint32_t m_iNumChannels;
     std::vector<uint32_t> m_ChannelMap;
 };
-

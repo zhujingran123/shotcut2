@@ -2620,6 +2620,7 @@ void MainWindow::setupActions()
     ui->menuFile->insertAction(ui->actionShowProjectFolder, action);
 
     Actions.loadFromMenu(ui->menuFile);
+    setupExportFrameAction();
     Actions.loadFromMenu(ui->menuEdit);
     Actions.loadFromMenu(ui->menuView);
     Actions.loadFromMenu(ui->menuPlayer);
@@ -6331,4 +6332,29 @@ void MainWindow::showSettingsMenu() const
     point = ui->menuBar->mapToGlobal(point);
 #endif
     ui->menuSettings->popup(point, ui->menuSettings->defaultAction());
+}
+//王奇琪
+void MainWindow::setupExportFrameAction()
+{
+    // 创建Export Frame Action
+    QAction *exportFrameAction = new QAction(tr("Export &Frame as Image"), this);
+    exportFrameAction->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_E));
+    exportFrameAction->setStatusTip(tr("Export current frame as an image file"));
+
+    // 连接到FilterController
+    connect(exportFrameAction,
+            &QAction::triggered,
+            &m_filterController,
+            &FilterController::exportCurrentFrame);
+
+    // 添加到File菜单（在Exit之前）
+    if (ui->menuFile && ui->actionExit) {
+        ui->menuFile->insertAction(ui->actionExit, exportFrameAction);
+        ui->menuFile->insertSeparator(ui->actionExit);
+    }
+
+    // 可选：添加到工具栏
+    if (ui->mainToolBar) {
+        ui->mainToolBar->addAction(exportFrameAction);
+    }
 }
