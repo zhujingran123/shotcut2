@@ -58,7 +58,7 @@ class QmlApplication : public QObject
 public:
     // 【单例模式】：获取唯一实例
     static QmlApplication &singleton();
-    
+
     // 系统级功能方法
     static Qt::WindowModality dialogModality();
     static QPoint mousePos();
@@ -67,28 +67,28 @@ public:
     static QString OS();
     static QRect mainWinRect();
     static bool hasFiltersOnClipboard();
-    
+
     // 【可调用方法】：滤镜复制操作
     Q_INVOKABLE static void copyAllFilters();
     Q_INVOKABLE static void copyEnabledFilters();
     Q_INVOKABLE static void copyCurrentFilter();
-    
+
     // 【可调用方法】：时间码转换
     Q_INVOKABLE static QString clockFromFrames(int frames);
     Q_INVOKABLE static QString timeFromFrames(int frames);
-    
+
     // 【可调用方法】：音频相关
     Q_INVOKABLE static int audioChannels();
-    
+
     // 【可调用方法】：文件管理
     Q_INVOKABLE static QString getNextProjectFile(const QString &filename);
     Q_INVOKABLE static bool isProjectFolder();
-    
+
     // 显示和图形相关
     static qreal devicePixelRatio();
     Q_INVOKABLE void showStatusMessage(const QString &message, int timeoutSeconds = 15);
     static int maxTextureSize();
-    
+
     // 【可调用方法】：用户确认和工具函数
     Q_INVOKABLE static bool confirmOutputFilter();
     static QDir dataDir();

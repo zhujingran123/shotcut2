@@ -81,6 +81,7 @@ class ShotcutSettings : public QObject
 public:
     static const qsizetype MaxPath{32767};
     enum TimelineScrolling { NoScrolling, CenterPlayhead, PageScrolling, SmoothScrolling };
+    enum ProcessingMode { Native8Cpu, Linear8Cpu, Native10Cpu, Linear10Cpu, Linear10GpuCpu };
 
     static ShotcutSettings &singleton();
     void log();
@@ -124,6 +125,10 @@ public:
     void setExportFrameSuffix(const QString &suffix);
     bool convertAdvanced() const;
     void setConvertAdvanced(bool);
+    ProcessingMode processingMode();
+    void setProcessingMode(ProcessingMode mode);
+    QString processingModeStr(ProcessingMode mode);
+    ProcessingMode processingModeId(const QString &mode);
 
     // encode
     QString encodePath() const;
@@ -149,7 +154,6 @@ public:
     QString playerExternal() const;
     void setPlayerExternal(const QString &);
     bool playerGPU() const;
-    void setPlayerGPU(bool);
     bool playerWarnGPU() const;
     QString playerInterpolation() const;
     void setPlayerInterpolation(const QString &);
@@ -310,6 +314,8 @@ public:
     void setDockerPath(const QString &path);
     QString chromiumPath() const;
     void setChromiumPath(const QString &path);
+    QString screenRecorderPath() const;
+    void setScreenRecorderPath(const QString &path);
 
     // proxy
     bool proxyEnabled() const;
@@ -384,6 +390,10 @@ public:
     void setSpeechVoice(const QString &voiceId);
     double speechSpeed() const;
     void setSpeechSpeed(double speed);
+
+    // Color Dialog
+    void saveCustomColors();
+    void restoreCustomColors();
 
 public slots:
     void reset();

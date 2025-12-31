@@ -44,10 +44,10 @@ public:
 signals:
     // 【信号】：用户接受（确认）字体选择时发射
     void accepted();
-    
+
     // 【信号】：用户拒绝（取消）字体选择时发射
     void rejected();
-    
+
     // 【信号】：选中字体改变时发射，携带新的字体对象
     // 【参数】：font - 用户选择的新字体，包含所有字体属性
     void selectedFontChanged(const QFont &font);
@@ -58,7 +58,7 @@ private:
     // 【私有方法】：获取当前选中的字体
     // 【返回值】：当前字体对象，包含完整的字体属性信息
     QFont selectedFont() const { return m_font; }
-    
+
     // 【私有方法】：设置选中字体，会检查字体是否实际改变
     // 【参数】：font - 新的字体对象
     // 【说明】：只有字体真正改变时才更新内部状态并发射信号

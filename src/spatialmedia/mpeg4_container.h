@@ -20,9 +20,13 @@
 // 【文件说明】：MPEG4处理类头文件
 // 【功能】：定义MP4/MOV文件加载和原子操作的顶层容器类接口
 // 【特性】：支持完整的MP4文件结构管理和关键原子识别
+// MPEG4 processing classes.
+//
+// Functions for loading MP4/MOV files and manipulating boxes.
+
+#include "box.h"
 #include "constants.h"
 #include "container.h"
-#include "box.h"
 
 // 【类说明】：MP4容器顶层管理类（继承自Container）
 // 【功能】：表示整个MP4文件的容器，管理文件级别的操作和关键原子
@@ -86,4 +90,19 @@ public:
   // - 计算方式：m_pFirstMDatBox->m_iPosition + m_pFirstMDatBox->m_iHeaderSize
   // - 用途：在文件保存时计算偏移量变化，用于更新索引表
   uint32_t m_iFirstMDatPos;
+    Mpeg4Container();
+    virtual ~Mpeg4Container();
+
+    static Mpeg4Container *load(std::fstream &); //, uint32_t iPos, uint32_t iEnd );
+
+    void merge(Box *);
+    virtual void print_structure(const char *p = "");
+    virtual void save(std::fstream &, std::fstream &, int32_t);
+
+public:
+    Box *m_pMoovBox;
+    Box *m_pFreeBox;
+    Box *m_pFTYPBox;
+    Mpeg4Container *m_pFirstMDatBox;
+    uint32_t m_iFirstMDatPos;
 };

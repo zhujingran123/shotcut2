@@ -20,27 +20,48 @@
 
 #include "abstractjob.h"
 
-#include <QStringList>
+#include <QRect>
+#include <QTimer>
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+#include <QDBusConnection>
+#endif
 
 class ScreenCaptureJob : public AbstractJob
 {
     Q_OBJECT
 public:
-    ScreenCaptureJob(const QString &name, const QString &filename, bool isRecording = false);
+    ScreenCaptureJob(const QString &name,
+                     const QString &filename,
+                     const QRect &captureRect,
+                     bool recordAudio = true);
     virtual ~ScreenCaptureJob();
-    void start();
-
-public slots:
-    virtual void stop();
+    void start() override;
+    void stop() override;
 
 private slots:
     void onOpenTriggered();
-    void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void onFinished(int exitCode, QProcess::ExitStatus exitStatus) override;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+    void onDBusRecordingTaken(const QString &fileName);
+    void onDBusRecordingFailed();
+#endif
 
 private:
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+    enum DBusService { None, GNOME, KDE };
+    bool startWaylandRecording();
+    bool startGnomeScreencast();
+    bool startKdeSpectacle();
+#endif
     QString m_filename;
-    bool m_isRecording;
+    QString m_actualFilename;
+    QRect m_rect;
     bool m_isAutoOpen;
+    bool m_recordAudio;
+    QTimer m_progressTimer;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+    DBusService m_dbusService = DBusService::None;
+#endif
 };
 
 #endif // SCREENCAPTUREJOB_H

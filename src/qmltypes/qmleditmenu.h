@@ -40,17 +40,17 @@ signals:
     void showPastePlainChanged();
     // 【信号】：只读模式状态改变
     void readOnlyChanged();
-    
+
     // 编辑操作触发信号
-    void undoTriggered();        // 撤销操作触发
-    void redoTriggered();        // 重做操作触发
-    void cutTriggered();         // 剪切操作触发
-    void copyTriggered();        // 复制操作触发
-    void pasteTriggered();       // 粘贴操作触发
-    void pastePlainTriggered();  // 纯文本粘贴触发
-    void deleteTriggered();      // 删除操作触发
-    void clearTriggered();       // 清空操作触发
-    void selectAllTriggered();   // 全选操作触发
+    void undoTriggered();       // 撤销操作触发
+    void redoTriggered();       // 重做操作触发
+    void cutTriggered();        // 剪切操作触发
+    void copyTriggered();       // 复制操作触发
+    void pasteTriggered();      // 粘贴操作触发
+    void pastePlainTriggered(); // 纯文本粘贴触发
+    void deleteTriggered();     // 删除操作触发
+    void clearTriggered();      // 清空操作触发
+    void selectAllTriggered();  // 全选操作触发
 
 public slots:
     // 【槽函数】：弹出编辑菜单
@@ -58,8 +58,8 @@ public slots:
     void popup();
 
 private:
-    bool m_showPastePlain;  // 控制是否显示纯文本粘贴选项
-    bool m_readOnly;        // 控制是否为只读模式（禁用编辑操作）
+    bool m_showPastePlain; // 控制是否显示纯文本粘贴选项
+    bool m_readOnly;       // 控制是否为只读模式（禁用编辑操作）
 };
 
 #endif // QMLEDITMENU_H

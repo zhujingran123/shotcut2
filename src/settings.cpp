@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QAudioDevice>
 #include <QColor>
+#include <QColorDialog>
 #include <QDir>
 #include <QFile>
 #include <QLocale>
@@ -38,6 +39,21 @@ static QString appDataForSession;
 static const int kMaximumTrackHeight = 125;
 static const QString kRecentKey("recent");
 static const QString kProjectsKey("projects");
+
+namespace {
+struct ModeMap
+{
+    ShotcutSettings::ProcessingMode id;
+    const char *name;
+};
+static const ModeMap kModeMap[] = {
+    {ShotcutSettings::Native8Cpu, "Native8Cpu"},
+    {ShotcutSettings::Linear8Cpu, "Linear8Cpu"},
+    {ShotcutSettings::Native10Cpu, "Native10Cpu"},
+    {ShotcutSettings::Linear10Cpu, "Linear10Cpu"},
+    {ShotcutSettings::Linear10GpuCpu, "Linear10GpuCpu"},
+};
+} // anonymous namespace
 
 ShotcutSettings &ShotcutSettings::singleton()
 {
@@ -513,6 +529,51 @@ void ShotcutSettings::setConvertAdvanced(bool b)
     settings.setValue("convertAdvanced", b);
 }
 
+ShotcutSettings::ProcessingMode ShotcutSettings::processingMode()
+{
+    if (settings.contains("processingMode")) {
+        auto result = (ShotcutSettings::ProcessingMode) settings.value("processingMode").toInt();
+        if (result == Linear8Cpu) {
+            // No longer supported but kept to prevent unexpected processing behavior going from
+            // beta to release
+            result = Native8Cpu;
+        }
+        return result;
+    } else if (settings.contains("player/gpu2")) {
+        // Legacy GPU Mode
+        if (settings.value("player/gpu2").toBool()) {
+            return ShotcutSettings::Linear10GpuCpu;
+        }
+    }
+    return ShotcutSettings::Native8Cpu;
+}
+
+void ShotcutSettings::setProcessingMode(ProcessingMode mode)
+{
+    settings.setValue("processingMode", mode);
+    emit playerGpuChanged();
+}
+
+QString ShotcutSettings::processingModeStr(ShotcutSettings::ProcessingMode mode)
+{
+    for (const auto &m : kModeMap) {
+        if (m.id == mode)
+            return QString::fromLatin1(m.name);
+    }
+    LOG_ERROR() << "Unknown processing mode" << mode;
+    return QStringLiteral("Native8Cpu");
+}
+
+ShotcutSettings::ProcessingMode ShotcutSettings::processingModeId(const QString &mode)
+{
+    for (const auto &m : kModeMap) {
+        if (mode == QLatin1String(m.name))
+            return m.id;
+    }
+    LOG_ERROR() << "Unknown processing mode" << mode;
+    return Native8Cpu;
+}
+
 bool ShotcutSettings::showConvertClipDialog() const
 {
     return settings.value("showConvertClipDialog", true).toBool();
@@ -570,12 +631,6 @@ void ShotcutSettings::setPlayerExternal(const QString &s)
     settings.setValue("player/external", s);
 }
 
-void ShotcutSettings::setPlayerGPU(bool b)
-{
-    settings.setValue("player/gpu2", b);
-    emit playerGpuChanged();
-}
-
 bool ShotcutSettings::playerJACK() const
 {
     return settings.value("player/jack", false).toBool();
@@ -593,7 +648,15 @@ void ShotcutSettings::setPlayerInterpolation(const QString &s)
 
 bool ShotcutSettings::playerGPU() const
 {
-    return settings.value("player/gpu2", false).toBool();
+    // This is the legacy function for the old GPU mode.
+    if (settings.contains("processingMode")) {
+        ProcessingMode mode = (ProcessingMode) settings.value("processingMode").toInt();
+        return mode == Linear10GpuCpu;
+    } else if (settings.contains("player/gpu2")) {
+        // Legacy GPU Mode
+        return settings.value("player/gpu2").toBool();
+    }
+    return false;
 }
 
 bool ShotcutSettings::playerWarnGPU() const
@@ -942,7 +1005,7 @@ ShotcutSettings::TimelineScrolling ShotcutSettings::timelineScrolling() const
 
 bool ShotcutSettings::timelineAutoAddTracks() const
 {
-    return settings.value("timeline/autoAddTracks", true).toBool();
+    return settings.value("timeline/autoAddTracks", false).toBool();
 }
 
 void ShotcutSettings::setTimelineAutoAddTracks(bool b)
@@ -966,7 +1029,7 @@ void ShotcutSettings::setTimelineRectangleSelect(bool b)
 
 bool ShotcutSettings::timelineAdjustGain() const
 {
-    return settings.value("timeline/adjustGain", true).toBool();
+    return settings.value("timeline/adjustGain", false).toBool();
 }
 
 void ShotcutSettings::setTimelineAdjustGain(bool b)
@@ -1553,6 +1616,36 @@ void ShotcutSettings::setSpeechSpeed(double speed)
     settings.setValue("speech/speed", speed);
 }
 
+void ShotcutSettings::saveCustomColors()
+{
+    // QColorDialog supports up to 48 custom colors (16 in older versions)
+    QStringList colorList;
+    for (int i = 0; i < QColorDialog::customCount(); ++i) {
+        QColor color = QColorDialog::customColor(i);
+        if (color.isValid()) {
+            colorList.append(color.name(QColor::HexArgb));
+        } else {
+            colorList.append(QString());
+        }
+    }
+    settings.setValue("colorDialog/customColors", colorList);
+}
+
+void ShotcutSettings::restoreCustomColors()
+{
+    QStringList colorList = settings.value("colorDialog/customColors").toStringList();
+    for (int i = 0; i < colorList.size() && i < QColorDialog::customCount(); ++i) {
+        const QString &colorName = colorList.at(i);
+        if (!colorName.isEmpty()) {
+            QColor color(colorName);
+            if (color.isValid()) {
+                // Use rgba() to preserve alpha channel
+                QColorDialog::setCustomColor(i, color.rgba());
+            }
+        }
+    }
+}
+
 void ShotcutSettings::setWhisperExe(const QString &path)
 {
     settings.setValue("subtitles/whisperExe", path);
@@ -1659,7 +1752,7 @@ void ShotcutSettings::setDockerPath(const QString &path)
 QString ShotcutSettings::chromiumPath() const
 {
 #if defined(Q_OS_MAC)
-    return settings.value("dockerPath", "/Applications/Google Chrome.app").toString();
+    return settings.value("chromiumPath", "/Applications/Google Chrome.app").toString();
 #elif defined(Q_OS_WIN)
     return settings.value("chromiumPath", "C:/Program Files/Google/Chrome/Application/chrome.exe")
         .toString();
@@ -1671,4 +1764,14 @@ QString ShotcutSettings::chromiumPath() const
 void ShotcutSettings::setChromiumPath(const QString &path)
 {
     settings.setValue("chromiumPath", path);
+}
+
+QString ShotcutSettings::screenRecorderPath() const
+{
+    return settings.value("screenRecorderPath", "obs").toString();
+}
+
+void ShotcutSettings::setScreenRecorderPath(const QString &path)
+{
+    settings.setValue("screenRecorderPath", path);
 }

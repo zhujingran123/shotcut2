@@ -5,7 +5,7 @@ Metadata {
     type: Metadata.Filter
     objectName: 'movitOpacity'
     name: qsTr("Opacity")
-    keywords: qsTr('alpha transparent translucent', 'search keywords for the Opacity video filter') + ' opacity #gpu'
+    keywords: qsTr('alpha transparent translucent', 'search keywords for the Opacity video filter') + ' opacity #gpu #10bit'
     mlt_service: "movit.opacity"
     needsGPU: true
     qml: "ui.qml"
@@ -21,7 +21,7 @@ Metadata {
                 property: 'opacity'
                 isCurve: true
                 minimum: 0
-                maximum: 1
+                maximum: filter.isAtLeastVersion(5) ? 2 : 1
             }
         ]
     }

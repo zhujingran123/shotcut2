@@ -34,7 +34,7 @@ void FontDialog::open()
     // 创建字体对话框，使用当前字体作为初始值
     QFontDialog dialog(m_font);
     dialog.setModal(true); // 设置为模态对话框，阻塞用户与其他窗口交互
-    
+
     // 【平台特定配置】：在Unix系统（非macOS）上不使用原生对话框
     // 【原因】：确保跨平台一致的界面体验，避免不同桌面环境的差异
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
@@ -59,7 +59,7 @@ void FontDialog::setSelectedFont(const QFont &font)
 {
     // 只有字体真正改变时才更新并发射信号
     if (font != m_font) {
-        m_font = font; // 更新内部字体状态
+        m_font = font;                  // 更新内部字体状态
         emit selectedFontChanged(font); // 通知绑定属性更新
     }
 }

@@ -55,6 +55,7 @@ class KeyframesDock;
 class MarkersDock;
 class NotesDock;
 class SubtitlesDock;
+class ScreenCapture;
 
 class MainWindow : public QMainWindow
 {
@@ -112,9 +113,11 @@ public:
     void getSelectionRange(int *start, int *end);
     Mlt::Playlist *binPlaylist();
     void showInFiles(const QString &filePath);
+    void setupExportFrameAction();
 
 signals:
     void audioChannelsChanged();
+    void processingModeChanged();
     void producerOpened(bool withReopen = true);
     void profileChanged();
     void openFailed(QString);
@@ -147,6 +150,7 @@ private:
     void setupSettingsMenu();
     void setupOpenOtherMenu();
     void setupActions();
+    void setupExportFrameAction();
     QAction *addProfile(QActionGroup *actionGroup, const QString &desc, const QString &name);
     QAction *addLayout(QActionGroup *actionGroup, const QString &name);
     void readPlayerSettings();
@@ -161,6 +165,7 @@ private:
     bool checkAutoSave(QString &url);
     bool saveRepairedXmlFile(MltXmlChecker &checker, QString &fileName);
     void setAudioChannels(int channels);
+    void setProcessingMode(ShotcutSettings::ProcessingMode mode);
     void showSaveError();
     void setPreviewScale(int scale);
     void setVideoModeMenu();
@@ -172,6 +177,8 @@ private:
     void backupPeriodically();
     bool confirmProfileChange();
     bool confirmRestartExternalMonitor();
+    void resetFilterMenuIfNeeded();
+    void setupExportFrameAction();
 
     Ui::MainWindow *ui;
     Player *m_player;
@@ -216,6 +223,7 @@ private:
     SubtitlesDock *m_subtitlesDock;
     std::unique_ptr<QWidget> m_producerWidget;
     FilesDock *m_filesDock;
+    ScreenCapture *m_screenCapture;
 
 public slots:
     bool isCompatibleWithGpuMode(MltXmlChecker &checker);
@@ -303,7 +311,6 @@ private slots:
     void on_actionBicubic_triggered(bool checked);
     void on_actionHyper_triggered(bool checked);
     void on_actionJack_triggered(bool checked);
-    void on_actionGPU_triggered(bool checked);
     void onExternalTriggered(QAction *);
     void onDecklinkGammaTriggered(QAction *);
     void onKeyerTriggered(QAction *);
@@ -351,10 +358,8 @@ private slots:
     void on_actionAppDataSet_triggered();
     void on_actionAppDataShow_triggered();
     void on_actionNew_triggered();
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
     void on_actionScreenSnapshot_triggered();
     void on_actionScreenRecording_triggered();
-#endif
     void on_actionKeyboardShortcuts_triggered();
     void on_actionLayoutLogging_triggered();
     void on_actionLayoutEditing_triggered();

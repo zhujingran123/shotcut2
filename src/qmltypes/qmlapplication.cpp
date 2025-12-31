@@ -59,7 +59,7 @@ QmlApplication::QmlApplication()
 Qt::WindowModality QmlApplication::dialogModality()
 {
 #ifdef Q_OS_MAC
-    return Qt::WindowModal;      // macOS：窗口模态
+    return Qt::WindowModal; // macOS：窗口模态
 #else
     return Qt::ApplicationModal; // 其他系统：应用模态
 #endif
@@ -79,7 +79,7 @@ QColor QmlApplication::toolTipBaseColor()
     if ("gtk+" == QApplication::style()->objectName())
         return QApplication::palette().highlight().color(); // GTK+主题使用高亮色
 #endif
-    return QApplication::palette().toolTipBase().color();   // 默认工具提示背景色
+    return QApplication::palette().toolTipBase().color(); // 默认工具提示背景色
 }
 
 // 【功能】：获取工具提示文字颜色
@@ -89,7 +89,7 @@ QColor QmlApplication::toolTipTextColor()
     if ("gtk+" == QApplication::style()->objectName())
         return QApplication::palette().highlightedText().color(); // GTK+主题使用高亮文字色
 #endif
-    return QApplication::palette().toolTipText().color();        // 默认工具提示文字色
+    return QApplication::palette().toolTipText().color(); // 默认工具提示文字色
 }
 
 // 【功能】：获取当前操作系统名称
@@ -126,9 +126,9 @@ void QmlApplication::copyEnabledFilters()
 {
     QScopedPointer<Mlt::Producer> producer(
         new Mlt::Producer(MAIN.filterController()->attachedModel()->producer()));
-    MLT.copyFilters(producer.data(), MLT.FILTER_INDEX_ENABLED); // 复制启用状态的滤镜
+    MLT.copyFilters(producer.data(), MLT.FILTER_INDEX_ENABLED);       // 复制启用状态的滤镜
     QGuiApplication::clipboard()->setText(MLT.filtersClipboardXML()); // 设置XML到剪贴板
-    emit QmlApplication::singleton().filtersCopied(); // 发射复制完成信号
+    emit QmlApplication::singleton().filtersCopied();                 // 发射复制完成信号
 }
 
 // 【功能】：复制所有滤镜到剪贴板（包括禁用状态）
@@ -189,12 +189,12 @@ QString QmlApplication::getNextProjectFile(const QString &filename)
         QFileInfo info(filename);
         QString basename = info.completeBaseName(); // 文件名（不含扩展名）
         QString extension = info.suffix();          // 文件扩展名
-        
+
         if (extension.isEmpty()) {
             extension = basename;
             basename = QString();
         }
-        
+
         // 从1开始递增查找可用的文件名
         for (unsigned i = 1; i < std::numeric_limits<unsigned>::max(); i++) {
             QString filename = QString::fromLatin1("%1%2.%3").arg(basename).arg(i).arg(extension);
@@ -247,8 +247,8 @@ bool QmlApplication::confirmOutputFilter()
                            QMessageBox::No | QMessageBox::Yes,
                            &MAIN);
         dialog.setWindowModality(dialogModality());
-        dialog.setDefaultButton(QMessageBox::No);  // 默认选择"否"（安全选项）
-        dialog.setEscapeButton(QMessageBox::Yes);  // ESC键对应"是"
+        dialog.setDefaultButton(QMessageBox::No); // 默认选择"否"（安全选项）
+        dialog.setEscapeButton(QMessageBox::Yes); // ESC键对应"是"
         dialog.setCheckBox(
             new QCheckBox(tr("Do not show this anymore.", "confirm output filters dialog")));
         result = dialog.exec() == QMessageBox::Yes;
@@ -266,12 +266,12 @@ QDir QmlApplication::dataDir()
     QDir dir(qApp->applicationDirPath());
 #if defined(Q_OS_MAC)
     dir.cdUp();
-    dir.cd("Resources");        // macOS：Resources目录
+    dir.cd("Resources"); // macOS：Resources目录
 #else
 #if defined(Q_OS_UNIX) || (defined(Q_OS_WIN) && defined(NODEPLOY))
     dir.cdUp();
 #endif
-    dir.cd("share");            // Unix/Windows：share目录
+    dir.cd("share"); // Unix/Windows：share目录
 #endif
     return dir;
 }

@@ -19,10 +19,10 @@
 #include "ui_textproducerwidget.h"
 
 #include "mltcontroller.h"
+#include "qmltypes/colordialog.h"
 #include "shotcut_mlt_properties.h"
 #include "util.h"
 
-#include <QColorDialog>
 #include <QFileInfo>
 #include <QFont>
 
@@ -74,17 +74,9 @@ void TextProducerWidget::on_colorButton_clicked()
     if (m_producer) {
         color = QColor(QFileInfo(m_producer->get("resource")).baseName());
     }
-    QColorDialog::ColorDialogOptions flags = QColorDialog::ShowAlphaChannel;
-    flags |= Util::getColorDialogOptions();
-    auto newColor = QColorDialog::getColor(color, this, QString(), flags);
+    auto newColor = ColorDialog::getColor(color, this);
+
     if (newColor.isValid()) {
-        auto rgb = newColor;
-        auto transparent = QColor(0, 0, 0, 0);
-        rgb.setAlpha(color.alpha());
-        if (newColor.alpha() == 0
-            && (rgb != color || (newColor == transparent && color == transparent))) {
-            newColor.setAlpha(255);
-        }
         ui->colorLabel->setText(colorToString(newColor));
         ui->colorLabel->setStyleSheet(QStringLiteral("color: %1; background-color: %2")
                                           .arg(Util::textColor(newColor), newColor.name()));
@@ -217,7 +209,7 @@ Mlt::Filter *TextProducerWidget::createFilter(Mlt::Profile &profile, Mlt::Produc
         filter->set("typewriter.macro_type", 1);
         filter->set("typewriter.cursor", 1);
         filter->set("typewriter.cursor_blink_rate", 25);
-        filter->set("typewriter.cursor_char", '|');
+        filter->set("typewriter.cursor_char", "|");
     } else {
         filter = new Mlt::Filter(profile, "dynamictext");
         filter->set(kShotcutFilterProperty, kSimpleFilterName);
@@ -227,16 +219,29 @@ Mlt::Filter *TextProducerWidget::createFilter(Mlt::Profile &profile, Mlt::Produc
             filter->set("argument",
                         tr("Edit your text using the Filters panel.").toUtf8().constData());
     }
+    if (ui->typeWriterRadioButton->isChecked()) {
 #if defined(Q_OS_WIN)
-    filter->set("family", "Verdana");
+        filter->set("family", "Consolas");
 #elif defined(Q_OS_MAC)
-    filter->set("family", "Helvetica");
+        filter->set("family", "Monaco");
+#else
+        filter->set("family", "monospace");
 #endif
+        filter->set("outline", 0);
+        filter->set("weight", QFont::Normal);
+        fgcolor = "#ff00ff00";
+    } else {
+#if defined(Q_OS_WIN)
+        filter->set("family", "Verdana");
+#elif defined(Q_OS_MAC)
+        filter->set("family", "Helvetica");
+#endif
+        filter->set("outline", 3);
+        filter->set("weight", QFont::Bold);
+    }
     filter->set("fgcolour", fgcolor);
     filter->set("bgcolour", "#00000000");
     filter->set("olcolour", "#aa000000");
-    filter->set("outline", 3);
-    filter->set("weight", QFont::Bold * 10);
     filter->set("style", "normal");
     filter->set("shotcut:usePointSize", 1);
     filter->set("shotcut:pointSize", kPointSize);

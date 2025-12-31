@@ -39,11 +39,11 @@ ColorWheelItem::ColorWheelItem(QQuickItem *parent)
     , m_isMouseDown(false)
     , m_lastPoint(0, 0)
     , m_size(0, 0)
-    , m_margin(5)           // 边距设置
-    , m_color(0, 0, 0, 0)   // 初始颜色（黑色透明）
+    , m_margin(5)         // 边距设置
+    , m_color(0, 0, 0, 0) // 初始颜色（黑色透明）
     , m_isInWheel(false)
     , m_isInSquare(false)
-    , m_step(1 / 256)       // 颜色变化步长
+    , m_step(1 / 256) // 颜色变化步长
 {
     setAcceptedMouseButtons(Qt::LeftButton); // 只接受左键点击
     setAcceptHoverEvents(true);              // 启用悬停事件
@@ -69,7 +69,10 @@ void ColorWheelItem::setColor(const QColor &color)
 // 以下是一组RGB分量的getter/setter方法
 // 每个分量改变都会更新颜色并触发重绘
 
-int ColorWheelItem::red() { return m_color.red(); }
+int ColorWheelItem::red()
+{
+    return m_color.red();
+}
 void ColorWheelItem::setRed(int red)
 {
     if (m_color.red() != red) {
@@ -79,7 +82,10 @@ void ColorWheelItem::setRed(int red)
     }
 }
 
-int ColorWheelItem::green() { return m_color.green(); }
+int ColorWheelItem::green()
+{
+    return m_color.green();
+}
 void ColorWheelItem::setGreen(int green)
 {
     if (m_color.green() != green) {
@@ -89,7 +95,10 @@ void ColorWheelItem::setGreen(int green)
     }
 }
 
-int ColorWheelItem::blue() { return m_color.blue(); }
+int ColorWheelItem::blue()
+{
+    return m_color.blue();
+}
 void ColorWheelItem::setBlue(int blue)
 {
     if (m_color.blue() != blue) {
@@ -102,7 +111,10 @@ void ColorWheelItem::setBlue(int blue)
 // 以下是一组浮点数格式的RGB分量getter/setter
 // 使用0.0-1.0的范围，适合颜色计算
 
-qreal ColorWheelItem::redF() { return m_color.redF(); }
+qreal ColorWheelItem::redF()
+{
+    return m_color.redF();
+}
 void ColorWheelItem::setRedF(qreal red)
 {
     if (m_color.redF() != red) {
@@ -112,7 +124,10 @@ void ColorWheelItem::setRedF(qreal red)
     }
 }
 
-qreal ColorWheelItem::greenF() { return m_color.greenF(); }
+qreal ColorWheelItem::greenF()
+{
+    return m_color.greenF();
+}
 void ColorWheelItem::setGreenF(qreal green)
 {
     if (m_color.greenF() != green) {
@@ -122,7 +137,10 @@ void ColorWheelItem::setGreenF(qreal green)
     }
 }
 
-qreal ColorWheelItem::blueF() { return m_color.blueF(); }
+qreal ColorWheelItem::blueF()
+{
+    return m_color.blueF();
+}
 void ColorWheelItem::setBlueF(qreal blue)
 {
     if (m_color.blueF() != blue) {
@@ -132,8 +150,14 @@ void ColorWheelItem::setBlueF(qreal blue)
     }
 }
 
-qreal ColorWheelItem::step() { return m_step; }
-void ColorWheelItem::setStep(qreal step) { m_step = step; }
+qreal ColorWheelItem::step()
+{
+    return m_step;
+}
+void ColorWheelItem::setStep(qreal step)
+{
+    m_step = step;
+}
 
 // 【功能】：计算颜色轮的直径尺寸
 // 【算法】：根据组件宽高和比例约束计算最大可用尺寸
@@ -150,31 +174,31 @@ QColor ColorWheelItem::colorForPoint(const QPoint &point)
 {
     if (!m_image.valid(point))
         return QColor();
-        
+
     if (m_isInWheel) {
         // 【颜色轮区域】：计算色相和饱和度
         qreal w = wheelSize() - m_margin * 2;
-        qreal xf = qreal(point.x() - m_margin) / w;  // 归一化X坐标
+        qreal xf = qreal(point.x() - m_margin) / w;       // 归一化X坐标
         qreal yf = 1.0 - qreal(point.y() - m_margin) / w; // 归一化Y坐标
-        qreal xp = 2.0 * xf - 1.0;  // 转换为[-1,1]范围
+        qreal xp = 2.0 * xf - 1.0;                        // 转换为[-1,1]范围
         qreal yp = 2.0 * yf - 1.0;
         qreal rad = qMin(hypot(xp, yp), 1.0); // 计算极坐标半径
         qreal theta = qAtan2(yp, xp);         // 计算极坐标角度
-        
-        theta -= 105.0 / 360.0 * 2.0 * M_PI;  // 调整角度偏移（视觉优化）
+
+        theta -= 105.0 / 360.0 * 2.0 * M_PI; // 调整角度偏移（视觉优化）
         if (theta < 0.0)
-            theta += 2.0 * M_PI;              // 规范化角度到[0,2π]
-            
+            theta += 2.0 * M_PI; // 规范化角度到[0,2π]
+
         qreal hue = (theta * 180.0 / M_PI) / 360.0; // 转换为HSV色相
         return QColor::fromHsvF(hue, rad, m_color.valueF());
     }
-    
+
     if (m_isInSquare) {
         // 【滑动条区域】：计算亮度值
         qreal value = 1.0 - qreal(point.y() - m_margin) / (wheelSize() - m_margin * 2);
         return QColor::fromHsvF(m_color.hueF(), m_color.saturationF(), value);
     }
-    
+
     return QColor();
 }
 
@@ -205,8 +229,9 @@ void ColorWheelItem::mouseMoveEvent(QMouseEvent *event)
 {
     updateCursor(event->pos()); // 更新鼠标光标
 
-    if (!m_isMouseDown) return;
-    
+    if (!m_isMouseDown)
+        return;
+
     m_lastPoint = event->pos();
     if (m_wheelRegion.contains(m_lastPoint) && m_isInWheel) {
         QColor color = colorForPoint(m_lastPoint);
@@ -244,20 +269,26 @@ void ColorWheelItem::wheelEvent(QWheelEvent *event)
     // 分别调整RGB三个分量
     c = currentColor.redF();
     c += delta;
-    if (c < 0) c = 0;     // 限制最小值
-    if (c > 1) c = 1;     // 限制最大值
+    if (c < 0)
+        c = 0; // 限制最小值
+    if (c > 1)
+        c = 1; // 限制最大值
     currentColor.setRedF(c);
 
     c = currentColor.greenF();
     c += delta;
-    if (c < 0) c = 0;
-    if (c > 1) c = 1;
+    if (c < 0)
+        c = 0;
+    if (c > 1)
+        c = 1;
     currentColor.setGreenF(c);
 
     c = currentColor.blueF();
     c += delta;
-    if (c < 0) c = 0;
-    if (c > 1) c = 1;
+    if (c < 0)
+        c = 0;
+    if (c > 1)
+        c = 1;
     currentColor.setBlueF(c);
 
     setColor(currentColor);
@@ -273,15 +304,15 @@ void ColorWheelItem::paint(QPainter *painter)
     if (m_size != size) {
         m_image = QImage(QSize(width(), height()), QImage::Format_ARGB32_Premultiplied);
         m_image.fill(qRgba(0, 0, 0, 0)); // 透明背景
-        drawWheel();    // 绘制颜色轮
-        drawSlider();   // 绘制亮度滑动条
+        drawWheel();                     // 绘制颜色轮
+        drawSlider();                    // 绘制亮度滑动条
         m_size = size;
     }
 
     painter->setRenderHint(QPainter::Antialiasing); // 抗锯齿
     painter->drawImage(0, 0, m_image);              // 绘制缓存图像
-    drawWheelDot(*painter);  // 绘制当前颜色指示点
-    drawSliderBar(*painter); // 绘制亮度指示条
+    drawWheelDot(*painter);                         // 绘制当前颜色指示点
+    drawSliderBar(*painter);                        // 绘制亮度指示条
 }
 
 // 【功能】：绘制颜色轮（色相环）
@@ -354,7 +385,7 @@ void ColorWheelItem::drawSliderBar(QPainter &painter)
     painter.setPen(pen);
     painter.setBrush(Qt::black);
     painter.translate(ws, m_margin + value * h); // 定位到当前亮度位置
-    painter.drawRect(0, 0, w, 4); // 绘制指示条
+    painter.drawRect(0, 0, w, 4);                // 绘制指示条
     painter.resetTransform();
 }
 
