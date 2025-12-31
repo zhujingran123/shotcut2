@@ -18,7 +18,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "subtitleeditorwidget.h"
 #include "Logger.h"
 #include "actions.h"
 #include "autosavefile.h"
@@ -6334,15 +6333,6 @@ void MainWindow::showSettingsMenu() const
 #endif
     ui->menuSettings->popup(point, ui->menuSettings->defaultAction());
 }
-
-
-// 在某个合适的位置，例如在构造函数中
-SubtitleEditorWidget *subtitleEditor = new SubtitleEditor(this);
-connect(someButton, &QPushButton::clicked, [=]{ subtitleEditor->show(); });
-
-// 加载字幕
-QStringList subtitles = ...; // 从文件或其他来源加载字幕
-subtitleEditor->loadSubtitles(subtitles);
 //王奇琪
 void MainWindow::setupExportFrameAction()
 {
