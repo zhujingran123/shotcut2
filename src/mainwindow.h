@@ -20,6 +20,7 @@
 
 #include "mltcontroller.h"
 #include "mltxmlchecker.h"
+#include "subtitleeditorwidget.h"
 
 #include <QDateTime>
 #include <QMainWindow>
@@ -411,3 +412,10 @@ private slots:
 #define MAIN MainWindow::singleton()
 
 #endif // MAINWINDOW_H
+// 在某个合适的位置，例如在构造函数中
+SubtitleEditorWidget *subtitleEditor = new SubtitleEditor(this);
+connect(someButton, &QPushButton::clicked, [=]{ subtitleEditor->show(); });
+
+// 加载字幕
+QStringList subtitles = ...; // 从文件或其他来源加载字幕
+subtitleEditor->loadSubtitles(subtitles);
